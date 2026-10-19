@@ -1,0 +1,12 @@
+# Action costs (crew-units, CU = 1 crew day) and delays. Sweep these in Phase 4 sensitivity analysis.
+dig:              {cost: 1.5,  needs_approval: true,  duration_h: 6}
+place_logger:     {cost: 0.1,  needs_approval: false, reads: next_night}
+ask_reporter:     {cost: 0.0,  needs_approval: false, response_prob: 0.7, delay_h: [0.5, 4.0]}
+acoustic_survey:  {cost: 0.2,  needs_approval: false, reads: next_night, max_radius_m: 250,
+                   p_detect_1lps: 0.6, p_detect_max: 0.9, false_positive: 0.05, locate_sigma_m: 30}
+step_test:        {cost: 0.3,  needs_approval: true,  reads: next_night, max_nodes: 60, flow_noise_lps: 0.3}
+wait:             {cost: 0.0}
+water_cost_per_m3: 0.002   # CU per m3 lost (sets how much delay matters)
+dig_success_radius_m: 100
+max_loggers_per_case: 3
+crews_per_night: 1          # field checks that can run in the same night (parallel night crews); Phase 4 also tests 3
