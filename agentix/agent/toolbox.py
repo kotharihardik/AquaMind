@@ -1,360 +1,515 @@
-"""The agent's toolbox: every action a 'brain' (LLM or rules) can take, each one checked by code before it runs.
+"""The investigation toolbox: every action a 'brain' (the LLM agent or the code-only planner) can take.
 
-Safety by design (patterns from Beurer-Kellner et al., "Design Patterns for Securing LLM Agents against Prompt
-Injections", 2025):
-- ACTION SELECTOR: a brain picks tools and menu items; it can never name an arbitrary dig location. A dig always
-  targets the spot the EVIDENCE supports (code's best dig spot), so text inside a report cannot steer a crew.
-- CODE GATE: a dig request needs P(success) >= 0.5 and no strong alternative explanation BEFORE the operator is
-  even asked; then the operator must approve. The mechanical SOP steps (permit, hospital notice, school-hours
-  timing, informing reporters) are done by code, so they never depend on a brain remembering them.
-- DUAL LLM / CONTEXT MINIMIZATION: raw citizen text is only read by the quarantined reader. Tools return only
-  fixed words, canonical place names and numbers. Document hits lose any instruction-like sentence.
-- MONITOR: every call is validated (known tool, valid ids, budget, step limits); errors are returned, not raised.
-
-The same toolbox serves the LLM agent AND the rule-based brain, so they are compared on equal terms.
+Safety by design (proposal Section 7, step 4; ADR-005). The temporary logger (place_logger) is a baseline-only tool (FixedRules, ReAct); the crew's
+new-measurement tool is the night step test:
+- QUARANTINE: raw citizen text is read only by the reader. The brain sees code-built summaries: fixed words,
+  canonical place names from the map, numbers. Questions to citizens are free text, but answers come back as fields.
+- ACTION SELECTOR: a dig has no location argument; it always goes to the spot the evidence supports most.
+- CODE GATE before the operator is even asked: P(success) >= 0.8 and at least one field check (not a message)
+  supports the spot; at most two digs (SOP-2).
+- OPERATOR TOKEN: the duty operator approves the form; the one-time token is bound to the exact action and target.
+- SOP paperwork (permits, hospital notices, school hours, informing citizens) is done by code from the SOP (RAG).
+- Every call is validated; errors are returned (never raised) and logged, so tool-call accuracy can be measured.
 """
 from __future__ import annotations
 
-import json
-import re
+import time
+import zlib
 
 import numpy as np
 
-from ..active.investigation import OPEN_QUESTION, Investigation, Option
-from ..env.operator import SUSPICIOUS
-from .timeparse import parse_when
+from ..search.planner import DIG_BAR, FINAL_BAR, Option, Planner
 
-DIG_THRESHOLD = 0.5          # P(success) needed before a dig may even be requested
-ALT_LIMIT = 0.3              # a non-leak explanation above this blocks digging (check it first)
-MAX_DIGS = 2                 # SOP-2
-TOOLS = ["do", "ask", "search_docs", "test_event", "test_sensor_fault", "exclude_sensor", "wait", "recheck",
-         "request_permit", "notify", "propose_dig", "abstain"]
+SYM_WORDS = {"water_coming_out": "water coming out", "burst": "burst", "pooling": "water collected",
+             "wet_ground": "wet ground", "sound_underground": "sound under road", "road_damage": "road damage",
+             "low_pressure": "low pressure", "no_water": "no water", "dirty_water": "dirty water"}
 
 
 class Toolbox:
-    def __init__(self, inv: Investigation, env, case, retriever, rulebook, budget_cu: float = 1.6,
-                 use_rag: bool = True, use_gate: bool = True, allow_alternatives: bool = True):
-        self.inv, self.env, self.case = inv, env, case
-        self.ret, self.rules = retriever, rulebook
-        self.budget, self.use_rag, self.use_gate = budget_cu, use_rag, use_gate
-        self.allow_alt = allow_alternatives          # ablation: no testing of other explanations
-        self.board = inv.start(case, env)
-        self.net = inv.net
-        self.menu_cache: dict[str, Option] = {}
-        self.doc_hits: dict[str, dict] = {}
+    def __init__(self, env, case, search, reader, docs, rulebook, *, use_gate: bool = True, use_rag: bool = True,
+                 use_field: bool = True, plan_samples: int = 96, use_canvass: bool = False,
+                 use_planner: bool = True, min_checks_close: int = 0, auto_sop: bool = False,
+                 allow_step: bool = True):
+        self.env, self.case, self.search, self.reader = env, case, search, reader
+        self.docs, self.rules = docs, rulebook
+        self.net, self.places, self.sections = search.net, search.town.places, search.sections
+        self.use_gate, self.use_rag, self.use_field, self.use_canvass = use_gate, use_rag, use_field, use_canvass
+        self.min_checks_close = min_checks_close            # sweep before 'no leak': at least this many field checks unless P(leak) < 0.03
+        self.auto_sop = auto_sop                            # True: the rule book in code does the SOP paperwork; False: only what an agent asks for (read from sop.md)
+        self.use_planner = use_planner                      # False: no look-ahead values at all (the rule-based dispatcher baseline)
+        self.allow_step = allow_step                        # False: no night step test (the temporary flow/pressure measurement) is offered or accepted
+        self.trace: list[dict] = []
+        t0 = time.time()
+        self.reads = reader.read_many(case.reports)
+        self.board = search.start(case, self.reads)
+        self.seen = {r["report_id"] for r in case.reports}
+        self.planner = Planner(self.net, self.sections, self.board.tools, n_samples=plan_samples,
+                               seed=zlib.crc32(case.case_id.encode()) % 10_000,
+                               dig_bar=search.cfg.dig_bar, final_bar=search.cfg.final_bar, hedge=search.cfg.hedge,
+                               allow_step=allow_step)
+        self.options: dict[str, Option] = {}
+        self._plan_key = None
+        self.attempts: dict[str, int] = {}              # call-backs made per message (answered or not): max 2 each
+        self.repairs_used: set[str] = set()             # ADR-018: repair tickets the agent cited as a failing stretch
         self.digs = 0
+        self.calls: dict[str, list] = {}
+        self.records_used: dict[str, str] = {}
         self.done = False
-        self.events: list[dict] = []          # what happened, for the brain's memory and the logs
-        self.searches: dict[str, list] = {}
-        self.failed: dict[str, str] = {}      # calls that failed (so an identical retry is refused at once)
-        # this case's own work orders and maintenance notes are short, so every brain sees all of them from the
-        # start (instruction-like sentences removed); search_docs is for the SOP and for finding things again
-        self.notes = {c.id: {"text": _clean(c.text), "provenance": c.provenance}
-                      for c in retriever.chunks if c.provenance == "internal_note"} if use_rag else {}
-        self.doc_hits.update(self.notes)
+        self._log("open", {}, {"messages": len(case.reports)}, time.time() - t0)
 
-    # ------------------------------------------------------------------ small helpers
-    def p_success(self) -> float:
-        return self.board.belief().best_dig()[1]
+    # ------------------------------------------------------------------ bookkeeping
+    def _log(self, tool, args, result, secs=0.0):
+        self.trace.append({"t_case_h": round((self.env.now - self.case.case_open_s) / 3600, 2), "tool": tool,
+                           "args": args, "result": result, "p_leak": round(self.board.p_leak, 3),
+                           "p_success": round(self.board.best_dig()[1], 3), "secs": round(secs, 2)})
+        return result
 
-    def best_node(self) -> str:
-        return self.net.junctions[self.board.belief().best_dig()[0]]
+    def _err(self, tool, args, msg):
+        return self._log(tool, args, {"ok": False, "error": msg})
 
-    def alt_max(self) -> tuple[str | None, float]:
-        """The strongest non-leak explanation and its probability."""
-        ex = self.board.explanations()
-        alts = [(k, v) for k, v in ex.items() if k not in ("leak", "none")]
-        return max(alts, key=lambda x: x[1]) if alts else (None, 0.0)
+    def refresh(self):
+        """Read messages that arrived since the last look (time passes during an investigation)."""
+        new = [r for r in self.env.observe()["reports"] if r["report_id"] not in self.seen]
+        if new:
+            self.reads.update(self.reader.read_many(new))
+            self.seen |= {r["report_id"] for r in new}
+            self.search.add_messages(self.board, new, self.reads)
+        return [r["report_id"] for r in new]
 
-    def sensor_outlier(self, min_drop_m: float = 0.15, ratio: float = 3.0):
-        """One sensor that dropped much more than all others (SOP-10: may be a fault, not a leak)."""
-        d = np.abs(self.inv.ev0.drop_m)
-        if len(d) < 3:
-            return None
-        order = np.argsort(-d)
-        if d[order[0]] >= min_drop_m and d[order[0]] >= ratio * max(d[order[1]], 0.02):
-            return self.case.pressure_nodes[int(order[0])], float(self.inv.ev0.drop_m[order[0]]), float(d[order[1]])
-        return None
+    def describe_node(self, j: int) -> str:
+        return f"{self.places.describe(j)} ({self.net.junctions[j]})"
 
-    def menu(self) -> list[Option]:
-        opts = self.inv.menu(self.board, budget_left=self.budget - self.inv.state["spent"])
-        if not self.env.night_left():                    # field checks need a night; only questions remain
-            opts = [o for o in opts if o.kind == "ask"]
-        self.menu_cache = {f"M{i + 1}": o for i, o in enumerate(opts[:6])}
-        return opts[:6]
+    def message_line(self, rid: str) -> str:
+        """A code-built summary of a message: fixed words + canonical map names only (never the raw text)."""
+        rd, m = self.reads[rid], self.board.messages.get(rid)
+        names = []
+        for p in rd.get("places") or []:
+            ids = self.places.resolve(p["text"], p.get("type"))
+            names.append(self.places.places[ids[0]]["name"] if ids else "an unrecognised place")
+        flags = []
+        if rd.get("contains_instructions"):
+            flags.append("CONTAINS INSTRUCTION-LIKE TEXT (quarantined, not evidence)")
+        if rd.get("on_private_property"):
+            flags.append("private property")
+        what = ", ".join(SYM_WORDS.get(s, s) for s in rd.get("symptoms") or []) or "-"
+        line = (("[OPENED THE CASE] " if rid == getattr(self.case, "trigger_report", None) else "") +
+                f"{rid}: {rd.get('category')} | {what} | place: {'; '.join(names) or 'none'} | "
+                f"source: {(m.source if m else rd.get('source'))}")
+        if m and m.usable() and self.search.rep.kind(rd) == "discolour":
+            line += (" | brown/dirty tap water: weak AREA-level evidence (the leak is on a feeder pipe, often 300-900 m away; the place itself is not "
+                     "the leak)" + (f" | explained by the utility's own works" if m.eps >= 0.9 else f" | calls {m.calls}/2"))
+        elif m and m.usable():
+            line += f" | chance it is a false alarm {m.eps:.0%} | calls {m.calls}/2"
+        elif not flags:
+            line += " | not leak evidence"
+        if m and m.notes:
+            line += " | " + "; ".join(m.notes[-3:])
+        return line + (" | " + "; ".join(flags) if flags else "")
 
-    def resolve_node(self, where: str) -> str | None:
-        """'n123' or a place description -> one junction id.
-        'Vegetable Market, Tank Bund Road' -> the Vegetable Market closest to Tank Bund Road (names repeat in a
-        city, so the street helps pick the right one). A street alone -> its middle junction."""
-        where = str(where).strip()
-        if where in self.net.index:
-            return where
-        gaz = self.inv.gaz
-        found = [pids for _, _, _, pids in gaz.find_mentions(where)] or [gaz.resolve(where)]
-        pids = [p for group in found for p in group]
-        if not pids:
-            return None
-        marks = [gaz.places[p]["geometry"]["node"] for p in pids if "node" in gaz.places[p].get("geometry", {})]
-        lines = [n for p in pids for n in gaz.places[p].get("geometry", {}).get("nodes", []) if n in self.net.index]
-        if marks and lines:
-            xy = self.net.xy[[self.net.index[n] for n in lines]]
-            return min(marks, key=lambda m: float(np.min(np.hypot(*(xy - self.net.xy[self.net.index[m]]).T))))
-        if marks:
-            return marks[0]
-        return lines[len(lines) // 2] if lines else None
+    def influence(self, rid: str) -> float:
+        """How much the leak map would change without this message (total-variation distance)."""
+        m = self.board.messages.get(rid)
+        if not (m and m.usable()):
+            return 0.0
+        p0 = self.board.post
+        b = self.board.copy()
+        b.messages[rid].eps = 0.999
+        b.touch()
+        return 0.5 * float(np.abs(b.post - p0).sum())
 
-    def resolve_place(self, text: str) -> dict | None:
-        """A place description -> one gazetteer place (a landmark if one is named; the one nearest a named street)."""
-        node = self.resolve_node(text)
-        gaz = self.inv.gaz
-        pids = [p for _, _, _, g in gaz.find_mentions(text) for p in g] or gaz.resolve(text)
-        if not pids:
-            return None
-        marks = [p for p in pids if gaz.places[p].get("geometry", {}).get("node") == node]
-        return gaz.places[marks[0] if marks else pids[0]]
-
-    def grounded(self, basis: str) -> str:
-        """Is a hypothesis backed by something real? 'doc' (a work order / log line we have read), 'report'
-        (a report we have), or 'guess'. Citing an ID that does not exist counts as a guess."""
-        words = str(basis).strip().upper().replace(",", " ").split()
-        b = words[0] if words else ""
-        if b in self.doc_hits and self.doc_hits[b]["provenance"] == "internal_note":
-            return "doc"
-        if b in self.inv.state["reader_outs"]:
-            return "report"
-        return "guess"
-
-    def missing_steps(self, node: str, schedule: str) -> list[str]:
-        """SOP steps still to do before digging at `node` (SOP-5 school hours, SOP-6 permit, SOP-7 hospital)."""
-        todo = []
-        for need in self.rules.requirements("dig", [node], self.env.clock()):
-            if need["rule"] == "school_hours" and schedule != "after_school_hours":
-                todo.append(f"{need['sop']}: use schedule='after_school_hours'")
-            elif need["rule"] == "resurfaced_permit" and \
-                    self.rules.resurfaced_node.get(node) not in self.env.permits:
-                todo.append(f"{need['sop']}: {need['do']}")
-            elif need["rule"] == "hospital_notice" and not any(t.startswith("hospital") for t in self.env.notified):
-                todo.append(f"{need['sop']}: {need['do']}")
-        return todo
-
-    # ------------------------------------------------------------------ single entry point
-    def call(self, tool: str, args: dict | None) -> dict:
-        """Validate, run, record. Never raises."""
-        if (self.done or self.env.done) and tool != "notify":       # informing people is still allowed
-            return {"ok": False, "error": "case already closed"}
-        if tool not in TOOLS:
-            return {"ok": False, "error": f"unknown tool '{tool}'. Allowed: {TOOLS}"}
-        if not self.allow_alt and tool in ("test_event", "test_sensor_fault", "exclude_sensor", "recheck"):
-            return {"ok": False, "error": f"'{tool}' is not available in this setup"}
-        key = tool + json.dumps(args or {}, sort_keys=True, default=str)
-        if key in self.failed:                               # same call failed before: don't spend time on it again
-            return {"ok": False, "error": f"repeat of a call that already failed ({self.failed[key][:80]})"}
-        try:
-            res = getattr(self, "t_" + tool)(**(args or {}))
-        except (TypeError, ValueError) as e:
-            res = {"ok": False, "error": f"bad arguments for {tool}: {str(e)[:120]}"}
-        if not res.get("ok", True) and tool not in ("propose_dig", "wait", "recheck"):
-            self.failed[key] = str(res.get("error"))
-        self.events.append({"tool": tool, "args": args, "result": {k: v for k, v in res.items() if k != "explanations"}})
-        return res
-
-    # ------------------------------------------------------------------ the tools
-    def t_do(self, option: str):
-        """Run a prepared check from the menu by its id (M1, M2, ...)."""
-        o = self.menu_cache.get(str(option).strip().upper())
-        if o is None:
-            return {"ok": False, "error": f"unknown menu option '{option}'; choose one of {list(self.menu_cache)}"}
-        if self.inv.state["spent"] + o.cost > self.budget + 1e-9:
-            return {"ok": False, "error": "not enough budget left for this check"}
-        if o.kind == "step":                                 # SOP-7: hospitals hear about a night shut-off first
-            nodes = [self.net.junctions[i] for i in o.args["S"]]
-            for need in self.rules.requirements("step_test", nodes, self.env.clock()):
-                self.env.notify(need["do"].split("notify('")[1].rstrip("')"), "night step test planned nearby")
-        r = self.inv.execute(o, self.board, self.env)
-        return {"ok": bool(r.get("ok")), "check": o.label, "result": _short(r),
-                "p_success_now": round(self.p_success(), 3)}
-
-    def t_ask(self, report_id: str, question: str = "", options: list | None = None):
-        """Ask a reporter a question, optionally 'near which of these places?'. Free, at most 2 per report.
-        The answer comes back already read by the quarantined reader (never as raw text)."""
-        if report_id not in self.board.reports:
-            return {"ok": False, "error": f"no usable report '{report_id}'"}
-        question = str(question or OPEN_QUESTION)[:300]
-        if re.search(SUSPICIOUS, question.lower()):
-            return {"ok": False, "error": "question contains instruction-like text"}
-        opts = []
-        for o in (options or [])[:4]:
-            p = self.resolve_place(str(o))
-            if p and p["place_id"] not in [x["place_id"] for x in opts]:
-                opts.append({"place_id": p["place_id"], "label": p["name"]})
-        o = Option(f"ask@{report_id}", "ask", {"rid": report_id, "question": question, "options": opts}, 0.0, 2.0)
-        r = self.inv.execute(o, self.board, self.env, question=question)
-        parsed = r.get("parsed") or {}
-        k = parsed.get("option_index")
-        chose = (opts[k]["label"] if k is not None and k < len(opts) else
-                 "none of those" if opts and k == len(opts) else None)
-        safe = {"answered": bool(r.get("reply_text")), "source_seen": parsed.get("source_seen"), "chose_option": chose,
-                "places": [self._canon(m["text"]) for m in parsed.get("mentions", [])],
-                "flows_from": [self._canon(m["text"]) for m in parsed.get("upstream", [])],
-                "not_public_pipe": parsed.get("non_supply", False)}
-        return {"ok": bool(r.get("ok")), "error": r.get("error"), "answer": safe,
-                "p_success_now": round(self.p_success(), 3)}
-
-    def t_search_docs(self, query: str):
-        """Search the SOP rules and this case's work orders / maintenance log (BM25)."""
+    def records_near(self, rid: str, k: int = 2) -> list:
+        """Complaint/repair records at the place of a message (RAG)."""
         if not self.use_rag:
-            return {"ok": False, "error": "document search is not available"}
-        q = " ".join(str(query).lower().split())
-        if q in self.searches:
-            return {"ok": False, "error": "you already ran this search; its hits are on the board"}
-        if len(self.searches) >= 4:
-            return {"ok": False, "error": "search limit (4) reached; use what is on the board"}
-        hits = []
-        for c, _ in self.ret.search(q, k=4):
-            text = _clean(c.text)
-            self.doc_hits[c.id] = {"text": text, "provenance": c.provenance}
-            hits.append({"id": c.id, "type": c.provenance, "text": text[:260]})
-        self.searches[q] = [h["id"] for h in hits]
-        return {"ok": True, "hits": hits}
+            return []
+        rd = self.reads[rid]
+        names = [self.places.places[ids[0]]["name"] for p in rd.get("places") or []
+                 if (ids := self.places.resolve(p["text"], p.get("type")))]
+        if not names:
+            return []
+        hits = self.docs.search(" ".join(names), k=6, provenance="record")
+        out = []
+        for c, s in hits:
+            if any(n.lower() in c.text.lower() for n in names):         # tickets that mention the place; an agent judges what they mean
+                out.append(c)
+        return out[:k + 1]
 
-    def t_test_event(self, where: str, start: str, end: str, basis: str = "guess"):
-        """Test the explanation 'temporary water use (flushing / fire brigade / valve works) at `where`'.
-        start/end: '14:15', '1415 hrs', '2 PM', or with a date like '10/10 14:15'."""
-        node = self.resolve_node(where)
-        if node is None:
-            return {"ok": False, "error": f"unknown place '{where}'"}
-        sd = self.env.start_dt
-        t0 = parse_when(start, sd, self.case.case_open_s)
-        t1 = parse_when(end, sd, t0 if t0 is not None else self.env.now)
-        if t0 is None or t1 is None:
-            return {"ok": False, "error": "start/end must contain a clock time like 14:15"}
-        if t1 <= t0:
-            t1 += 86400                       # runs past midnight
-        g = self.grounded(basis)
-        prior = {"doc": 0.6, "report": 0.4, "guess": 0.1}[g]
-        name = f"event@{node}"
-        if name in self.inv.state["alts_tested"]:
-            return {"ok": False, "error": f"'{name}' was already tested; see HYPOTHESES on the board"}
-        ex = self.inv.test_event(self.board, node, t0, t1, prior, name, spread=(g == "guess"))
-        return {"ok": True, "hypothesis": name, "support": g, "explanations": _round(ex),
-                "event_ends_in_h": round((t1 - self.env.now) / 3600, 1),
-                "hint": "an event stops, a leak does not: wait until ~2 h after it ends, then recheck"}
+    def plan(self) -> list[Option]:
+        """Valued options (cached until the evidence changes, so asking twice is free)."""
+        if not self.use_planner:
+            return []
+        left = self.env.checks_left() if self.use_field else 0
+        cl = max(self.env.cfg["canvass"]["max_per_case"] - self.env.canvasses, 0) if (self.use_field and self.use_canvass) else 0
+        key = (self.board.version, left, self.digs, cl)
+        if key != self._plan_key:
+            opts = self.planner.evaluate(self.board, left, 2 - self.digs, cl) if left else []
+            self.options = {f"F{i + 1}": o for i, o in enumerate(opts[:4])}
+            self._plan_key = key
+        return list(self.options.values())
 
-    def t_test_sensor_fault(self, sensor: str, basis: str = "guess"):
-        """Test the explanation 'this sensor is faulty and there is no leak'."""
-        if sensor not in self.case.pressure_nodes:
-            return {"ok": False, "error": f"'{sensor}' is not one of our sensors {self.case.pressure_nodes}"}
-        if f"sensor_fault:{sensor}" in self.inv.state["alts_tested"]:
-            return {"ok": False, "error": f"sensor fault of {sensor} was already tested; see HYPOTHESES on the board"}
-        prior = {"doc": 0.6, "report": 0.15, "guess": 0.15}[self.grounded(basis)]
-        ex = self.inv.test_sensor_fault(self.board, sensor, prior, f"sensor_fault:{sensor}")
-        return {"ok": True, "explanations": _round(ex)}
+    def rule_option(self):
+        """The simple dispatcher rule (no look-ahead): listen where the map is concentrated, else night step test of the sections holding most of it."""
+        lite = self.planner.lite(self.board)
+        cand = getattr(self.board, "cand", None)
+        if cand is not None and cand.any():                  # ADR-016: only where somebody hypothesised a leak
+            lite.lp = np.where(cand, lite.lp, -np.inf)
+        o = self.planner.base_choice(lite)
+        if o is None:
+            return None
+        o.label = (f"night step test of sections {', '.join(o.args['sections'])}" if o.kind == "step"
+                   else f"listen within 250 m of junction {self.net.junctions[o.args['center']]}")
+        self.options = {"F1": o}
+        return o
 
-    def t_exclude_sensor(self, sensor: str):
-        """Stop using one sensor (for example after a maintenance note says it is broken)."""
-        if sensor not in self.case.pressure_nodes:
-            return {"ok": False, "error": f"'{sensor}' is not one of our sensors"}
-        if sensor in self.inv.state.get("excluded_sensors", []):
-            return {"ok": False, "error": f"'{sensor}' is already excluded"}
-        ex = self.inv.exclude_sensor(self.board, sensor)
-        return {"ok": True, "explanations": _round(ex), "p_success_now": round(self.p_success(), 3)}
-
-    def t_wait(self, hours: float):
-        """Let time pass (up to 12 h). New reports that arrive are read and added."""
-        hours = float(hours)
-        if not 0 < hours <= 12:
-            return {"ok": False, "error": "wait between 0 and 12 hours"}
-        n0 = len(self.inv.state["seen_reports"])
-        r = self.env.wait(hours)
-        self.inv.add_reports(self.board, self.env.observe()["reports"])
-        return {"ok": bool(r.get("ok")), "now": self.env.clock().strftime("%a %H:%M"),
-                "new_reports": len(self.inv.state["seen_reports"]) - n0}
-
-    def t_recheck(self):
-        """Look at the newest data (after any suspected event ended): is the anomaly still there?
-        If it is a little too early (an event ended less than 2 h ago), wait the few hours needed first."""
-        r = self.inv.recheck(self.board, self.env)
-        if not r.get("ok") and 0 < r.get("wait_h", 99) <= 6 and self.env.now + r["wait_h"] * 3600 <= self.env.horizon:
-            self.t_wait(r["wait_h"])
-            r = self.inv.recheck(self.board, self.env)
-        if r.get("ok"):
-            r["explanations"] = _round(r["explanations"])
-            r["p_success_now"] = round(self.p_success(), 3)
-        return r
-
-    def t_request_permit(self, street: str):
-        """SOP-6 permit for a recently resurfaced street (takes about 12 hours)."""
-        return self.env.request_permit(str(street))
-
-    def t_notify(self, target: str, message: str = ""):
-        """'hospital:<name>', 'reporter:<report_id>', 'supervisor' or 'traffic_police'."""
-        if re.search(SUSPICIOUS, str(message).lower()):
-            return {"ok": False, "error": "message contains instruction-like text"}
-        return self.env.notify(str(target), str(message))
-
-    def t_propose_dig(self, schedule: str = "now", reason: str = ""):
-        """Ask to dig at the best-supported spot. Code gate first, then the operator."""
-        if schedule not in ("now", "after_school_hours"):
-            return {"ok": False, "error": "schedule must be 'now' or 'after_school_hours'"}
-        if self.digs >= MAX_DIGS:
-            return {"ok": False, "gate": "blocked", "error": "two digs already done (SOP-2)"}
-        p, node = self.p_success(), self.best_node()
-        alt, pa = self.alt_max()
-        if self.use_gate:
-            if p < DIG_THRESHOLD:
-                return {"ok": False, "gate": "blocked",
-                        "error": f"P(success) {p:.2f} < {DIG_THRESHOLD}: collect more evidence first"}
-            if pa > ALT_LIMIT:
-                return {"ok": False, "gate": "blocked", "error": f"'{alt}' still has {pa:.2f}: rule it out first"}
-        sop_done = []
-        for step in self.missing_steps(node, schedule):     # mechanical SOP steps are done by code, not left to luck
-            if "after_school_hours" in step:
-                schedule = "after_school_hours"
-            elif "request_permit" in step:
-                self.env.request_permit(self.rules.resurfaced_node[node])
-            elif "notify" in step:
-                self.env.notify(step.split("notify('")[1].rstrip("')"), "planned excavation nearby")
-            sop_done.append(step)
-        token, why = self.inv.approve(self.env, "dig", node, self.board, str(reason))
-        if token is None:
-            return {"ok": False, "operator": why}
-        b = self.board.belief()
-        j = self.net.index[node]
-        r = self.env.request_dig(node, approval_token=token, schedule=schedule)
-        self.digs += 1
-        found = bool(r.get("leak_found"))
-        if found:
-            self.done = True
+    def add_option(self, oid: str, kind: str, args: dict, label: str) -> str | None:
+        """Register a field check someone proposed (no look-ahead value): a night step test of up to 6 valid sections, or listening at a junction."""
+        from ..search.planner import Option
+        if kind == "step":
+            if not self.allow_step:
+                return None
+            sids = [s for s in dict.fromkeys(args.get("sections") or []) if s in self.sections.areas][:6]
+            if not sids:
+                return None
+            args = {"sections": sids}
+        elif kind == "listen":
+            if not isinstance(args.get("center"), (int, np.integer)):
+                return None
         else:
-            self.board.add_check(f"failed_dig@{node}", 1 - b.cover[j] * 0.9, 1.0)
-        if r.get("ok"):                                      # SOP-8: tell the people whose reports we used
-            for rid in self.board.reports:
-                self.env.notify(f"reporter:{rid}", "a crew inspected the reported area")
-        return {"ok": bool(r.get("ok")), "dug_at": node, "leak_found": found, "error": r.get("error"),
-                "sop_done": sop_done + (["SOP-8: reporters informed"] if r.get("ok") else [])}
+            return None
+        post = self.board.post * self.board.p_leak
+        p_in = (sum(self.sections.area_mass(s, post) for s in args["sections"]) if kind == "step"
+                else float(self.planner.listen_cover[args["center"]] @ post))
+        self.options[oid] = Option(kind, args, label, float(p_in))
+        return oid
 
-    def t_abstain(self, summary: str = ""):
-        """Close the case without digging and hand it to a human (with a short summary)."""
-        self.env.abstain(str(summary)[:300])
+    def can_call(self, rid: str) -> bool:
+        m = self.board.messages.get(rid)
+        return m is not None and m.usable() and self.attempts.get(rid, 0) < self.env.cfg["call"]["max_per_message"]
+
+    def exhausted(self) -> bool:
+        """No field check can add anything any more (budget or time spent, or none is worth its cost)."""
+        if not self.use_field or self.env.checks_left() <= 0 or self.env.now >= self.env.horizon:
+            return True
+        if not self.use_planner:
+            return False
+        opts = self.plan()
+        return bool(opts) and max(o.value for o in opts) <= 0.01
+
+    def gate(self) -> tuple[bool, str]:
+        j, p = self.board.best_dig()
+        final = self.exhausted()
+        sup = self.board.field_support(j, final)
+        bar = self.planner.final_bar if final else self.planner.dig_bar
+        if self.digs >= 2:
+            return False, "two digs already done (SOP-2): hand the case over"
+        if not self.use_gate:
+            return True, "no code gate in this setup"
+        if p < bar:
+            return False, f"P(success) {p:.2f} is below the bar {bar:.2f}" + (" (last-resort bar: no check can add anything)" if final else "")
+        if not sup:
+            return False, "no field check (step test or listening) supports the spot yet; messages alone can be wrong or faked"
+        return True, f"P(success) {p:.2f} >= {bar:.2f}; supported by {', '.join(sup[:3])}" + (" (last resort)" if final and p < self.planner.dig_bar else "")
+
+    # ------------------------------------------------------------------ tools
+    def call_back(self, calls: list[dict]) -> dict:
+        """Call several people back (free, in parallel). calls: [{"report_id", "question"}]."""
+        t0 = time.time()
+        args = {"calls": calls}
+        if not isinstance(calls, list) or not calls:
+            return self._err("call_back", args, "give a list of {report_id, question}")
+        asked, results, longest = [], [], 0.0
+        for c in calls[:4]:
+            rid, q = str(c.get("report_id", "")), str(c.get("question", "")).strip()
+            if rid not in self.board.messages:
+                results.append({"report_id": rid, "error": "unknown message id"})
+                continue
+            r = self.env.call(rid, q)
+            if not r.get("ok"):
+                results.append({"report_id": rid, "error": r["error"]})
+                continue
+            longest = max(longest, r["delay_s"])
+            self.attempts[rid] = self.attempts.get(rid, 0) + 1
+            asked.append((rid, q, r["reply_text"]))
+        replies = self.reader.read_replies([(q, a) for _, q, a in asked])
+        for (rid, q, a), rep in zip(asked, replies):
+            self.search.apply_reply(self.board, rid, rep)
+            self.calls.setdefault(rid, []).append({"question": q, "reply": rep})
+            facts = [k for k in ("source", "not_network", "still_flowing") if rep.get(k) not in (None, "unknown")]
+            results.append({"report_id": rid, "answered": rep["answered"],
+                            "learned": {k: rep[k] for k in facts},
+                            "places_named": len(rep.get("places") or []) + len(rep.get("flows_from") or [])})
+        self.env.advance(longest)
+        new = self.refresh()
+        return self._log("call_back", args, {"ok": True, "results": results, "new_messages": new}, time.time() - t0)
+
+    def _record_check(self, rid: str, record_id: str) -> tuple[bool, str]:
+        """Does this record describe a non-utility false alarm at the place this message points to? (pure, no logging)"""
+        c = self.docs.by_id.get(record_id) if self.use_rag else None
+        if c is None or c.provenance != "record":
+            return False, "unknown record id"
+        m = self.board.messages.get(rid)
+        if m is None or m.w is None or m.eps is None:
+            return False, "the record's place is not where this message points"
+        w = self._record_footprint(c.text)
+        if w is None or float(m.w @ self.search.near_share(w)) < 0.3:
+            return False, "the record's place is not where this message points"
+        return True, ""
+
+    def _record_footprint(self, text: str):
+        """Junction weights of the places a ticket mentions (landmark disc / street), or None."""
+        ws = []
+        for _, _, _, ids in self.places.find_mentions(text):
+            ws += [self.places.place_nodes(i) for i in ids[:1]]
+        if not ws:
+            return None
+        w = sum(ws[:3])
+        return w / w.sum() if w.sum() > 0 else None
+
+    def record_applies(self, rid: str, record_id: str) -> bool:
+        return self._record_check(rid, record_id)[0]
+
+    def use_record(self, rid: str, record_id: str) -> dict:
+        """Count a record of repeated non-utility false alarms at this message's place (verified by code)."""
+        args = {"report_id": rid, "record_id": record_id}
+        ok, why = self._record_check(rid, record_id)
+        if not ok:
+            return self._err("use_record", args, why)
+        if not self.search.mark_record_match(self.board, rid, self._record_footprint(self.docs.by_id[record_id].text)):
+            return self._err("use_record", args, "the record's place is not where this message points")
+        self.records_used[rid] = record_id
+        return self._log("use_record", args, {"ok": True, "effect": "message counted as a likely repeat false alarm"})
+
+    def repair_tickets_near(self, k: int = 5) -> list:
+        """RAG over the town archive: repair tickets (not complaint visits) whose place lies within 300 m of a usable complaint or a hypothesised
+        junction. The agent judges what a ticket means; code only finds and places them."""
+        if not self.use_rag:
+            return []
+        b, D = self.board, self.net.pipe_distance
+        focus = [int(np.argmax(m.w)) for m in b.messages.values() if m.usable()]
+        cand = getattr(b, "cand", None)
+        if cand is not None and cand.any():
+            focus += list(np.where(cand)[0][:: max(int(cand.sum()) // 40, 1)])
+        if not focus:
+            return []
+        out = []
+        for cid, c in self.docs.by_id.items():
+            if c.provenance != "record" or "No utility pipe leak found" in c.text or cid in self.repairs_used:
+                continue
+            w = self._record_footprint(c.text)
+            if w is None:
+                continue
+            j = int(np.argmax(w))
+            d = min(float(D[j, f]) for f in focus)
+            if d <= 300:
+                out.append((d, c))
+        return [c for _, c in sorted(out, key=lambda x: x[0])[:k]]
+
+    def use_repair_record(self, record_id: str) -> dict:
+        """The agent cites a ticket as a failing stretch of main. Code checks it is a repair ticket with a place on the map, raises the prior
+        within 150 m of it by the failure hazard, and hypothesises that stretch (it is simulated like any other hypothesis)."""
+        args = {"record_id": record_id}
+        c = self.docs.by_id.get(str(record_id)) if self.use_rag else None
+        if c is None or c.provenance != "record" or "No utility pipe leak found" in c.text:
+            return self._err("use_repair_record", args, "not a repair ticket of the archive")
+        w = self._record_footprint(c.text)
+        if w is None:
+            return self._err("use_repair_record", args, "the ticket's place is not on the map")
+        mask = self.net.pipe_distance[int(np.argmax(w))] <= 150
+        n = self.search.raise_prior(self.board, mask)
+        added = self.search.add_candidates(self.board, np.where(mask)[0], f"history:{record_id}")
+        self.repairs_used.add(str(record_id))
+        return self._log("use_repair_record", args, {"ok": True, "junctions_raised": n, "hypothesised": added,
+                                                     "where": self.describe_node(int(np.argmax(w)))})
+
+    def search_docs(self, query: str) -> dict:
+        if not self.use_rag:
+            return self._err("search_docs", {"query": query}, "document search is not available in this setup")
+        hits = self.docs.search(str(query), k=4)
+        return self._log("search_docs", {"query": query}, {"ok": True, "hits": [{"id": c.id, "text": c.text[:300]}
+                                                                                for c, _ in hits]})
+
+    def _promote_physical(self) -> None:
+        """A lit step-test area or a heard leak is physical proof: its junctions become hypotheses (simulated) whether or not any agent named them.
+        Mechanical, no language: every toolbox method gets the same rule (the no-AI fallback already did)."""
+        b = self.board
+        if getattr(b, "cand", None) is None:
+            return
+        js = []
+        for c in b.checks:
+            if c.get("support") is not None:
+                js += list(np.where(c["support"])[0])
+            elif c["kind"] == "listen_hit" and c.get("at") is not None:
+                js += list(np.where(self.net.pipe_distance[c["at"]] <= 150)[0])
+        if js:
+            self.search.add_candidates(b, js, "physical", force=True)
+
+    def field_check(self, option_id: str) -> dict:
+        t0 = time.time()
+        args = {"option": option_id}
+        if not self.use_field:
+            return self._err("field_check", args, "field checks are not available in this setup")
+        o = self.options.get(str(option_id).strip().upper())
+        if o is None:
+            return self._err("field_check", args, f"unknown option; choose one of {sorted(self.options)}")
+        if o.kind == "step":
+            if not self.allow_step:
+                return self._err("field_check", args, "step tests / valve closures are disabled for practical real-world operations")
+            sids = o.args["sections"]
+            nodes = [n for s in sids for n in self.sections.by_id[s]["junctions"]]
+            if self.use_rag:
+                for need in self.rules.requirements("step_test", nodes, self.env.clock()):
+                    self.env.notify(f"hospital:{need['hospital']}", "Night step test planned in your area (SOP-7).")
+            post = self.board.post * self.board.p_leak
+            cert = {"why": "locate a suspected leak", "evidence": [f"{s}: {self.sections.area_mass(s, post):.0%} of the leak map"
+                                                               for s in sids]}
+            ap = self.env.request_approval("step_test", sids, cert)
+            r = self.env.step_test(sids, ap.get("token"))
+            if r.get("ok"):
+                self.board.add_step_result(f"step@{r['night_of']}", r["steps"])
+                ok_steps = [s for s in r["steps"] if not s.get("failed")]
+                lit_labels = {c["label"] for c in self.board.checks if c["kind"] == "step" and c.get("support") is not None}
+                lit = [s["section"] for s in ok_steps if f"step@{r['night_of']}:{s['section']}" in lit_labels]
+                r = {"ok": True, "kind": "step test", "excess_flow_lps": {s["section"]: round(
+                    s["inflow_drop_lps"] - s["expected_customer_use_lps"], 2) for s in ok_steps}, "clearly_lit": lit,
+                     "suggestive": [s["section"] for s in ok_steps if s["section"] not in lit and (lambda a: a[0] > 3 * a[1])(self.board.tools.step(
+                         s["section"], s["inflow_drop_lps"] - s["expected_customer_use_lps"], self.board.q_hat, self.board.q_sd))],
+                     "valve_failed": [s["section"] for s in r["steps"] if s.get("failed")]}
+        elif o.kind == "canvass":
+            c = o.args["center"]
+            r = self.env.canvass(self.net.junctions[c])
+            if r.get("ok"):
+                self.board.add_canvass_result(f"canvass@{self.net.junctions[c]}", c, r["contacted"], r["heard_hissing"],
+                                              r["saw_damp"])
+                r = {"ok": True, "kind": "canvass", "where": self.describe_node(c), "residents_answered": r["contacted"],
+                     "heard_hissing_at_night": r["heard_hissing"], "saw_damp_ground": r["saw_damp"]}
+        else:
+            c = o.args["center"]
+            r = self.env.listen(self.net.junctions[c], 250.0)
+            if r.get("ok"):
+                at = self.net.index[r["pinpointed_at"]] if r.get("heard") else None
+                self.board.add_listen_result(f"listen@{self.net.junctions[c]}", c, 250.0, r["heard"], at)
+                r = {"ok": True, "kind": "listening", "where": self.describe_node(c), "heard": r["heard"],
+                     **({"pinpointed": self.describe_node(at)} if at is not None else {})}
+        self._promote_physical()
+        self.refresh()
+        r["p_success_now"] = round(self.board.best_dig()[1], 2)
+        return self._log("field_check", {**args, "label": o.label}, r, time.time() - t0)
+
+    def sop_context(self, j: int) -> list[str]:
+        """What an auditor needs to apply the SOP to a dig at junction j: where and when it would happen, which schools and hospitals are near
+        (facts of the map), and the SOP clauses retrieved from sop.md (RAG). Code states facts and text; deciding what applies is the agent's job."""
+        when = self.env.clock()
+        st = self.places.node_street(j)
+        lms = []
+        for p in self.places.places.values():
+            if p["type"] == "landmark" and p.get("subtype") in ("school", "hospital"):
+                d = float(np.hypot(*(self.net.xy[j] - self.net.xy[self.net.index[p["geometry"]["node"]]])))
+                if d <= 250:
+                    lms.append(f"{p['name']} ({p['subtype']}, {d:.0f} m away)")
+        lines = [f"DIG SITE: {self.describe_node(j)}; street: {st['name'] if st else 'unknown'}; the dig would start {when.strftime('%A %H:%M')} (case clock)",
+                 "SCHOOLS / HOSPITALS within 250 m: " + ("; ".join(lms) if lms else "none")]
+        if self.use_rag:
+            q = f"excavation dig {st['name'] if st else ''} school hospital resurfaced road permit weekday schools notify citizens approval"
+            lines += ["SOP CLAUSES (retrieved from sop.md):"] + [f"  {c.id}: {c.text[:420]}" for c, _ in self.docs.search(q, k=6, provenance="policy")]
+        return lines
+
+    def _sop_execute(self, actions: list) -> tuple[bool, list[str], list[str]]:
+        """Run the paperwork an agent asked for; -> (after_school_hours, reporters_to_inform, errors). Names must exist on the map."""
+        after, inform, errs = False, [], []
+        hospitals = {h.lower(): h for h in self.rules.hospitals}
+        streets = {p["name"].lower(): p["name"] for p in self.places.places.values() if p["type"] == "street"}
+        for a in actions or []:
+            a = str(a).strip()
+            kind, _, arg = a.partition(":")
+            kind, arg = kind.strip().lower(), arg.strip()
+            if kind == "after_school_hours":
+                after = True
+            elif kind == "request_permit" and arg.lower() in streets:
+                self.env.request_permit(streets[arg.lower()])
+            elif kind == "notify_hospital" and arg.lower() in hospitals:
+                self.env.notify(f"hospital:{hospitals[arg.lower()]}", "Excavation planned nearby (SOP-7).")
+            elif kind == "inform_reporters":
+                inform.append("reporters")
+            else:
+                errs.append(a)
+        return after, inform, errs
+
+    def propose_dig(self, reason: str = "", sop_actions: list | None = None) -> dict:
+        args = {"reason": str(reason)[:200], **({"sop_actions": [str(x) for x in sop_actions][:6]} if sop_actions else {})}
+        ok, why = self.gate()
+        if not ok:
+            return self._err("propose_dig", args, f"code gate refused: {why}")
+        j, p = self.board.best_dig()
+        node = self.net.junctions[j]
+        after_school, inform, bad = False, [], []
+        if self.auto_sop:                                    # SOP paperwork done by the rule book in code (a hard-wired baseline)
+            for need in self.rules.requirements("dig", [node], self.env.clock()):
+                if need["rule"] == "school_hours":
+                    after_school = True
+                elif need["rule"] == "resurfaced_permit":
+                    self.env.request_permit(need["street"])
+                elif need["rule"] == "hospital_notice":
+                    self.env.notify(f"hospital:{need['hospital']}", "Excavation planned nearby (SOP-7).")
+            inform = ["reporters"]
+        elif sop_actions:                                    # paperwork an agent asked for after reading the SOP
+            after_school, inform, bad = self._sop_execute(sop_actions)
+        ev = self.board.pressure_evidence
+        evidence = (self.board.field_support(j) + self.board.area_support(j)
+                    + [f"{rid} (false-alarm chance {m.eps:.0%})" for rid, m in self.board.messages.items()
+                       if m.usable() and m.eps < 0.6]
+                    + [f"pressure sensors: net inflow rise {ev.q_hat:+.1f} L/s, leak map P(leak) {self.board.p_leak:.2f}"])
+        evidence = list(dict.fromkeys(evidence))
+        cert = {"spot": self.describe_node(j), "p_success": round(p, 2), "evidence": evidence[:6] or ["leak map"],
+                "why": "leak located by the investigation"}
+        ap = self.env.request_approval("dig", node, cert)
+        if not ap.get("approved"):
+            return self._err("propose_dig", args, f"operator refused: {ap.get('reason')}")
+        r = self.env.dig(node, ap["token"], after_school_hours=after_school)
+        self.digs += 1
+        if r.get("ok") and r["leak_found"]:
+            if inform:
+                self.env.notify("reporters", "The leak you reported was found and is being repaired (SOP-8).")
+            self.done = True
+        elif r.get("ok"):
+            self.board.add_dry_dig(f"dry dig@{node}", j)
+            if inform:
+                self.env.notify("reporters", "We checked the spot; investigation continues (SOP-8).")
+        return self._log("propose_dig", args, {"ok": r.get("ok", False), "spot": self.describe_node(j),
+                                               "leak_found": r.get("leak_found"), "p_success": round(p, 2),
+                                               **({"sop_unparsed": bad} if bad else {})})
+
+    def close_gate(self) -> tuple[bool, str]:
+        """May the case be closed without a (further) dig? Only when the leak is unlikely or no check can help."""
+        if self.env.checks_left() <= 0 or not self.use_field or self.env.now >= self.env.horizon:
+            return True, "no field checks or time left"
+        used = sum(1 for t in self.trace if t["tool"] == "field_check" and t["result"].get("kind") != "canvass" and t["result"].get("ok", True))
+        all_debunked = bool(self.board.messages) and all(
+            (not m.usable()) or m.eps >= 0.85 or m.source == "not_network"
+            for m in self.board.messages.values()
+        )
+        has_physical = any((c["kind"] == "step" and c.get("support") is not None) or c["kind"] == "listen_hit" for c in self.board.checks)
+        if all_debunked and not has_physical and self.board.p_leak < 0.25:
+            return True, f"all complaints debunked as non-network/false alarms and P(leak) {self.board.p_leak:.2f} < 0.25"
+        if used < self.min_checks_close and self.board.p_leak >= 0.03:
+            return False, f"sweep first: only {used} of at least {self.min_checks_close} field checks done (a leak can hide from a map that is wrong)"
+        if self.board.p_leak < 0.15:
+            return True, f"P(leak) {self.board.p_leak:.2f} < 0.15"
+        if not self.use_planner:
+            return False, f"P(leak) is still {self.board.p_leak:.2f} and checks are left"
+        best = max((o.found for o in self.plan()), default=0.0)
+        if best < 0.10:
+            return True, f"no remaining check has a 10 % chance of finding the leak (best {best:.0%})"
+        return False, (f"P(leak) is still {self.board.p_leak:.2f} and the best check has a {best:.0%} chance of "
+                       f"finding the leak. Explaining a message does not explain the pressure/flow anomaly.")
+
+    def close(self, verdict: str, summary: str = "", force: bool = False) -> dict:
+        if verdict not in ("no_leak", "hand_over"):
+            return self._err("close", {"verdict": verdict}, "verdict must be no_leak or hand_over")
+        ok, why = self.close_gate()
+        if not ok and not force:
+            return self._err("close", {"verdict": verdict}, f"close gate refused: {why}")
+        self.env.close(verdict, summary)
         self.done = True
-        return {"ok": True}
+        return self._log("close", {"verdict": verdict, "summary": summary[:300]}, {"ok": True})
 
-    def _canon(self, text: str) -> str:
-        ids = self.inv.gaz.resolve(text)
-        return self.inv.gaz.places[ids[0]]["name"] if ids else "an unknown place"
-
-
-def _clean(text: str) -> str:
-    """Remove any sentence that reads like an instruction to us (it is data, never an order)."""
-    return re.sub(r"[^.|]*(" + SUSPICIOUS + r")[^.|]*", "[instruction-like text removed]", text, flags=re.I)
-
-
-def _round(d: dict) -> dict:
-    return {k: round(float(v), 3) for k, v in d.items()}
-
-
-def _short(r: dict) -> dict:
-    keep = ("ok", "error", "detected", "approx_node", "night_mean_pressure_m", "inflow_drop_lps",
-            "expected_customer_drop_lps", "note")
-    return {k: v for k, v in r.items() if k in keep}
+    def final_guess(self) -> str:
+        return self.net.junctions[self.board.best_dig()[0]]
