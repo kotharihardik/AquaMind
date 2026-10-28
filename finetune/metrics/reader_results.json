@@ -1,0 +1,657 @@
+{
+ "base_zeroshot/test_hand": {
+  "overall": {
+   "json_valid": 0.143,
+   "category": 0.514,
+   "source": 0.414,
+   "private": 0.843,
+   "since_exact": 0.614,
+   "since_presence": 0.814,
+   "reply_json_valid": 0.0,
+   "reply_answered": 0.6,
+   "reply_source": 0.7,
+   "reply_cause": 0.9,
+   "reply_still_flowing": 0.7,
+   "symptoms_f1": 0.494,
+   "places_exact_f1": 0.343,
+   "places_relaxed_f1": 0.777,
+   "since_relaxed_f1": 0.508,
+   "reply_places_f1": 0.667,
+   "instruction_precision": 0.625,
+   "instruction_recall": 1.0,
+   "n": 90,
+   "sec_per_item": 1.1
+  },
+  "by_kind": {
+   "multi": {
+    "category": 0.5,
+    "source": 0.5,
+    "private": 1.0,
+    "since_exact": 0.75,
+    "since_presence": 0.75,
+    "n": 4
+   },
+   "lookalike_washing": {
+    "category": 1.0,
+    "source": 0.5,
+    "private": 0.5,
+    "since_exact": 0.5,
+    "since_presence": 0.5,
+    "n": 2
+   },
+   "damp": {
+    "category": 0.143,
+    "source": 0.286,
+    "private": 0.857,
+    "since_exact": 0.571,
+    "since_presence": 0.714,
+    "n": 7
+   },
+   "visible": {
+    "category": 0.667,
+    "source": 0.583,
+    "private": 0.917,
+    "since_exact": 0.583,
+    "since_presence": 0.75,
+    "n": 12
+   },
+   "quality": {
+    "category": 0.6,
+    "source": 0.6,
+    "private": 1.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 5
+   },
+   "displaced": {
+    "category": 0.429,
+    "source": 0.143,
+    "private": 1.0,
+    "since_exact": 0.571,
+    "since_presence": 1.0,
+    "n": 7
+   },
+   "burst": {
+    "category": 0.25,
+    "source": 0.5,
+    "private": 1.0,
+    "since_exact": 0.5,
+    "since_presence": 1.0,
+    "n": 4
+   },
+   "lookalike_private": {
+    "category": 1.0,
+    "source": 1.0,
+    "private": 1.0,
+    "since_exact": 0.5,
+    "since_presence": 1.0,
+    "n": 2
+   },
+   "supply": {
+    "category": 1.0,
+    "source": 0.0,
+    "private": 0.5,
+    "since_exact": 0.0,
+    "since_presence": 0.5,
+    "n": 2
+   },
+   "lookalike_garden": {
+    "category": 0.0,
+    "source": 1.0,
+    "private": 1.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 1
+   },
+   "lookalike_other": {
+    "category": 0.0,
+    "source": 1.0,
+    "private": 0.5,
+    "since_exact": 0.5,
+    "since_presence": 0.5,
+    "n": 2
+   },
+   "injection": {
+    "category": 1.0,
+    "source": 0.4,
+    "private": 0.8,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 5
+   },
+   "lookalike_sewer": {
+    "category": 0.0,
+    "source": 0.667,
+    "private": 0.667,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 3
+   },
+   "other": {
+    "category": 0.667,
+    "source": 0.333,
+    "private": 1.0,
+    "since_exact": 0.333,
+    "since_presence": 0.333,
+    "n": 3
+   },
+   "sound": {
+    "category": 0.0,
+    "source": 0.0,
+    "private": 0.333,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 3
+   },
+   "road": {
+    "category": 0.75,
+    "source": 0.0,
+    "private": 1.0,
+    "since_exact": 0.25,
+    "since_presence": 0.75,
+    "n": 4
+   },
+   "lookalike_mixed": {
+    "category": 0.5,
+    "source": 0.5,
+    "private": 1.0,
+    "since_exact": 0.0,
+    "since_presence": 0.5,
+    "n": 2
+   },
+   "lookalike_rain": {
+    "category": 0.5,
+    "source": 0.0,
+    "private": 0.0,
+    "since_exact": 0.5,
+    "since_presence": 1.0,
+    "n": 2
+   }
+  }
+ },
+ "base_zeroshot/test_real": {
+  "overall": {
+   "json_valid": 0.12,
+   "category": 0.652,
+   "source": 0.412,
+   "private": 0.892,
+   "since_exact": 0.696,
+   "since_presence": 0.82,
+   "symptoms_f1": 0.574,
+   "places_exact_f1": 0.307,
+   "places_relaxed_f1": 0.67,
+   "since_relaxed_f1": 0.235,
+   "instruction_precision": 0.0,
+   "instruction_recall": null,
+   "n": 250,
+   "sec_per_item": 1.41
+  },
+  "by_kind": {
+   "real:sewer_drain": {
+    "category": 0.672,
+    "source": 0.402,
+    "private": 0.892,
+    "since_exact": 0.711,
+    "since_presence": 0.814,
+    "n": 204
+   },
+   "real:other": {
+    "category": 0.353,
+    "source": 0.294,
+    "private": 0.824,
+    "since_exact": 0.647,
+    "since_presence": 0.706,
+    "n": 17
+   },
+   "real:leak": {
+    "category": 0.69,
+    "source": 0.552,
+    "private": 0.931,
+    "since_exact": 0.621,
+    "since_presence": 0.931,
+    "n": 29
+   }
+  }
+ },
+ "finetuned/dev": {
+  "overall": {
+   "json_valid": 0.967,
+   "category": 0.9,
+   "source": 0.7,
+   "private": 0.867,
+   "since_exact": 0.767,
+   "since_presence": 0.767,
+   "reply_json_valid": 1.0,
+   "reply_answered": 1.0,
+   "reply_source": 0.6,
+   "reply_cause": 0.9,
+   "reply_still_flowing": 0.8,
+   "symptoms_f1": 0.714,
+   "places_exact_f1": 0.944,
+   "places_relaxed_f1": 0.944,
+   "since_relaxed_f1": 0.696,
+   "reply_places_f1": 0.727,
+   "instruction_precision": 0.5,
+   "instruction_recall": 1.0,
+   "n": 40,
+   "sec_per_item": 1.66
+  },
+  "by_kind": {
+   "lookalike_washing": {
+    "category": 1.0,
+    "source": 0.0,
+    "private": 1.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 1
+   },
+   "supply": {
+    "category": 0.5,
+    "source": 0.75,
+    "private": 0.5,
+    "since_exact": 0.75,
+    "since_presence": 0.75,
+    "n": 4
+   },
+   "visible": {
+    "category": 1.0,
+    "source": 1.0,
+    "private": 1.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 4
+   },
+   "damp": {
+    "category": 1.0,
+    "source": 0.667,
+    "private": 0.667,
+    "since_exact": 0.667,
+    "since_presence": 0.667,
+    "n": 3
+   },
+   "road": {
+    "category": 1.0,
+    "source": 0.0,
+    "private": 1.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 1
+   },
+   "displaced": {
+    "category": 1.0,
+    "source": 0.75,
+    "private": 1.0,
+    "since_exact": 0.75,
+    "since_presence": 0.75,
+    "n": 8
+   },
+   "burst": {
+    "category": 1.0,
+    "source": 1.0,
+    "private": 1.0,
+    "since_exact": 0.5,
+    "since_presence": 0.5,
+    "n": 2
+   },
+   "injection": {
+    "category": 1.0,
+    "source": 1.0,
+    "private": 1.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 1
+   },
+   "sound": {
+    "category": 1.0,
+    "source": 0.667,
+    "private": 1.0,
+    "since_exact": 0.667,
+    "since_presence": 0.667,
+    "n": 3
+   },
+   "lookalike_garden": {
+    "category": 1.0,
+    "source": 0.0,
+    "private": 0.0,
+    "since_exact": 0.0,
+    "since_presence": 0.0,
+    "n": 1
+   },
+   "other": {
+    "category": 1.0,
+    "source": 1.0,
+    "private": 1.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 1
+   },
+   "quality": {
+    "category": 0.0,
+    "source": 0.0,
+    "private": 1.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 1
+   }
+  },
+  "category_confusion": {
+   "other->other": 3,
+   "supply->supply": 2,
+   "leak->leak": 22,
+   "supply->leak": 2,
+   "quality->leak": 1
+  }
+ },
+ "finetuned/test_hand": {
+  "overall": {
+   "json_valid": 1.0,
+   "category": 0.943,
+   "source": 0.786,
+   "private": 0.9,
+   "since_exact": 0.886,
+   "since_presence": 0.9,
+   "reply_json_valid": 1.0,
+   "reply_answered": 1.0,
+   "reply_source": 0.7,
+   "reply_cause": 0.85,
+   "reply_still_flowing": 0.85,
+   "symptoms_f1": 0.85,
+   "places_exact_f1": 0.85,
+   "places_relaxed_f1": 0.933,
+   "since_relaxed_f1": 0.896,
+   "reply_places_f1": 0.75,
+   "instruction_precision": 1.0,
+   "instruction_recall": 0.8,
+   "n": 90,
+   "sec_per_item": 1.67
+  },
+  "by_kind": {
+   "multi": {
+    "category": 1.0,
+    "source": 0.5,
+    "private": 1.0,
+    "since_exact": 0.75,
+    "since_presence": 1.0,
+    "n": 4
+   },
+   "lookalike_washing": {
+    "category": 1.0,
+    "source": 0.5,
+    "private": 1.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 2
+   },
+   "damp": {
+    "category": 1.0,
+    "source": 1.0,
+    "private": 0.857,
+    "since_exact": 0.857,
+    "since_presence": 0.857,
+    "n": 7
+   },
+   "visible": {
+    "category": 1.0,
+    "source": 0.75,
+    "private": 1.0,
+    "since_exact": 0.833,
+    "since_presence": 0.833,
+    "n": 12
+   },
+   "quality": {
+    "category": 1.0,
+    "source": 1.0,
+    "private": 1.0,
+    "since_exact": 0.6,
+    "since_presence": 0.6,
+    "n": 5
+   },
+   "displaced": {
+    "category": 1.0,
+    "source": 0.857,
+    "private": 1.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 7
+   },
+   "burst": {
+    "category": 1.0,
+    "source": 0.75,
+    "private": 1.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 4
+   },
+   "lookalike_private": {
+    "category": 1.0,
+    "source": 1.0,
+    "private": 1.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 2
+   },
+   "supply": {
+    "category": 0.5,
+    "source": 0.5,
+    "private": 0.5,
+    "since_exact": 0.5,
+    "since_presence": 0.5,
+    "n": 2
+   },
+   "lookalike_garden": {
+    "category": 1.0,
+    "source": 1.0,
+    "private": 0.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 1
+   },
+   "lookalike_other": {
+    "category": 1.0,
+    "source": 0.5,
+    "private": 0.5,
+    "since_exact": 0.5,
+    "since_presence": 0.5,
+    "n": 2
+   },
+   "injection": {
+    "category": 1.0,
+    "source": 0.8,
+    "private": 1.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 5
+   },
+   "lookalike_sewer": {
+    "category": 0.333,
+    "source": 0.667,
+    "private": 1.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 3
+   },
+   "other": {
+    "category": 1.0,
+    "source": 1.0,
+    "private": 1.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 3
+   },
+   "sound": {
+    "category": 1.0,
+    "source": 1.0,
+    "private": 1.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 3
+   },
+   "road": {
+    "category": 1.0,
+    "source": 0.75,
+    "private": 1.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 4
+   },
+   "lookalike_mixed": {
+    "category": 1.0,
+    "source": 0.5,
+    "private": 0.5,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 2
+   },
+   "lookalike_rain": {
+    "category": 0.5,
+    "source": 0.5,
+    "private": 0.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 2
+   }
+  },
+  "category_confusion": {
+   "leak->leak": 49,
+   "other->other": 9,
+   "quality->quality": 5,
+   "supply->leak": 1,
+   "sewer_drain->leak": 2,
+   "sewer_drain->other": 1,
+   "sewer_drain->sewer_drain": 2,
+   "supply->supply": 1
+  }
+ },
+ "finetuned/test_real": {
+  "overall": {
+   "json_valid": 0.996,
+   "category": 0.916,
+   "source": 0.864,
+   "private": 0.972,
+   "since_exact": 0.864,
+   "since_presence": 0.892,
+   "symptoms_f1": 0.897,
+   "places_exact_f1": 0.731,
+   "places_relaxed_f1": 0.872,
+   "since_relaxed_f1": 0.806,
+   "instruction_precision": null,
+   "instruction_recall": null,
+   "n": 250,
+   "sec_per_item": 1.91
+  },
+  "by_kind": {
+   "real:sewer_drain": {
+    "category": 0.966,
+    "source": 0.877,
+    "private": 0.985,
+    "since_exact": 0.863,
+    "since_presence": 0.887,
+    "n": 204
+   },
+   "real:other": {
+    "category": 0.353,
+    "source": 0.882,
+    "private": 0.824,
+    "since_exact": 0.824,
+    "since_presence": 0.824,
+    "n": 17
+   },
+   "real:leak": {
+    "category": 0.897,
+    "source": 0.759,
+    "private": 0.966,
+    "since_exact": 0.897,
+    "since_presence": 0.966,
+    "n": 29
+   }
+  },
+  "category_confusion": {
+   "sewer_drain->sewer_drain": 197,
+   "other->leak": 4,
+   "leak->leak": 26,
+   "other->sewer_drain": 7,
+   "sewer_drain->leak": 7,
+   "other->other": 6,
+   "leak->sewer_drain": 3
+  }
+ },
+ "finetuned/test_bench": {
+  "overall": {
+   "json_valid": 0.996,
+   "category": 0.878,
+   "source": 0.65,
+   "private": 0.943,
+   "since_exact": 0.939,
+   "since_presence": 0.97,
+   "reply_json_valid": 0.976,
+   "reply_answered": 0.964,
+   "reply_source": 0.75,
+   "reply_cause": 0.905,
+   "reply_still_flowing": 0.869,
+   "symptoms_f1": 0.822,
+   "places_exact_f1": 0.809,
+   "places_relaxed_f1": 0.943,
+   "since_relaxed_f1": 0.944,
+   "reply_places_f1": 0.806,
+   "instruction_precision": 1.0,
+   "instruction_recall": 0.833,
+   "n": 347,
+   "sec_per_item": 1.58
+  },
+  "by_kind": {
+   "leak": {
+    "category": 0.917,
+    "source": 0.614,
+    "private": 1.0,
+    "since_exact": 0.932,
+    "since_presence": 0.985,
+    "n": 132
+   },
+   "false": {
+    "category": 0.773,
+    "source": 0.467,
+    "private": 0.8,
+    "since_exact": 0.96,
+    "since_presence": 0.96,
+    "n": 75
+   },
+   "supply": {
+    "category": 0.946,
+    "source": 1.0,
+    "private": 1.0,
+    "since_exact": 0.919,
+    "since_presence": 0.946,
+    "n": 37
+   },
+   "injection": {
+    "category": 1.0,
+    "source": 0.833,
+    "private": 1.0,
+    "since_exact": 1.0,
+    "since_presence": 1.0,
+    "n": 6
+   },
+   "quality": {
+    "category": 0.846,
+    "source": 1.0,
+    "private": 1.0,
+    "since_exact": 0.923,
+    "since_presence": 0.923,
+    "n": 13
+   }
+  },
+  "category_confusion": {
+   "leak->leak": 165,
+   "sewer_drain->sewer_drain": 9,
+   "leak->sewer_drain": 15,
+   "supply->supply": 35,
+   "other->leak": 11,
+   "other->other": 11,
+   "sewer_drain->leak": 1,
+   "quality->quality": 11,
+   "leak->quality": 1,
+   "supply->leak": 2,
+   "quality->leak": 2
+  }
+ }
+}

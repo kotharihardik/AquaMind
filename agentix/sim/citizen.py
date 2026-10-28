@@ -17,7 +17,9 @@ import numpy as np
 
 TOPICS = [   # (topic, patterns in the question) - broad on purpose: any reasonable wording must be understood
     ("source", r"coming out|come[s]? out|com(e|es|ing) from|where.{0,25}(start|begin|origin|source)|source|bubbl|"
-               r"flow(s|ing)? (from|down)|collected|collect|downhill|uphill|kahan se|nikal"),
+               r"flow(s|ing)? (from|down)|collected|collect|downhill|uphill|kahan se|nikal|"
+               r"which (way|side|direction)|from (where|which (side|direction))|com(e|es|ing) down|run(s|ning)? (down|from)|"
+               r"where (does|is|did) (it|the water) (come|run|flow)|kis taraf|kidhar se|upar se|higher side"),
     ("street", r"which (road|street|lane)|what (road|street|lane)|(road|street|lane) name|name of the (road|street|lane)|address|\bgali\b|kaun si"),
     ("landmark", r"landmark|nearest|near (what|which)|what is (near|next)|exact(ly)? (where|which|spot|location)|where exactly|precise|where (is|was) (it|the water)|paas"),
     ("private", r"house|home|compound|private|inside|property|your (own )?pipe|tank|ghar|overflow"),

@@ -1,0 +1,45 @@
+{
+ "contract": "reader-2.0 / reply-2.0",
+ "splits": {
+  "train": {
+   "n": 702,
+   "by_source": {
+    "read:hand_written": 394,
+    "reply:hand_written": 108,
+    "read:fixmystreet_real": 200
+   },
+   "sha256": "d3e0bae3f30be0e1"
+  },
+  "dev": {
+   "n": 40,
+   "by_source": {
+    "read:hand_written": 30,
+    "reply:hand_written": 10
+   },
+   "sha256": "b1588d6cff5a2a61"
+  },
+  "test_hand": {
+   "n": 90,
+   "by_source": {
+    "read:hand_written": 70,
+    "reply:hand_written": 20
+   },
+   "sha256": "eee175e6bf1ad641"
+  },
+  "test_real": {
+   "n": 250,
+   "by_source": {
+    "read:fixmystreet_real": 250
+   },
+   "sha256": "3aa0d5c3436bc5c6"
+  },
+  "test_bench": {
+   "n": 347,
+   "by_source": {
+    "read:simulator_text": 263,
+    "reply:simulator_text": 84
+   },
+   "sha256": "b14e2921a764c513"
+  }
+ }
+}

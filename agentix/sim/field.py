@@ -15,7 +15,6 @@ import zlib
 import numpy as np
 import yaml
 
-from . import faults as F
 from .cases import leak_distance
 from .citizen import Citizen
 from .operator import Operator
@@ -51,9 +50,6 @@ class CaseEnv:
         self._n: dict[str, int] = {}
         self._sensor_cols = [list(self.arr["sensor_nodes"]).index(n) for n in self.layout]
         self._dist = leak_distance(net, self.leak) if self.leak else np.full(len(net.junctions), np.inf)
-        fd = self.hid.get("fault")                         # ADR-017: a non-leak fault (truth); found and fixed only by an inspection
-        self.fault = F.FaultSpec(**{k: (tuple(v) if k == "draw_h" else v) for k, v in fd.items() if k != "what"}) if fd else None
-        self.fault_found, self.fault_fixed_s = False, None
 
     # ------------------------------------------------------------------ bookkeeping
     def _rng(self, kind: str, key: str) -> np.random.Generator:
@@ -173,73 +169,10 @@ class CaseEnv:
             true_use = float(use[min(day, len(use) - 1)][area["mask"]].sum())
             leak_in = self.leak is not None and bool(area["mask"][self.net.index[self.leak["nearest_node"]]])
             drop = true_use * (1 + rng.normal(0, c["use_rel_noise"])) + (q if leak_in else 0.0) + rng.normal(0, c["meter_noise_lps"])
-            drop += self._draw_in(area["mask"], day)
             out.append({"section": sid, "inflow_drop_lps": round(float(drop), 2),
                         "expected_customer_use_lps": float(area["expected"])})
         return self._record("step_test", args, {"ok": True, "night_of": self.clock().date().isoformat(), "steps": out},
                             field_check=True)
-
-    def _draw_in(self, mask, day: int) -> float:
-        """A night draw inside the section during the step-test window (01-05 h) shows up as extra flow (its overlap with the window)."""
-        f = self.fault
-        if f is None or f.family != "night_draw" or self.fault_fixed_s is not None or not mask[self.net.index[f.element]]:
-            return 0.0
-        t = day * 86400 + np.arange(1 * 3600, 5 * 3600, 300)
-        return float(f.value * F.draw_on(t, f).mean())
-
-    # ------------------------------------------------------------------ inspections (ADR-017): a crew checks one element of the network
-    INSPECT_H = {"valve": 4.0, "prv": 2.0, "sensor": 2.0, "meter": 3.0}
-
-    def inspect(self, kind: str, target: str) -> dict:
-        """A field check of one element: 'valve' (is the isolation valve on this pipe open?), 'prv' (outlet pressure of a pressure-reducing
-        valve against its setting), 'sensor' (portable reference gauge next to a pressure sensor), 'meter' (clamp-on meter next to an inlet
-        flow meter), 'watch' (a crew watches the hydrants within 300 m of a junction through the night). A fault that is found is fixed."""
-        args = {"kind": kind, "target": target}
-        wn = self.net.wn
-        ok = {"valve": lambda x: x in wn.pipe_name_list, "prv": lambda x: x in wn.valve_name_list,
-              "sensor": lambda x: x in self.layout, "meter": lambda x: x in F.INLET_METERS, "watch": lambda x: x in self.net.index}
-        if kind not in ok:
-            return self._err("inspect", args, "kind must be valve, prv, sensor, meter or watch")
-        if not ok[kind](str(target)):
-            return self._err("inspect", args, f"unknown {kind} '{target}'")
-        e = self._use_check("inspect", args)
-        if e:
-            return e
-        f, rng = self.fault, self._rng("inspect", f"{kind}|{target}")
-        live = f is not None and self.fault_fixed_s is None
-        hit = False
-        if kind == "watch":
-            self.now = min(math.floor((self.now - 6 * 3600) / 86400) * 86400 + 86400 + 6 * 3600, self.horizon)
-            hit = (live and f.family == "night_draw" and self.net.pipe_distance[self.net.index[target], self.net.index[f.element]] <= 300
-                   and rng.random() < 0.9)
-            res = ({"ok": True, "found": True, "what": f"a water tanker was filling from the hydrant at {f.element} during the night "
-                    f"(about {f.value:.0f} L/s); the crew stopped it"} if hit else {"ok": True, "found": False, "what": "nothing unusual at the hydrants"})
-        else:
-            self.advance(self.INSPECT_H[kind] * 3600)
-            if kind == "valve":
-                from ..town.network import series_chain                # the crew walks the stretch of main and opens every valve box on it
-                hit = live and f.family == "closed_valve" and f.element in series_chain(self.net.wn, target)
-                res = {"ok": True, "found": hit, "what": f"the isolation valve on {target} was CLOSED; it has been reopened" if hit
-                       else f"the valve on {target} is open"}
-            elif kind == "prv":
-                setting = float(wn.get_link(target).initial_setting)
-                dev = (f.value if (live and f.family == "prv_drift" and f.element == target) else 0.0) + float(rng.normal(0, 0.15))
-                hit = abs(dev) > 1.0
-                res = {"ok": True, "found": hit, "what": f"{target} outlet {setting + dev:.1f} m against a setting of {setting:.1f} m"
-                       + ("; it has been reset" if hit else "")}
-            elif kind == "sensor":
-                b = (f.value if (live and f.family == "sensor_bias" and f.element == target) else 0.0) + float(rng.normal(0, 0.03))
-                hit = abs(b) > 0.15
-                res = {"ok": True, "found": hit, "what": f"sensor {target} reads {b:+.2f} m against the reference gauge"
-                       + ("; it has been recalibrated" if hit else "")}
-            else:
-                b = (f.value if (live and f.family == "meter_bias" and f.element == target) else 0.0) + float(rng.normal(0, 0.3))
-                hit = abs(b) > 1.0
-                res = {"ok": True, "found": hit, "what": f"meter {target} reads {b:+.1f} L/s against the clamp-on meter"
-                       + ("; it has been recalibrated" if hit else "")}
-        if hit and live:
-            self.fault_found, self.fault_fixed_s = True, self.now
-        return self._record("inspect", args, res, field_check=True)
 
     def listen(self, center: str, radius_m: float) -> dict:
         args = {"center": center, "radius_m": radius_m}
@@ -363,14 +296,7 @@ class CaseEnv:
                 "wrong_digs": sum(not e["result"]["leak_found"] for e in digs),
                 "outcome": "found" if found else (self.outcome or "unfinished"),
                 "checks_used": self.checks_used, "canvasses": self.canvasses, "hours_open": round((self.now - self.case["case_open_s"]) / 3600, 1),
-                "water_lost_m3": round(lost, 1),
-                "fault": self.fault.family if self.fault else None, "fault_found": self.fault_found,
-                # ADR-017: resolved = the leak found (if there is one) AND the fault found (if there is one), and no crew sent to a dry hole
-                # when there was no leak
-                "resolved": bool((found if self.leak else not digs and self.outcome in ("no_leak", "hand_over"))
-                                 and (self.fault_found if self.fault else True)
-                                 and (self.outcome != "hand_over" or self.leak is not None and found)),
-                "leak_decision_ok": bool(found if self.leak else (not digs and self.outcome == "no_leak"))}
+                "water_lost_m3": round(lost, 1)}
 
 
 def _realistic(path: str) -> dict:
