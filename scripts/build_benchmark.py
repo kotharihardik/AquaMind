@@ -25,11 +25,20 @@ SHARES_V4 = {"visible": 0.06, "displaced": 0.06, "damp": 0.10, "sound": 0.10, "b
 SEED_V4 = {"dev": 170_000, "val": 570_000, "test": 970_000}
 V4H = os.environ.get("AGENTIX_BENCH_V4H") == "1"       # v4 + failure history (ADR-018): weak stretches with repair records leak 4x more often
 SEED_V4H = {"dev": 260_000, "val": 660_000, "test": 960_000}
+CD = os.environ.get("AGENTIX_BENCH_CD") == "1"        # ADR-019: complaint-dependent leaks (step-test SNR < 1.5) + decoys + false alarms
+SHARES_CD = {"cd_damp": 0.2, "cd_damp_decoy": 0.2, "cd_sound": 0.2, "cd_sound_decoy": 0.2, "false_alarm": 0.2}
+SEED_CD = {"dev": 280_000, "val": 680_000, "test": 980_000}
 TWIN = os.environ.get("AGENTIX_BENCH_TWIN") == "1"     # the pressure-twin study: the sensors cannot tell the leak from its twin
 SHARES_TWIN = {"twin": 0.5, "twin_decoy": 0.5}
 SEED_TWIN = {"dev": 230_000, "val": 630_000, "test": 930_000}
-V4 = os.environ.get("AGENTIX_BENCH_V4") == "1" or TWIN or V4H
-V3 = os.environ.get("AGENTIX_BENCH_V3") == "1"      # benchmark v3 (ADR-010): set by --v3, inherited by the worker processes
+FINAL = os.environ.get("AGENTIX_BENCH_FINAL") == "1"   # Master benchmark: unified decoys, brown-water scour, chronic failure records
+SHARES_FINAL = {
+    "cd_sound_decoy": 0.12, "cd_damp_decoy": 0.12, "brown": 0.14, "chronic": 0.18, "displaced": 0.10,
+    "cd_sound": 0.08, "cd_damp": 0.08, "trap": 0.06, "false_alarm": 0.10, "visible": 0.02
+}
+SEED_FINAL = {"dev": 300_000, "val": 700_000, "test": 990_000}
+V4 = os.environ.get("AGENTIX_BENCH_V4") == "1" or TWIN or V4H or CD or FINAL
+V3 = os.environ.get("AGENTIX_BENCH_V3") == "1" or FINAL      # benchmark v3 (ADR-010): set by --v3, inherited by the worker processes
 _W = {}
 
 
@@ -42,7 +51,7 @@ def _init():
     sim = SimTown(town)
     fp = Fingerprints(town.signatures_path)
     twin_g = fp.g_night[:, [town.net.index[n] for n in layouts(town)["spread_k5"]]] if TWIN else None
-    weak = json.load(open(os.environ["AGENTIX_WEAK_PIPES"])) if V4H else None
+    weak = json.load(open(os.environ["AGENTIX_WEAK_PIPES"])) if (V4H or FINAL) else None
     _W["builder"] = CaseBuilder(town.cfg, town.net, sim.ctx, sim.real, town.sections, fp.base_p_night, v3=V3 or V4, v4=V4, twin_g=twin_g,
                                 weak_pipes=weak)
 
@@ -57,10 +66,10 @@ def _build(job):
 
 
 def plan(split: str, n: int) -> list[tuple[str, str, int]]:
-    shares, seeds = ((SHARES_TWIN, SEED_TWIN) if TWIN else (SHARES_V4, SEED_V4H) if V4H else (SHARES_V4, SEED_V4) if V4 else (SHARES_V3, SEED_V3) if V3
+    shares, seeds = ((SHARES_FINAL, SEED_FINAL) if FINAL else (SHARES_CD, SEED_CD) if CD else (SHARES_TWIN, SEED_TWIN) if TWIN else (SHARES_V4, SEED_V4H) if V4H else (SHARES_V4, SEED_V4) if V4 else (SHARES_V3, SEED_V3) if V3
                      else (SHARES, SEED))
     counts = {s: int(round(n * f)) for s, f in shares.items()}
-    counts["twin" if TWIN else "damp"] += n - sum(counts.values())
+    counts["cd_sound_decoy" if FINAL else "cd_damp" if CD else "twin" if TWIN else "damp"] += n - sum(counts.values())
     only = os.environ.get("AGENTIX_ONLY_SUITE")                     # sensitivity builds: one suite only
     jobs = []
     for s, c in counts.items():
@@ -97,11 +106,33 @@ if __name__ == "__main__":
     ap.add_argument("--val", type=int, default=0)
     ap.add_argument("--v4", action="store_true", help="benchmark v4 (ADR-011): v3 + chronic leaks (sensors blind) and their look-alikes")
     ap.add_argument("--v4h", action="store_true", help="v4 + failure history (ADR-018): repair records on weak stretches that leak more often")
+    ap.add_argument("--cd", action="store_true", help="ADR-019: complaint-dependent leaks (step-test SNR < 1.5), decoys, false alarms")
     ap.add_argument("--twin", action="store_true", help="the pressure-twin study: leaks whose sensor fingerprint has a twin elsewhere")
     ap.add_argument("--v3", action="store_true", help="benchmark v3 (ADR-010): brown water, works log, flushing look-alikes")
+    ap.add_argument("--final", action="store_true", help="Master benchmark: unified decoys, brown-water scour, chronic failure history records, and non-obvious categories")
     ap.add_argument("--workers", type=int, default=3)
     ap.add_argument("--only", choices=["dev", "val", "test"])
     a = ap.parse_args()
+    if a.final:
+        FINAL = True
+        os.environ["AGENTIX_BENCH_FINAL"] = "1"
+        V4H = True
+        os.environ["AGENTIX_BENCH_V4H"] = "1"
+        CD = True
+        os.environ["AGENTIX_BENCH_CD"] = "1"
+        a.v4 = True
+        os.makedirs(f"{a.out}/hidden", exist_ok=True)
+        wp = f"{a.out}/hidden/_weak_pipes.json"
+        if not os.path.exists(wp):
+            from agentix.sim.records import build_records_h
+            from agentix.sim.terrain import Terrain
+            from agentix.town.assets import Town
+            t = Town()
+            rec = build_records_h(t.net, t.places, Terrain(t.net), seed=0)
+            open(f"{a.out}/records.md", "w").write(rec["markdown"])
+            json.dump(rec["weak_pipes"], open(wp, "w"))
+            json.dump(rec["stretches"], open(f"{a.out}/hidden/_weak_stretches.json", "w"))
+        os.environ["AGENTIX_WEAK_PIPES"] = wp
     if a.v3:
         V3 = True
         os.environ["AGENTIX_BENCH_V3"] = "1"
@@ -121,6 +152,10 @@ if __name__ == "__main__":
             json.dump(rec["weak_pipes"], open(wp, "w"))
             json.dump(rec["stretches"], open(f"{a.out}/hidden/_weak_stretches.json", "w"))
         os.environ["AGENTIX_WEAK_PIPES"] = wp
+    if a.cd:
+        CD = True
+        os.environ["AGENTIX_BENCH_CD"] = "1"
+        a.v4 = True
     if a.twin:
         TWIN = True
         os.environ["AGENTIX_BENCH_TWIN"] = "1"
@@ -158,5 +193,5 @@ if __name__ == "__main__":
             continue                                       # never rewrite the frozen test list
         json.dump({"cases": names, "sha256": hashlib.sha256("\n".join(names).encode()).hexdigest()},
                   open(path, "w"), indent=1)
-    print("done:", {s: sum(v["suite"] == s for v in index.values()) for s in (SHARES_TWIN if TWIN else SHARES_V4 if V4 else SHARES_V3 if V3
+    print("done:", {s: sum(v["suite"] == s for v in index.values()) for s in (SHARES_FINAL if FINAL else SHARES_CD if CD else SHARES_TWIN if TWIN else SHARES_V4 if V4 else SHARES_V3 if V3
                                                                              else SHARES)})

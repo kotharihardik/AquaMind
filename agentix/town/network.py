@@ -109,21 +109,3 @@ class NetworkInfo:
     def pipe_endpoints(self, pipe: str) -> tuple[str, str]:
         link = self.wn.get_link(pipe)
         return link.start_node_name, link.end_node_name
-
-
-def series_chain(wn, pipe: str) -> list[str]:
-    """The pipes in series with `pipe` (joined only through junctions with exactly two pipes): one stretch of main (public map)."""
-    if pipe not in wn.pipe_name_list:
-        return [pipe]
-    out, todo = {pipe}, [pipe]
-    while todo:
-        link = wn.get_link(todo.pop())
-        for n in (link.start_node_name, link.end_node_name):
-            if n in wn.junction_name_list:
-                links = wn.get_links_for_node(n)                      # every link: a valve or pump at a junction ends the stretch
-                if len(links) == 2 and all(l in wn.pipe_name_list for l in links):
-                    for l in links:
-                        if l not in out:
-                            out.add(l)
-                            todo.append(l)
-    return sorted(out)

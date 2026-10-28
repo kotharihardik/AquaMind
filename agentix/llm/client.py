@@ -28,8 +28,60 @@ ENDPOINTS = {"nvidia": "https://integrate.api.nvidia.com/v1/chat/completions",
 RPM = {"nvidia": float(os.environ.get("NVIDIA_RPM", "20")), "gemini": float(os.environ.get("GEMINI_RPM", "10")),
        "groq": float(os.environ.get("GROQ_RPM", "25")), "cerebras": float(os.environ.get("CEREBRAS_RPM", "25")),
        "openrouter": float(os.environ.get("OPENROUTER_RPM", "15"))}   # free tiers
-KEYS = {"nvidia": ["NVIDIA_API_KEY"], "gemini": ["GEMINI_API_1", "GEMINI_API_2", "GEMINI_API_KEY"], "groq": ["GROQ_API_KEY"],
-        "cerebras": ["CEREBRAS_API_KEY"], "openrouter": ["OPENROUTER_API_KEY"]}
+def _discover_provider_keys(provider: str) -> list[str]:
+    """Find all configured API keys for a provider dynamically from os.environ.
+    Supports both exact names and suffixed indices (e.g. NVIDIA_API_KEY, NVIDIA_API_KEY_1..N, GEMINI_API_1..N).
+    """
+    prefix_map = {
+        "nvidia": ["NVIDIA_API_KEY"],
+        "gemini": ["GEMINI_API", "GEMINI_API_KEY"],
+        "groq": ["GROQ_API_KEY"],
+        "cerebras": ["CEREBRAS_API_KEY"],
+        "openrouter": ["OPENROUTER_API_KEY"],
+    }
+    prefixes = prefix_map.get(provider, [f"{provider.upper()}_API_KEY"])
+    keys = []
+    
+    # Check exact matches first in defined order
+    for p in prefixes:
+        val = os.environ.get(p)
+        if val and val.strip():
+            keys.append(val.strip())
+            
+    # Then discover all numbered or suffixed environment variables
+    # e.g., NVIDIA_API_KEY_1, NVIDIA_API_KEY_2, ..., NVIDIA_API_KEY_50
+    discovered = []
+    for env_k, env_v in os.environ.items():
+        if not env_v or not env_v.strip():
+            continue
+        for p in prefixes:
+            if env_k.startswith(f"{p}_") or env_k.startswith(f"{p}"):
+                if env_k not in prefixes and (env_k.startswith(f"{p}_") or env_k.startswith(f"{p}")):
+                    discovered.append((env_k, env_v.strip()))
+                    break
+
+    # Sort numerically if ending in numbers, else alphabetically for deterministic ordering
+    def _sort_key(item):
+        k = item[0]
+        parts = k.rsplit("_", 1)
+        if len(parts) == 2 and parts[1].isdigit():
+            return (parts[0], int(parts[1]))
+        return (k, 0)
+
+    discovered.sort(key=_sort_key)
+    for _, v in discovered:
+        keys.append(v)
+
+    # Deduplicate while preserving order
+    seen = set()
+    deduped = []
+    for k in keys:
+        if k and k not in seen:
+            seen.add(k)
+            deduped.append(k)
+    return deduped
+
+
 AGENT_MODEL = "nvidia:nvidia/nemotron-3-ultra-550b-a55b"      # every agent / LLM baseline (same model)
 WRITER_MODEL = "gemini:gemini-3.1-flash-lite"                  # environment text (different family)
 
@@ -67,11 +119,13 @@ class LLM:
     def __post_init__(self):
         load_dotenv()
         self.provider, self.name = self.model.split(":", 1)
-        self.keys = [os.environ[k] for k in KEYS[self.provider] if os.environ.get(k)]
+        self.keys = _discover_provider_keys(self.provider)
         if not self.keys:
             raise RuntimeError(f"no API key for {self.provider} in the environment or .env")
-        self._k = random.randrange(len(self.keys))
+        self._key_tags = [hashlib.sha256(k.encode()).hexdigest()[:8] for k in self.keys]
+        self._k = (os.getpid() + random.randrange(len(self.keys))) % len(self.keys)
         os.makedirs(self.cache_dir, exist_ok=True)
+        os.makedirs(".cache/rate", exist_ok=True)
 
     def json(self, system: str, user: str, required: list[str] | None = None, tag: str = "") -> dict:
         """Ask for ONE JSON object. Returns the parsed dict, or {"_error": ...}."""
@@ -93,13 +147,33 @@ class LLM:
             json.dump({"tag": tag, "model": self.model, "answer": answer}, open(path, "w"))
         return answer
 
-    def _pace(self) -> None:
-        """One shared clock for all worker processes. The free tiers sustain only a few calls a minute and answer 429
-        to bursts, but a 429 is cheap and faster attempts still give more successes per minute (measured), so the gap
-        only widens a little after a 429 (x1.25, at most 2x the base gap 60/RPM) and recovers after a success. The lock is held while sleeping, so waiting workers queue in order."""
-        base = 60.0 / RPM[self.provider]
-        os.makedirs(".cache/rate", exist_ok=True)
-        with open(f".cache/rate/{self.provider}.json", "a+") as f:
+    def _rate_file(self, k_idx: int) -> str:
+        tag = self._key_tags[k_idx]
+        return f".cache/rate/{self.provider}_{tag}.json"
+
+    def _key_wait_estimate(self, k_idx: int) -> tuple[float, float]:
+        base = 60.0 / RPM.get(self.provider, 20.0)
+        rf = self._rate_file(k_idx)
+        if not os.path.exists(rf):
+            return 0.0, base
+        try:
+            with open(rf, "r") as f:
+                st = json.loads(f.read() or "{}")
+            gap = float(st.get("gap", base))
+            wait = max(0.0, float(st.get("last", 0.0)) + gap - time.time())
+            return wait, gap
+        except Exception:
+            return 0.0, base
+
+    def _reserve_pace_key(self, k_idx: int) -> float:
+        """Reserve a timeslot for the specific API key using virtual clock reservation.
+        Releases the lock immediately so other processes are never blocked from reading/reserving slots.
+        Returns the duration (seconds) this process needs to sleep before making the request.
+        """
+        base = 60.0 / RPM.get(self.provider, 20.0)
+        rf = self._rate_file(k_idx)
+        now = time.time()
+        with open(rf, "a+") as f:
             fcntl.flock(f, fcntl.LOCK_EX)
             f.seek(0)
             try:
@@ -107,18 +181,21 @@ class LLM:
             except ValueError:
                 st = {}
             gap = max(base, float(st.get("gap", base)))
-            wait = max(0.0, float(st.get("last", 0.0)) + gap - time.time())
-            if wait:
-                time.sleep(wait)
-                self.usage.waited += wait
-            st.update(last=time.time(), gap=gap)
+            last = float(st.get("last", 0.0))
+            scheduled = max(now, last + gap)
+            wait = scheduled - now
+            st.update(last=scheduled, gap=gap)
             f.seek(0)
             f.truncate()
             f.write(json.dumps(st))
+            fcntl.flock(f, fcntl.LOCK_UN)
+        return max(0.0, wait)
 
-    def _adapt(self, throttled: bool) -> None:
-        base = 60.0 / RPM[self.provider]
-        with open(f".cache/rate/{self.provider}.json", "a+") as f:
+    def _adapt_key(self, k_idx: int, throttled: bool) -> None:
+        """Adapt the rate gap for the specific API key."""
+        base = 60.0 / RPM.get(self.provider, 20.0)
+        rf = self._rate_file(k_idx)
+        with open(rf, "a+") as f:
             fcntl.flock(f, fcntl.LOCK_EX)
             f.seek(0)
             try:
@@ -126,27 +203,47 @@ class LLM:
             except ValueError:
                 st = {}
             gap = float(st.get("gap", base))
-            st["gap"] = min(2 * base, gap * 1.25) if throttled else max(base, gap * 0.9)
+            if throttled:
+                st["gap"] = min(2 * base, gap * 1.25)
+                st["last"] = max(float(st.get("last", 0.0)), time.time() + 3.0)
+            else:
+                st["gap"] = max(base, gap * 0.9)
             f.seek(0)
             f.truncate()
             f.write(json.dumps(st))
+            fcntl.flock(f, fcntl.LOCK_UN)
 
     def _ask(self, system, user, required):
         last, tries, throttled = None, 0, 0
+        preferred_k = (os.getpid() + random.randrange(len(self.keys))) % len(self.keys)
         while tries < 4 and throttled < 60:
+            # Pick the key with the smallest estimated wait time
+            candidates = []
+            for i in range(len(self.keys)):
+                k_idx = (preferred_k + i) % len(self.keys)
+                wait_s, _ = self._key_wait_estimate(k_idx)
+                candidates.append((wait_s, k_idx))
+            candidates.sort(key=lambda x: x[0])
+            chosen_key_idx = candidates[0][1]
+
+            wait = self._reserve_pace_key(chosen_key_idx)
+            if wait > 0:
+                time.sleep(wait)
+                self.usage.waited += wait
+
             try:
-                self._pace()
-                text, pt, ot = self._post(system, user, tries > 0)
-                self._adapt(False)
+                text, pt, ot = self._post(system, user, tries > 0, chosen_key_idx)
+                self._adapt_key(chosen_key_idx, False)
                 return _parse(text, required), pt, ot
             except urllib.error.HTTPError as e:
                 last = f"HTTP {e.code}"
                 if e.code in (429, 503):
-                    self._adapt(True)
+                    self._adapt_key(chosen_key_idx, True)
                     throttled += 1
                     self.usage.throttled += 1
-                    self._k = (self._k + 1) % len(self.keys)
-                    continue                        # the shared pacer spaces the retry (no extra private back-off)
+                    # Shift preference immediately to next key
+                    preferred_k = (chosen_key_idx + 1) % len(self.keys)
+                    continue
                 tries += 1
                 time.sleep(2 ** tries)
             except (urllib.error.URLError, TimeoutError, ValueError, OSError, KeyError) as e:
@@ -155,7 +252,7 @@ class LLM:
                 time.sleep(2 ** tries)
         return {"_error": last}, 0, 0
 
-    def _post(self, system, user, retry: bool):
+    def _post(self, system, user, retry: bool, key_idx: int):
         sys_msg = system + "\n\nAnswer with ONE JSON object only (no markdown)."
         if retry:
             sys_msg = "Keep any reasoning very short.\n" + sys_msg
@@ -166,7 +263,7 @@ class LLM:
             body["chat_template_kwargs"] = {"enable_thinking": False}
         req = urllib.request.Request(ENDPOINTS[self.provider], data=json.dumps(body).encode(),
                                      headers={"Content-Type": "application/json",
-                                              "Authorization": f"Bearer {self.keys[self._k]}"})
+                                              "Authorization": f"Bearer {self.keys[key_idx]}"})
         with urllib.request.urlopen(req, timeout=self.timeout_s) as r:
             d = json.loads(r.read())
         u = d.get("usage") or {}
