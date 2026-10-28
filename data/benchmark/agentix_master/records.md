@@ -1,0 +1,92 @@
+# Complaint and repair history (utility records)
+
+One line per closed ticket. Repeated repairs on the same stretch of main mean old, failing pipe; places with repeated non-utility causes are usually false alarms again.
+
+- REC-001 | 2025-06-08 | Complaint 'water logging' near St. Mary's School on Hill Road. Crew visit: garden watering overflowing onto the road. No utility pipe leak found.
+- REC-002 | 2025-06-08 | Service connection leak repaired near Om Sai Kirana on 4th Cross, Tank Bund Area. Closed.
+- REC-003 | 2025-06-23 | Pipe burst near HP Petrol Bunk on 7th Cross, Market Area repaired after night call-out. Corrosion pitting along the main; added to renewal list.
+- REC-004 | 2025-06-29 | Complaint 'water flowing on road' near Kalyana Mandapam on Sunrise Road. Crew visit: private service pipe leaking at the compound wall. No utility pipe leak found.
+- REC-005 | 2025-07-03 | Joint leak repaired on College Road. Closed.
+- REC-006 | 2025-07-05 | Joint failure repaired near Indian Oil Petrol Pump on Patel Street. Crew note: same stretch repaired before, lead joints perished, replacement needed.
+- REC-007 | 2025-07-08 | Complaint 'water logging' near Indian Oil Petrol Pump on Canal Road. Crew visit: blocked storm drain overflowing. No utility pipe leak found.
+- REC-008 | 2025-07-22 | Main burst repaired near CSI Church on School Lane. Old CI main badly corroded; clamp fitted. Recommend replacement of this stretch.
+- REC-009 | 2025-07-26 | Complaint 'water flowing on road' on 2nd Cross, Gandhi Nagar. Crew visit: rain water collecting at the low point; drain choked. No utility pipe leak found.
+- REC-010 | 2025-07-27 | Pipe burst on Water Tank Road repaired after night call-out. Corrosion pitting along the main; added to renewal list.
+- REC-011 | 2025-07-31 | Low pressure complaint near Overhead Water Tank on Bus Stand Road; customer-side issue (private pump). Closed.
+- REC-012 | 2025-08-07 | Valve gland leak fixed near Sri Sai Clinic on 5th Cross, Indira Colony. Closed.
+- REC-013 | 2025-08-11 | Complaint 'water leaking on the road' near Mecca Masjid on 2nd Cross, Old Town. Crew visit: overhead tank of a house overflowing. No utility pipe leak found.
+- REC-014 | 2025-08-11 | Valve gland leak fixed near Children's Park on Railway Feeder Road. Closed.
+- REC-015 | 2025-08-12 | Complaint 'pipe leak' near Zilla Parishad School. Crew visit: sprinkler of the park running onto the footpath. No utility pipe leak found.
+- REC-016 | 2025-08-12 | Pipe burst near New Krishna Stores on 2nd Cross, Lake View repaired after night call-out. Corrosion pitting along the main; added to renewal list.
+- REC-017 | 2025-08-13 | Pipe burst near HP Petrol Bunk on 7th Cross, Market Area repaired after night call-out. Corrosion pitting along the main; added to renewal list.
+- REC-018 | 2025-08-17 | Joint failure repaired near Annapurna Stores on Patel Street. Crew note: same stretch repaired before, lead joints perished, replacement needed.
+- REC-019 | 2025-09-02 | Complaint 'water logging' near Little Flower School on Market Road. Crew visit: garden watering overflowing onto the road. No utility pipe leak found.
+- REC-020 | 2025-09-09 | Low pressure complaint near Overhead Water Tank on Station Road; customer-side issue (private pump). Closed.
+- REC-021 | 2025-09-10 | Repeat leak on Park Avenue: new clamp next to an earlier repair clamp. Main is old cast iron, recommend renewal.
+- REC-022 | 2025-09-13 | Low pressure complaint near Canara Bank on Shivaji Marg; customer-side issue (private pump). Closed.
+- REC-023 | 2025-09-17 | Service connection leak repaired near Colony Bus Stop on 1st Cross, Teachers Colony. Closed.
+- REC-024 | 2025-09-19 | Complaint 'pipe leak' near Zilla Parishad School. Crew visit: sprinkler of the park running onto the footpath. No utility pipe leak found.
+- REC-025 | 2025-09-19 | Valve gland leak fixed near Sri Sai Clinic on 4th Cross, Indira Colony. Closed.
+- REC-026 | 2025-09-20 | Service connection leak repaired near Sunrise Public School on Tilak Road. Closed.
+- REC-027 | 2025-09-25 | Pipe burst near Rose Garden on 1st Cross, Station Area repaired after night call-out. Corrosion pitting along the main; added to renewal list.
+- REC-028 | 2025-10-03 | Leak on distribution main repaired near New Krishna Stores on Rose Lane. Pipe wall thin, heavy tuberculation found. Second repair on this stretch this year.
+- REC-029 | 2025-10-06 | Valve gland leak fixed near Balaji General Store on MG Road. Closed.
+- REC-030 | 2025-10-09 | Low pressure complaint near School Bus Stop on 2nd Cross, Station Area; customer-side issue (private pump). Closed.
+- REC-031 | 2025-10-28 | Joint failure repaired near Annapurna Stores on Patel Street. Crew note: same stretch repaired before, lead joints perished, replacement needed.
+- REC-032 | 2025-11-15 | Complaint 'pipe leak' near Little Flower School on Market Road. Crew visit: sprinkler of the park running onto the footpath. No utility pipe leak found.
+- REC-033 | 2025-12-12 | Complaint 'pipe leak' near HP Petrol Bunk on 8th Cross, Market Area. Crew visit: car washing at the service point. No utility pipe leak found.
+- REC-034 | 2025-12-16 | Joint failure repaired near School Bus Stop on College Road. Crew note: same stretch repaired before, lead joints perished, replacement needed.
+- REC-035 | 2025-12-19 | Complaint 'water leaking on the road' near St. Mary's School on Hill Road. Crew visit: garden watering overflowing onto the road. No utility pipe leak found.
+- REC-036 | 2025-12-22 | Complaint 'water flowing on road' near Little Flower School on Market Road. Crew visit: sprinkler of the park running onto the footpath. No utility pipe leak found.
+- REC-037 | 2025-12-29 | Complaint 'water leaking on the road' near Little Flower School on Market Road. Crew visit: garden watering overflowing onto the road. No utility pipe leak found.
+- REC-038 | 2026-01-03 | Leak on distribution main repaired near Little Flower School on Market Road. Pipe wall thin, heavy tuberculation found. Second repair on this stretch this year.
+- REC-039 | 2026-01-10 | Repeat leak near Shiva Temple on 3rd Cross, Sai Nagar: new clamp next to an earlier repair clamp. Main is old cast iron, recommend renewal.
+- REC-040 | 2026-01-24 | Main burst repaired near Market Bus Stop on Ganesh Gully. Closed.
+- REC-041 | 2026-01-24 | Pipe burst near Shiva Temple on 8th Cross, Tank Bund Area repaired after night call-out. Corrosion pitting along the main; added to renewal list.
+- REC-042 | 2026-01-27 | Pipe burst near New Krishna Stores on 2nd Cross, Lake View repaired after night call-out. Corrosion pitting along the main; added to renewal list.
+- REC-043 | 2026-02-01 | Pipe burst on Water Tank Road repaired after night call-out. Corrosion pitting along the main; added to renewal list.
+- REC-044 | 2026-03-03 | Joint failure repaired near Government High School on Green Park Road. Crew note: same stretch repaired before, lead joints perished, replacement needed.
+- REC-045 | 2026-03-22 | Main burst repaired near Om Sai Kirana on 1st Cross, Tank Bund Area. Closed.
+- REC-046 | 2026-03-29 | Complaint 'pipe leak' near Vidya Mandir School on 1st Cross, Rose Garden. Crew visit: sprinkler of the park running onto the footpath. No utility pipe leak found.
+- REC-047 | 2026-04-02 | Complaint 'water leaking on the road' near Vidya Mandir School on 1st Cross, Rose Garden. Crew visit: gardener's hose left running. No utility pipe leak found.
+- REC-048 | 2026-04-12 | Joint leak repaired on 2nd Cross, Sai Nagar. Closed.
+- REC-049 | 2026-04-14 | Pipe burst near CSI Church on School Lane repaired after night call-out. Corrosion pitting along the main; added to renewal list.
+- REC-050 | 2026-04-18 | Pipe burst near School Bus Stop on College Road repaired after night call-out. Corrosion pitting along the main; added to renewal list.
+- REC-051 | 2026-04-19 | Complaint 'water logging' near Vegetable Market on 2nd Cross, Indira Colony. Crew visit: car washing at the service point. No utility pipe leak found.
+- REC-052 | 2026-04-21 | Joint failure repaired near Durga Temple on 4th Cross, Teachers Colony. Crew note: same stretch repaired before, lead joints perished, replacement needed.
+- REC-053 | 2026-05-16 | Complaint 'water flowing on road' on 2nd Cross, Gandhi Nagar. Crew visit: rain water collecting at the low point; drain choked. No utility pipe leak found.
+- REC-054 | 2026-05-19 | Complaint 'water leaking on the road' near Indian Oil Petrol Pump on Canal Road. Crew visit: sewer chamber overflow (not drinking water). No utility pipe leak found.
+- REC-055 | 2026-05-30 | Complaint 'water flowing on road' near Vegetable Market on 2nd Cross, Indira Colony. Crew visit: car washing at the service point. No utility pipe leak found.
+- REC-056 | 2026-05-30 | Complaint 'water logging' near St. Mary's School on Hill Road. Crew visit: garden watering overflowing onto the road. No utility pipe leak found.
+- REC-057 | 2026-06-01 | Joint leak repaired near Main Bus Stand on 7th Cross, Sai Nagar. Closed.
+- REC-058 | 2026-06-02 | Low pressure complaint near Post Office ATM on Park Avenue; customer-side issue (private pump). Closed.
+- REC-059 | 2026-06-09 | Low pressure complaint near Government Hospital on 4th Cross, Sai Nagar; customer-side issue (private pump). Closed.
+- REC-060 | 2026-06-11 | Leak on distribution main repaired near HP Petrol Bunk on 7th Cross, Market Area. Pipe wall thin, heavy tuberculation found. Second repair on this stretch this year.
+- REC-061 | 2026-06-12 | Pipe burst near Rose Garden on Water Tank Road repaired after night call-out. Corrosion pitting along the main; added to renewal list.
+- REC-062 | 2026-06-16 | Complaint 'water flowing on road' near Kalyana Mandapam on Sunrise Road. Crew visit: private service pipe leaking at the compound wall. No utility pipe leak found.
+- REC-063 | 2026-06-19 | Emergency repair on Park Avenue: circumferential crack on the main. Surrounding pipe in poor condition.
+- REC-064 | 2026-06-20 | Low pressure complaint near School Bus Stop on Ganesh Gully; customer-side issue (private pump). Closed.
+- REC-065 | 2026-06-24 | Leak on distribution main repaired near School Bus Stop on College Road. Pipe wall thin, heavy tuberculation found. Second repair on this stretch this year.
+- REC-066 | 2026-06-26 | Main burst repaired near Government High School on 3rd Cross, Green Park. Closed.
+- REC-067 | 2026-07-03 | Complaint 'water logging' near Mecca Masjid on 2nd Cross, Old Town. Crew visit: private service pipe leaking at the compound wall. No utility pipe leak found.
+- REC-068 | 2026-07-18 | Low pressure complaint on Kamala Street; customer-side issue (private pump). Closed.
+- REC-069 | 2026-07-19 | Repeat leak on Shivaji Marg: new clamp next to an earlier repair clamp. Main is old cast iron, recommend renewal.
+- REC-070 | 2026-07-20 | Complaint 'water flowing on road' near Mecca Masjid on 2nd Cross, Old Town. Crew visit: leaking pipe inside a house compound. No utility pipe leak found.
+- REC-071 | 2026-07-21 | Leak on distribution main repaired on Rose Lane. Pipe wall thin, heavy tuberculation found. Second repair on this stretch this year.
+- REC-072 | 2026-07-24 | Complaint 'water logging' near Mecca Masjid on 2nd Cross, Old Town. Crew visit: leaking pipe inside a house compound. No utility pipe leak found.
+- REC-073 | 2026-07-28 | Emergency repair near Community Hall on Hill Road: circumferential crack on the main. Surrounding pipe in poor condition.
+- REC-074 | 2026-07-29 | Main burst repaired near Rose Garden on 1st Cross, Station Area. Old CI main badly corroded; clamp fitted. Recommend replacement of this stretch.
+- REC-075 | 2026-07-31 | Repeat leak near Annapurna Stores on Church Street: new clamp next to an earlier repair clamp. Main is old cast iron, recommend renewal.
+- REC-076 | 2026-08-02 | Service connection leak repaired near Vegetable Market on Tank Bund Road. Closed.
+- REC-077 | 2026-08-04 | Complaint 'water leaking on the road' near Zilla Parishad School. Crew visit: sprinkler of the park running onto the footpath. No utility pipe leak found.
+- REC-078 | 2026-08-06 | Complaint 'pipe leak' near Vegetable Market on 2nd Cross, Indira Colony. Crew visit: shop washing its front every morning. No utility pipe leak found.
+- REC-079 | 2026-08-13 | Repeat leak near Rose Garden on Water Tank Road: new clamp next to an earlier repair clamp. Main is old cast iron, recommend renewal.
+- REC-080 | 2026-08-17 | Leak on distribution main repaired near Annapurna Stores on Patel Street. Pipe wall thin, heavy tuberculation found. Second repair on this stretch this year.
+- REC-081 | 2026-08-20 | Complaint 'water logging' on 2nd Cross, Gandhi Nagar. Crew visit: rain water collecting at the low point; drain choked. No utility pipe leak found.
+- REC-082 | 2026-08-20 | Main burst repaired near New Krishna Stores on Banyan Street. Closed.
+- REC-083 | 2026-08-20 | Valve gland leak fixed near New Krishna Stores on 2nd Cross, Lake View. Closed.
+- REC-084 | 2026-08-21 | Main burst repaired on 1st Cross, Gandhi Nagar. Closed.
+- REC-085 | 2026-08-22 | Complaint 'water logging' on 2nd Cross, Gandhi Nagar. Crew visit: rain water collecting at the low point; drain choked. No utility pipe leak found.
+- REC-086 | 2026-08-29 | Complaint 'water flowing on road' near HP Petrol Bunk on 8th Cross, Market Area. Crew visit: shop washing its front every morning. No utility pipe leak found.
+- REC-087 | 2026-09-07 | Valve gland leak fixed near School Bus Stop. Closed.
+- REC-088 | 2026-09-22 | Repeat leak near Hanuman Temple on Bazaar Street: new clamp next to an earlier repair clamp. Main is old cast iron, recommend renewal.

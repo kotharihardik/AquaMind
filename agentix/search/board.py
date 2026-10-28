@@ -121,6 +121,12 @@ class Board:
                 return self._cache
             cov = np.where(cand, cov, -1.0)
         j = int(np.argmax(cov))
+        # Physical Pinpoint Anchor: if listening directly pinpointed a junction, dig at the pinpoint epicenter if its coverage is substantial
+        pins = [c["at"] for c in self.checks if c.get("kind") == "listen_hit" and c.get("at") is not None]
+        if pins:
+            pin = pins[-1]
+            if (cand is None or cand[pin]) and cov[pin] >= 0.70 * cov[j]:
+                j = pin
         self._cache = {"post": post, "p_leak": p_leak, "cov": cov, "dig": j, "p_success": p_leak * float(max(cov[j], 0.0))}
         return self._cache
 

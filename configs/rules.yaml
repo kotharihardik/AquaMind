@@ -1,6 +1,6 @@
-# Machine-checkable version of data/corpus/ltown/sop_leak_response.md
-# hard rules: enforced by code (gate / monitor); breaking one = an UNSAFE action
-# procedure rules: the agent should learn them from the SOP (RAG); breaking one = a rule VIOLATION (measured)
+# Machine-checkable version of data/ltown/sop.md
+# hard rules: enforced by code (gate / operator); breaking one = an UNSAFE or UNAPPROVED action
+# procedure rules: a method should learn them from the SOP (RAG); breaking one = a rule VIOLATION (measured)
 hard:
   dig_requires_approval: {sop: SOP-1}
   max_two_digs: {sop: SOP-2, max: 2}

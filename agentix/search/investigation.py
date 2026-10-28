@@ -52,9 +52,6 @@ class SearchConfig:
     reply_confirms: bool = True         # a caller's 'it is still flowing / it comes out right here' may RAISE a complaint's credibility (False: answers can only debunk, ADR-014)
     hypothesis_mode: bool = False      # ADR-016: pressure physics only for HYPOTHESISED junctions (simulated on demand); no 782-junction table
     max_candidates: int = 220
-    max_sims: int | None = None         # ADR-017: EPANET runs per case (leak fingerprints + scenarios); the same for every compared method
-    open_world: bool = False            # ADR-017: explanations other than a leak can be proposed (search/explanations.py)
-    prior_leak_explained: float = 0.15  # P(leak) when the alarm that opened the case is explained by something else (ADR-017)
     hedge: float = 0.0                  # share of the complaint-free map in ranking the sections of the first step test (0 = off, ADR-014)
     dig_bar: float = 0.8                # P(success) needed to dig while checks can still add something
     final_bar: float = 0.35             # ... and when none can (ADR-008)
@@ -95,7 +92,6 @@ class LeakSearch:
             sidx = [net.index[n] for n in case.pressure_nodes]
             _, ll0 = self._phys().pressure_loglik(ev, [], sidx)
             ll0 = cfg.tau_p * ll0
-            self._p0 = ll0
             ll = np.full(len(net.junctions), ll0)
         elif cfg.use_pressure:
             sidx = [net.index[n] for n in case.pressure_nodes]
@@ -143,27 +139,8 @@ class LeakSearch:
         board.reply_confirms = cfg.reply_confirms
         if cfg.hypothesis_mode:
             board.cand = np.zeros(len(net.junctions), bool)
-            p0 = self._p0 if cfg.use_pressure else 0.0
-            board._hyp = {"ev": ev, "sidx": [net.index[n] for n in case.pressure_nodes], "zone": ll - (ll0 if cfg.use_pressure else 0.0),
-                          "zone0": ll0 - p0}
-            self._phys().new_case(cfg.max_sims)
-        board.sensor_names = list(case.pressure_nodes)
-        board.expl = {}                                 # ADR-017: explanations other than a leak (search/explanations.py)
-        board.expl_none = 1.0
-        board.prior_alarm = prior if (cfg.open_world and case.trigger == "scada_alarm") else None
-        if cfg.open_world:
-            from .explanations import conc_terms, inflow_concentration, night_block
-            c, ex_lps, sd = inflow_concentration(case.time_s, case.flow, now_eff)
-            if cfg.hypothesis_mode and np.isfinite(c):     # last night's busiest 3 h of extra inflow: a second evidence window
-                b_end = night_block(case.time_s, case.flow, now_eff)
-                board._hyp["ev_block"] = build_evidence(case.time_s, case.pressure, case.flow, case.tank_level, b_end, window_h=3.0)
-                board._hyp["main_overlaps_block"] = bool(now_eff - cfg.window_h * 3600 < b_end - 1.5 * 3600 < now_eff)
-                board._hyp["block_end_s"] = b_end
-            board.inflow_conc = conc_terms(c)
-            board.inflow_shape = {"share_in_busiest_3h": None if not np.isfinite(c) else round(c, 2), "night_extra_lps": round(ex_lps, 2),
-                                  "sd_lps": round(sd, 2)}
-        else:
-            board.inflow_conc, board.inflow_shape = (0.0, 0.0), None
+            board._hyp = {"ev": ev, "sidx": [net.index[n] for n in case.pressure_nodes], "zone": ll - (ll0 if cfg.use_pressure else 0.0)}
+        board.prior_boost = np.zeros(len(net.junctions))      # ADR-018: log-prior raised where the agent cited a failing stretch of main
         board.trigger_report = getattr(case, "trigger_report", None)
         board.t_open = dt.datetime.fromisoformat(case.start_datetime) + dt.timedelta(seconds=case.case_open_s)
         self.add_messages(board, case.reports, reads)
@@ -175,7 +152,7 @@ class LeakSearch:
             self.physics = PhysicsTool(self.town.cfg, list(self.net.junctions))
         return self.physics
 
-    def add_candidates(self, board: Board, js, source: str = "") -> int:
+    def add_candidates(self, board: Board, js, source: str = "", force: bool = False) -> int:
         """Hypothesise these junctions: simulate a leak at each on the nominal model (ADR-016) and let the pressure evidence speak about them.
         Junctions nobody hypothesised keep an uninformative pressure term (as likely as 'no leak'). -> number of new candidates."""
         if getattr(board, "cand", None) is None:
@@ -183,33 +160,27 @@ class LeakSearch:
         cfg = self.cfg
         new = [int(j) for j in dict.fromkeys(int(x) for x in js) if not board.cand[int(j)]]
         room = cfg.max_candidates - int(board.cand.sum())
-        new = new[:max(room, 0)]
+        new = new if force else new[:max(room, 0)]            # force: physical proof (a lit section, a heard leak) is never dropped for room
         if not new or not cfg.use_pressure:
             return 0
-        phys = self._phys()
-        if phys.left() is not None:                     # ADR-017: the case's simulation budget
-            fresh = [j for j in new if ("leak", j) not in phys._charged]
-            keep = set(fresh[:phys.left()])
-            new = [j for j in new if j in keep or ("leak", j) in phys._charged]
-        if not new:
-            return 0
         h = board._hyp
-        if board.expl:                                  # explanations other than a leak: rebuild the mixture with the new candidates
-            board.cand[new] = True
-            from .explanations import ExplanationEngine
-            ExplanationEngine(self).refresh(board)
-            return len(new)
-        ll, ll0 = phys.pressure_loglik(h["ev"], new, h["sidx"])
+        ll, ll0 = self._phys().pressure_loglik(h["ev"], new, h["sidx"])
         ll, ll0 = cfg.tau_p * ll, cfg.tau_p * ll0
         ll = np.logaddexp(np.log(1 - cfg.rho_p) + ll, np.log(cfg.rho_p) + ll0)          # the fingerprint may be wrong: never far below 'unknown'
-        board.base[new] = self.log_prior[new] + ll + h["zone"][new]
+        board.base[new] = self.log_prior[new] + board.prior_boost[new] + ll + h["zone"][new]
         board.cand[new] = True
         board.touch()
         return len(new)
 
-    def explanations(self):
-        from .explanations import ExplanationEngine
-        return ExplanationEngine(self)
+    FAILURE_HAZARD = 4.0     # a stretch of main with a repeated-failure history fails several times as often (pipe-failure literature; ADR-018)
+
+    def raise_prior(self, board: Board, mask: np.ndarray) -> int:
+        """A cited failure history: the prior of every junction in `mask` is multiplied by FAILURE_HAZARD (once)."""
+        new = mask & (board.prior_boost == 0)
+        board.prior_boost[new] = np.log(self.FAILURE_HAZARD)
+        board.base[new] += np.log(self.FAILURE_HAZARD)
+        board.touch()
+        return int(new.sum())
 
     def add_messages(self, board: Board, reports: list[dict], reads: dict[str, dict]):
         for r in reports:

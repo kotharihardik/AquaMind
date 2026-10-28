@@ -1,0 +1,59 @@
+# Complaint and repair history (utility records)
+
+One line per closed ticket. Use: places with repeated non-utility causes are usually false alarms again.
+
+- REC-001 | 2025-06-08 | Complaint 'water logging' near St. Mary's School on Hill Road. Crew visit: garden watering overflowing onto the road. No utility pipe leak found.
+- REC-002 | 2025-06-08 | Service connection leak repaired near Om Sai Kirana on 4th Cross, Tank Bund Area. Closed.
+- REC-003 | 2025-06-29 | Complaint 'water flowing on road' near Kalyana Mandapam on Sunrise Road. Crew visit: private service pipe leaking at the compound wall. No utility pipe leak found.
+- REC-004 | 2025-07-03 | Joint leak repaired on College Road. Closed.
+- REC-005 | 2025-07-08 | Complaint 'water logging' near Indian Oil Petrol Pump on Canal Road. Crew visit: blocked storm drain overflowing. No utility pipe leak found.
+- REC-006 | 2025-07-26 | Complaint 'water flowing on road' on 2nd Cross, Gandhi Nagar. Crew visit: rain water collecting at the low point; drain choked. No utility pipe leak found.
+- REC-007 | 2025-07-31 | Low pressure complaint near Overhead Water Tank on Bus Stand Road; customer-side issue (private pump). Closed.
+- REC-008 | 2025-08-07 | Valve gland leak fixed near Sri Sai Clinic on 5th Cross, Indira Colony. Closed.
+- REC-009 | 2025-08-11 | Complaint 'water leaking on the road' near Mecca Masjid on 2nd Cross, Old Town. Crew visit: overhead tank of a house overflowing. No utility pipe leak found.
+- REC-010 | 2025-08-11 | Valve gland leak fixed near Children's Park on Railway Feeder Road. Closed.
+- REC-011 | 2025-08-12 | Complaint 'pipe leak' near Zilla Parishad School. Crew visit: sprinkler of the park running onto the footpath. No utility pipe leak found.
+- REC-012 | 2025-09-02 | Complaint 'water logging' near Little Flower School on Market Road. Crew visit: garden watering overflowing onto the road. No utility pipe leak found.
+- REC-013 | 2025-09-09 | Low pressure complaint near Overhead Water Tank on Station Road; customer-side issue (private pump). Closed.
+- REC-014 | 2025-09-13 | Low pressure complaint near Canara Bank on Shivaji Marg; customer-side issue (private pump). Closed.
+- REC-015 | 2025-09-17 | Service connection leak repaired near Colony Bus Stop on 1st Cross, Teachers Colony. Closed.
+- REC-016 | 2025-09-19 | Complaint 'pipe leak' near Zilla Parishad School. Crew visit: sprinkler of the park running onto the footpath. No utility pipe leak found.
+- REC-017 | 2025-09-19 | Valve gland leak fixed near Sri Sai Clinic on 4th Cross, Indira Colony. Closed.
+- REC-018 | 2025-09-20 | Service connection leak repaired near Sunrise Public School on Tilak Road. Closed.
+- REC-019 | 2025-10-06 | Valve gland leak fixed near Balaji General Store on MG Road. Closed.
+- REC-020 | 2025-10-09 | Low pressure complaint near School Bus Stop on 2nd Cross, Station Area; customer-side issue (private pump). Closed.
+- REC-021 | 2025-11-15 | Complaint 'pipe leak' near Little Flower School on Market Road. Crew visit: sprinkler of the park running onto the footpath. No utility pipe leak found.
+- REC-022 | 2025-12-12 | Complaint 'pipe leak' near HP Petrol Bunk on 8th Cross, Market Area. Crew visit: car washing at the service point. No utility pipe leak found.
+- REC-023 | 2025-12-19 | Complaint 'water leaking on the road' near St. Mary's School on Hill Road. Crew visit: garden watering overflowing onto the road. No utility pipe leak found.
+- REC-024 | 2025-12-22 | Complaint 'water flowing on road' near Little Flower School on Market Road. Crew visit: sprinkler of the park running onto the footpath. No utility pipe leak found.
+- REC-025 | 2025-12-29 | Complaint 'water leaking on the road' near Little Flower School on Market Road. Crew visit: garden watering overflowing onto the road. No utility pipe leak found.
+- REC-026 | 2026-01-24 | Main burst repaired near Market Bus Stop on Ganesh Gully. Closed.
+- REC-027 | 2026-03-22 | Main burst repaired near Om Sai Kirana on 1st Cross, Tank Bund Area. Closed.
+- REC-028 | 2026-03-29 | Complaint 'pipe leak' near Vidya Mandir School on 1st Cross, Rose Garden. Crew visit: sprinkler of the park running onto the footpath. No utility pipe leak found.
+- REC-029 | 2026-04-02 | Complaint 'water leaking on the road' near Vidya Mandir School on 1st Cross, Rose Garden. Crew visit: gardener's hose left running. No utility pipe leak found.
+- REC-030 | 2026-04-12 | Joint leak repaired on 2nd Cross, Sai Nagar. Closed.
+- REC-031 | 2026-04-19 | Complaint 'water logging' near Vegetable Market on 2nd Cross, Indira Colony. Crew visit: car washing at the service point. No utility pipe leak found.
+- REC-032 | 2026-05-16 | Complaint 'water flowing on road' on 2nd Cross, Gandhi Nagar. Crew visit: rain water collecting at the low point; drain choked. No utility pipe leak found.
+- REC-033 | 2026-05-19 | Complaint 'water leaking on the road' near Indian Oil Petrol Pump on Canal Road. Crew visit: sewer chamber overflow (not drinking water). No utility pipe leak found.
+- REC-034 | 2026-05-30 | Complaint 'water flowing on road' near Vegetable Market on 2nd Cross, Indira Colony. Crew visit: car washing at the service point. No utility pipe leak found.
+- REC-035 | 2026-05-30 | Complaint 'water logging' near St. Mary's School on Hill Road. Crew visit: garden watering overflowing onto the road. No utility pipe leak found.
+- REC-036 | 2026-06-01 | Joint leak repaired near Main Bus Stand on 7th Cross, Sai Nagar. Closed.
+- REC-037 | 2026-06-02 | Low pressure complaint near Post Office ATM on Park Avenue; customer-side issue (private pump). Closed.
+- REC-038 | 2026-06-09 | Low pressure complaint near Government Hospital on 4th Cross, Sai Nagar; customer-side issue (private pump). Closed.
+- REC-039 | 2026-06-16 | Complaint 'water flowing on road' near Kalyana Mandapam on Sunrise Road. Crew visit: private service pipe leaking at the compound wall. No utility pipe leak found.
+- REC-040 | 2026-06-20 | Low pressure complaint near School Bus Stop on Ganesh Gully; customer-side issue (private pump). Closed.
+- REC-041 | 2026-06-26 | Main burst repaired near Government High School on 3rd Cross, Green Park. Closed.
+- REC-042 | 2026-07-03 | Complaint 'water logging' near Mecca Masjid on 2nd Cross, Old Town. Crew visit: private service pipe leaking at the compound wall. No utility pipe leak found.
+- REC-043 | 2026-07-18 | Low pressure complaint on Kamala Street; customer-side issue (private pump). Closed.
+- REC-044 | 2026-07-20 | Complaint 'water flowing on road' near Mecca Masjid on 2nd Cross, Old Town. Crew visit: leaking pipe inside a house compound. No utility pipe leak found.
+- REC-045 | 2026-07-24 | Complaint 'water logging' near Mecca Masjid on 2nd Cross, Old Town. Crew visit: leaking pipe inside a house compound. No utility pipe leak found.
+- REC-046 | 2026-08-02 | Service connection leak repaired near Vegetable Market on Tank Bund Road. Closed.
+- REC-047 | 2026-08-04 | Complaint 'water leaking on the road' near Zilla Parishad School. Crew visit: sprinkler of the park running onto the footpath. No utility pipe leak found.
+- REC-048 | 2026-08-06 | Complaint 'pipe leak' near Vegetable Market on 2nd Cross, Indira Colony. Crew visit: shop washing its front every morning. No utility pipe leak found.
+- REC-049 | 2026-08-20 | Complaint 'water logging' on 2nd Cross, Gandhi Nagar. Crew visit: rain water collecting at the low point; drain choked. No utility pipe leak found.
+- REC-050 | 2026-08-20 | Main burst repaired near New Krishna Stores on Banyan Street. Closed.
+- REC-051 | 2026-08-20 | Valve gland leak fixed near New Krishna Stores on 2nd Cross, Lake View. Closed.
+- REC-052 | 2026-08-21 | Main burst repaired on 1st Cross, Gandhi Nagar. Closed.
+- REC-053 | 2026-08-22 | Complaint 'water logging' on 2nd Cross, Gandhi Nagar. Crew visit: rain water collecting at the low point; drain choked. No utility pipe leak found.
+- REC-054 | 2026-08-29 | Complaint 'water flowing on road' near HP Petrol Bunk on 8th Cross, Market Area. Crew visit: shop washing its front every morning. No utility pipe leak found.
+- REC-055 | 2026-09-07 | Valve gland leak fixed near School Bus Stop. Closed.

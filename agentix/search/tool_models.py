@@ -62,7 +62,8 @@ class ToolModels:
         inside = d <= R
         p = np.where(inside, p_hear(q_hat) * (1 - LISTEN_EDGE * d / R), 0.0)
         if not heard:
-            return (1 - p) * (1 - LISTEN_FP), 1 - LISTEN_FP
+            p_pen = 0.5 * p
+            return (1 - p_pen) * (1 - LISTEN_FP), 1 - LISTEN_FP
         ring = max(int(inside.sum()), 1)
         if at is None:
             return p + LISTEN_FP / ring, LISTEN_FP / ring

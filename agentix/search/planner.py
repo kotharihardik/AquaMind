@@ -76,7 +76,9 @@ class Lite:
 
 class Planner:
     def __init__(self, net, sections, tools, dig_radius_m: float = 90.0, n_samples: int = 96, seed: int = 0,
-                 dig_bar: float = DIG_BAR, final_bar: float = FINAL_BAR, hedge: float = 0.0):
+                 dig_bar: float = DIG_BAR, final_bar: float = FINAL_BAR, hedge: float = 0.0,
+                 allow_step: bool = True):
+        self.allow_step = allow_step
         self.hedge = hedge
         self.net, self.sections, self.tools = net, sections, tools
         self.dig_bar, self.final_bar = dig_bar, final_bar
@@ -118,26 +120,27 @@ class Planner:
         post, p = s.post_pleak()
         mass = self.sections.mass(post) * p
         opts = []
-        lit = [sid for sid in s.lit if sid in self.sections.ids]
-        hot = [sid for k, sid in enumerate(self.sections.ids) if sid in s.tested and mass[k] >= HOT_MASS and sid not in lit]
-        parts = [a for sid in lit + hot for a in self.sections.parts(sid) if a not in s.tested]
-        if parts:                     # second night: split the lit section into its parts
-            pm = {a: self.sections.area_mass(a, post) * p for a in parts}
-            ids = sorted(pm, key=lambda a: -pm[a])[:max_sections]
-            opts.append(Option("step", {"sections": ids}, f"night step test of the parts {', '.join(ids)} of the lit "
-                               f"section" if labels else "", float(sum(pm[a] for a in ids))))
-        order = [k for k in np.argsort(-mass) if self.sections.ids[k] not in s.tested][:max_sections]
-        if hedge_on and s.mass_nm is not None and self.hedge > 0:         # reserve slots for the complaint-free map: complaints can mislead
-            n_nm = int(round(self.hedge * max_sections))
-            nm_order = [k for k in np.argsort(-s.mass_nm) if self.sections.ids[k] not in s.tested]
-            keep = [k for k in np.argsort(-mass) if self.sections.ids[k] not in s.tested][: max_sections - n_nm]
-            extra = [k for k in nm_order if k not in keep][:n_nm]
-            order = keep + extra
-            order += [k for k in np.argsort(-mass) if self.sections.ids[k] not in s.tested and k not in order][: max_sections - len(order)]
-        if order and not (parts and mass[order].sum() < 0.15):
-            ids = [self.sections.ids[k] for k in order]
-            opts.append(Option("step", {"sections": ids}, f"night step test of sections {', '.join(ids)}" if labels else "",
-                               float(mass[order].sum())))
+        if self.allow_step:
+            lit = [sid for sid in s.lit if sid in self.sections.ids]
+            hot = [sid for k, sid in enumerate(self.sections.ids) if sid in s.tested and mass[k] >= HOT_MASS and sid not in lit]
+            parts = [a for sid in lit + hot for a in self.sections.parts(sid) if a not in s.tested]
+            if parts:                     # second night: split the lit section into its parts
+                pm = {a: self.sections.area_mass(a, post) * p for a in parts}
+                ids = sorted(pm, key=lambda a: -pm[a])[:max_sections]
+                opts.append(Option("step", {"sections": ids}, f"night step test of the parts {', '.join(ids)} of the lit "
+                                   f"section" if labels else "", float(sum(pm[a] for a in ids))))
+            order = [k for k in np.argsort(-mass) if self.sections.ids[k] not in s.tested][:max_sections]
+            if hedge_on and s.mass_nm is not None and self.hedge > 0:         # reserve slots for the complaint-free map: complaints can mislead
+                n_nm = int(round(self.hedge * max_sections))
+                nm_order = [k for k in np.argsort(-s.mass_nm) if self.sections.ids[k] not in s.tested]
+                keep = [k for k in np.argsort(-mass) if self.sections.ids[k] not in s.tested][: max_sections - n_nm]
+                extra = [k for k in nm_order if k not in keep][:n_nm]
+                order = keep + extra
+                order += [k for k in np.argsort(-mass) if self.sections.ids[k] not in s.tested and k not in order][: max_sections - len(order)]
+            if order and not (parts and mass[order].sum() < 0.15):
+                ids = [self.sections.ids[k] for k in order]
+                opts.append(Option("step", {"sections": ids}, f"night step test of sections {', '.join(ids)}" if labels else "",
+                                   float(mass[order].sum())))
         q = post.astype(np.float32)
         blocked = np.zeros(len(post), bool)
         for c in s.quiet:                                    # crews do not re-survey the same streets

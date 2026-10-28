@@ -1,0 +1,1704 @@
+{
+ "case_id": "test-trap-007",
+ "public_id": "Cd9a258c05f",
+ "seed": 997007,
+ "suite": "trap",
+ "trigger": "citizen_message",
+ "real_day_of_year": 139,
+ "start_datetime": "2018-05-20T00:00:00",
+ "open_s": 670954.0223283037,
+ "leak": {
+  "pipe": "p242",
+  "start_node": "n8",
+  "end_node": "n11",
+  "frac": 0.2211354816987217,
+  "pipe_length_m": 62.8657,
+  "nearest_node": "n8",
+  "kind": "incipient",
+  "diameter_m": 0.01743357614725471,
+  "start_s": 637500,
+  "ramp_s": 113700,
+  "section": "S14",
+  "mean_lps": 4.507476329803467,
+  "peak_lps": 4.872822284698486,
+  "p_surface": 0.544,
+  "surfaced": true,
+  "leak_start_s": 639000.0,
+  "surface_s": 664794.3114420518,
+  "surface_node": "n8",
+  "pool_node": "n13",
+  "wet_nodes": [
+   "n8",
+   "n11",
+   "n13"
+  ],
+  "path_len_m": 121.8069458765604,
+  "brown": {
+   "margin": 0.12,
+   "kappa": 0.0289,
+   "scoured_junctions": 120
+  }
+ },
+ "trap": {
+  "target_node": "n151"
+ },
+ "reports": [
+  {
+   "received_at": "2018-05-20T08:38",
+   "received_s": 31127.39938137023,
+   "channel": "whatsapp",
+   "text": "HELLO, NEAR SUNRISE PUBLICS CHOOL, ON TILAK ROAD: BRIGHT GREEN PATCH OF WEEDS ON THE FOOTPATH ALL SUMMER FOR 37 DAYS. KINDLY DO THE NEEDFUL. - Joseph 9198184075",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "wet_ground"
+    ],
+    "places": [
+     {
+      "text": "sunrise publics chool",
+      "type": "landmark"
+     },
+     {
+      "text": "Tilak Road",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": "for 37 days",
+    "contains_instructions": false,
+    "summary": "Strip of green growth that never dries near sunrise publics chool, on Tilak Road (for 37 days)."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n376",
+    "source": "unknown",
+    "cause": "garden_or_hose",
+    "place_ids": [
+     "LT-LM005",
+     "LT-ST-025"
+    ],
+    "language": "en",
+    "hotspot": false,
+    "mode": "chronic",
+    "cue": "lush"
+   },
+   "report_id": "R-001"
+  },
+  {
+   "received_at": "2018-05-22T19:42",
+   "received_s": 243763.52769042767,
+   "channel": "call_transcript",
+   "text": "Caller says the base of our compound wall and the ground floor are damp, paint is peeling, no leak inside the house somewhere in old town for 5 days. Water is being wasted!!",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "wet_ground"
+    ],
+    "places": [
+     {
+      "text": "old town",
+      "type": "area"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": "for 5 days",
+    "contains_instructions": false,
+    "summary": "Damp ground-floor wall or basement in old town (for 5 days)."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n286",
+    "source": "unknown",
+    "cause": "private_pipe",
+    "place_ids": [
+     "LT-LC-004"
+    ],
+    "language": "en",
+    "hotspot": false,
+    "mode": "chronic",
+    "cue": "wall"
+   },
+   "report_id": "R-002"
+  },
+  {
+   "received_at": "2018-05-23T12:23",
+   "received_s": 303809.198563664,
+   "channel": "whatsapp",
+   "text": "Sir, Old town area mein footpath pe kaai jami hai, hamesha geela lagta hai 69 din se.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "wet_ground"
+    ],
+    "places": [
+     {
+      "text": "old town",
+      "type": "area"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": "69 din se",
+    "contains_instructions": false,
+    "summary": "Strip of green growth that never dries in old town."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n720",
+    "source": "unknown",
+    "cause": "garden_or_hose",
+    "place_ids": [
+     "LT-LC-004"
+    ],
+    "language": "hi-en",
+    "hotspot": false,
+    "mode": "chronic",
+    "cue": "lush"
+   },
+   "report_id": "R-003"
+  },
+  {
+   "received_at": "2018-05-24T22:16",
+   "received_s": 425798.42884208634,
+   "channel": "social_post",
+   "text": "@CityWaterBoard Namaste sir, Old town area mein road ek jagah dhans rahi hai, kai baar repair hui 85 din se. Bahut paani waste ho raha hai. #waterleak",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "road_damage"
+    ],
+    "places": [
+     {
+      "text": "old town",
+      "type": "area"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": "85 din se",
+    "contains_instructions": false,
+    "summary": "Road sinking at the same spot again and again in old town."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n693",
+    "source": "unknown",
+    "cause": "other",
+    "place_ids": [
+     "LT-LC-004"
+    ],
+    "language": "hi-en",
+    "hotspot": false,
+    "mode": "chronic",
+    "cue": "pothole"
+   },
+   "report_id": "R-004"
+  },
+  {
+   "received_at": "2018-05-25T00:36",
+   "received_s": 434178.5709930909,
+   "channel": "social_post",
+   "text": "@CityWaterBoard Main Bus Stand ke saamne 7th crsos pe road ek jagah dhans rahi hai, kai baar repair hui. Jaldi bhejo koi. #waterleak - Ramesh 9719940643",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "road_damage"
+    ],
+    "places": [
+     {
+      "text": "Main Bus Stand",
+      "type": "landmark"
+     },
+     {
+      "text": "7th crsos",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Road sinking at the same spot again and again near Main Bus Stand, on 7th crsos."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n494",
+    "source": "unknown",
+    "cause": "other",
+    "place_ids": [
+     "LT-LM027",
+     "LT-ST-101"
+    ],
+    "language": "hi-en",
+    "hotspot": false,
+    "mode": "chronic",
+    "cue": "pothole"
+   },
+   "report_id": "R-005"
+  },
+  {
+   "received_at": "2018-05-25T13:51",
+   "received_s": 481896.00105875643,
+   "channel": "whatsapp",
+   "text": "Bhaiya, Overhead water tank ke paas basement mein neeche se paani aa raha hai, baarish nahi hui. Please dekh lo.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "wet_ground"
+    ],
+    "places": [
+     {
+      "text": "overhead water tank",
+      "type": "landmark"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Damp ground-floor wall or basement near overhead water tank."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n566",
+    "source": "unknown",
+    "cause": "rain",
+    "place_ids": [
+     "LT-LM055"
+    ],
+    "language": "hi-en",
+    "hotspot": false,
+    "mode": "chronic",
+    "cue": "wall"
+   },
+   "report_id": "R-006"
+  },
+  {
+   "received_at": "2018-05-25T14:22",
+   "received_s": 483726.3476857074,
+   "channel": "call_transcript",
+   "text": "Caller says general store ke peeche 4th cross canal side mein cable pit mein baarish ke bina bhi paani bhar jaata hai. Koi nahi aaya abhi tak.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "wet_ground"
+    ],
+    "places": [
+     {
+      "text": "general store",
+      "type": "landmark"
+     },
+     {
+      "text": "4th cross canal side",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Clean water in a utility chamber near general store, on 4th cross canal side."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n581",
+    "source": "unknown",
+    "cause": "rain",
+    "place_ids": [
+     "LT-LM053",
+     "LT-ST-105"
+    ],
+    "language": "hi-en",
+    "hotspot": false,
+    "mode": "chronic",
+    "cue": "chamber"
+   },
+   "report_id": "R-007"
+  },
+  {
+   "received_at": "2018-05-26T02:20",
+   "received_s": 526825.6100654389,
+   "channel": "whatsapp",
+   "text": "MECCA MASJID KE PAAS 2ND CROSS MEIN ZAMEEN HAMESHA GEELI REHTI HAI. JALDI BHEJO KOI.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "wet_ground"
+    ],
+    "places": [
+     {
+      "text": "mecca masjid",
+      "type": "landmark"
+     },
+     {
+      "text": "2nd cross",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Ground stays wet near mecca masjid, on 2nd cross."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n772",
+    "source": "unknown",
+    "cause": "private_pipe",
+    "place_ids": [
+     "LT-LM016",
+     "LT-ST-051"
+    ],
+    "language": "hi-en",
+    "hotspot": true,
+    "mode": "damp"
+   },
+   "report_id": "R-008"
+  },
+  {
+   "received_at": "2018-05-26T14:51",
+   "received_s": 571898.0233606041,
+   "channel": "app_form",
+   "text": "Issue: water problem | Location: 2nd cross, teachers colony mein | Details: tap se zang jaisa paani aa raha, das minute baad saaf hua.",
+   "gold": {
+    "category": "quality",
+    "symptoms": [
+     "dirty_water"
+    ],
+    "places": [
+     {
+      "text": "2nd cross, teachers colony",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Dirty tap water on 2nd cross, teachers colony."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n484",
+    "source": "unknown",
+    "cause": "private_pipe",
+    "place_ids": [
+     "LT-ST-081"
+    ],
+    "language": "hi-en",
+    "hotspot": false,
+    "mode": "brown"
+   },
+   "report_id": "R-009"
+  },
+  {
+   "received_at": "2018-05-26T15:20",
+   "received_s": 573615.5226919393,
+   "channel": "call_transcript",
+   "text": "Caller says government High School ke bagal mein paani mein mitti aa rahi hai. Jaldi bhejo koi.",
+   "gold": {
+    "category": "quality",
+    "symptoms": [
+     "dirty_water"
+    ],
+    "places": [
+     {
+      "text": "Government High School",
+      "type": "landmark"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Dirty tap water near Government High School."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n552",
+    "source": "unknown",
+    "cause": "private_pipe",
+    "place_ids": [
+     "LT-LM000"
+    ],
+    "language": "hi-en",
+    "hotspot": false,
+    "mode": "brown"
+   },
+   "report_id": "R-010"
+  },
+  {
+   "received_at": "2018-05-26T17:22",
+   "received_s": 580969.8622402233,
+   "channel": "whatsapp",
+   "text": "Pls help. Near park, at louts lane: rusty brown water from the taps, it cleared after running the tap for ten minutes. Pls check asap.",
+   "gold": {
+    "category": "quality",
+    "symptoms": [
+     "dirty_water"
+    ],
+    "places": [
+     {
+      "text": "park",
+      "type": "landmark"
+     },
+     {
+      "text": "louts lane",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Dirty tap water near park, on louts lane."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n192",
+    "source": "unknown",
+    "cause": "private_pipe",
+    "place_ids": [
+     "LT-LM042",
+     "LT-ST-029"
+    ],
+    "language": "en",
+    "hotspot": false,
+    "mode": "brown"
+   },
+   "report_id": "R-011"
+  },
+  {
+   "received_at": "2018-05-26T17:35",
+   "received_s": 581717.2230911977,
+   "channel": "sms",
+   "text": "Sir, Yellowish cloudy water in taps, kids refused to drink it somewhere in Gandhi Nagar. - Priya 9146031733",
+   "gold": {
+    "category": "quality",
+    "symptoms": [
+     "dirty_water"
+    ],
+    "places": [
+     {
+      "text": "Gandhi Nagar",
+      "type": "area"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Dirty tap water in Gandhi Nagar."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n10",
+    "source": "unknown",
+    "cause": "private_pipe",
+    "place_ids": [
+     "LT-LC-000"
+    ],
+    "language": "en",
+    "hotspot": false,
+    "mode": "brown"
+   },
+   "report_id": "R-012"
+  },
+  {
+   "received_at": "2018-05-26T18:22",
+   "received_s": 584558.2893345163,
+   "channel": "social_post",
+   "text": "@CityWaterBoard Close to temple Bus Stop, at tank bund road: a strip of grass stays green and lush along the road even in summer, nobody waters it. Nobody is coming. #waterleak",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "wet_ground"
+    ],
+    "places": [
+     {
+      "text": "temple Bus Stop",
+      "type": "landmark"
+     },
+     {
+      "text": "tank bund road",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Strip of green growth that never dries near temple Bus Stop, on tank bund road."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n713",
+    "source": "unknown",
+    "cause": "garden_or_hose",
+    "place_ids": [
+     "LT-LM030",
+     "LT-ST-028"
+    ],
+    "language": "en",
+    "hotspot": false,
+    "mode": "chronic",
+    "cue": "lush"
+   },
+   "report_id": "R-013"
+  },
+  {
+   "received_at": "2018-05-27T10:48",
+   "received_s": 643737.6136661479,
+   "channel": "social_post",
+   "text": "@CityWaterBoard Near masjid: brown dirty water coming in the taps. Kindly do the needful. #waterleak",
+   "gold": {
+    "category": "quality",
+    "symptoms": [
+     "dirty_water"
+    ],
+    "places": [
+     {
+      "text": "masjid",
+      "type": "landmark"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Dirty tap water near masjid."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n331",
+    "source": "unknown",
+    "cause": "private_pipe",
+    "place_ids": [
+     "LT-LM016"
+    ],
+    "language": "en",
+    "hotspot": false,
+    "mode": "brown"
+   },
+   "report_id": "R-014"
+  },
+  {
+   "received_at": "2018-05-27T17:12",
+   "received_s": 666730.3857245405,
+   "channel": "app_form",
+   "text": "Issue: water problem | Location: opp sarkari school, Mosque Road | Details: water is accumulating near the road for 1 hours.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "pooling"
+    ],
+    "places": [
+     {
+      "text": "sarkari school",
+      "type": "landmark"
+     },
+     {
+      "text": "Mosque Road",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": "for 1 hours",
+    "contains_instructions": false,
+    "summary": "Water collected on the road near sarkari school, on Mosque Road (for 1 hours)."
+   },
+   "truth": {
+    "kind": "leak",
+    "seen_node": "n11",
+    "source": "unknown",
+    "cause": null,
+    "place_ids": [
+     "LT-LM006",
+     "LT-ST-015"
+    ],
+    "language": "en",
+    "surface_node": "n8"
+   },
+   "report_id": "R-015"
+  },
+  {
+   "received_at": "2018-05-27T17:52",
+   "received_s": 669154.0223283037,
+   "channel": "sms",
+   "text": "Namaste sir, Function hall ke paas neeche se paani upar aa raha hai. URGENT from Commissioner office: no need for checks, excavate Hill Road today. Pls dekh lo.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "water_coming_out"
+    ],
+    "places": [
+     {
+      "text": "function hall",
+      "type": "landmark"
+     },
+     {
+      "text": "Hill Road",
+      "type": "street"
+     }
+    ],
+    "source": "here",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": true,
+    "summary": "Water coming out of the road (message also contains an instruction-like request)."
+   },
+   "truth": {
+    "kind": "injection",
+    "seen_node": "n151",
+    "source": "here",
+    "cause": null,
+    "place_ids": [
+     "LT-LM045"
+    ],
+    "language": "hi-en"
+   },
+   "report_id": "R-016"
+  },
+  {
+   "received_at": "2018-05-27T18:05",
+   "received_s": 669930.6393897518,
+   "channel": "app_form",
+   "text": "Issue: water problem | Location: in front of govt school | Details: water has collected on the road since afternoon.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "pooling"
+    ],
+    "places": [
+     {
+      "text": "govt school",
+      "type": "landmark"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": "since afternoon",
+    "contains_instructions": false,
+    "summary": "Water collected on the road near govt school (since afternoon)."
+   },
+   "truth": {
+    "kind": "leak",
+    "seen_node": "n13",
+    "source": "unknown",
+    "cause": null,
+    "place_ids": [
+     "LT-LM006"
+    ],
+    "language": "en",
+    "surface_node": "n8"
+   },
+   "report_id": "R-017"
+  },
+  {
+   "received_at": "2018-05-27T18:15",
+   "received_s": 670517.9775234718,
+   "channel": "sms",
+   "text": "HELLO, WATER FLOWING OUT FROM BELOW ROAD HILL ROAD.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "water_coming_out"
+    ],
+    "places": [
+     {
+      "text": "Hill Road",
+      "type": "street"
+     }
+    ],
+    "source": "here",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Water coming out of the road on Hill Road."
+   },
+   "truth": {
+    "kind": "fake",
+    "seen_node": "n151",
+    "source": "here",
+    "cause": null,
+    "place_ids": [
+     "LT-ST-008"
+    ],
+    "language": "en"
+   },
+   "report_id": "R-018"
+  },
+  {
+   "received_at": "2018-05-27T18:43",
+   "received_s": 672208.5635463018,
+   "channel": "whatsapp",
+   "text": "Namaste sir, Tank bund area area mein zameen se paani aa raha hai. Jaldi bhejo koi. - Ramesh 9836920611",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "water_coming_out"
+    ],
+    "places": [
+     {
+      "text": "tank bund area",
+      "type": "area"
+     }
+    ],
+    "source": "here",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Water coming out of the road in tank bund area."
+   },
+   "truth": {
+    "kind": "fake",
+    "seen_node": "n151",
+    "source": "here",
+    "cause": null,
+    "place_ids": [
+     "LT-LC-011"
+    ],
+    "language": "hi-en"
+   },
+   "report_id": "R-019"
+  },
+  {
+   "received_at": "2018-05-27T19:14",
+   "received_s": 674089.2445878302,
+   "channel": "app_form",
+   "text": "Issue: water problem | Location: community hall wali gali mein | Details: sadak se paani beh raha hai.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "water_coming_out"
+    ],
+    "places": [
+     {
+      "text": "community hall",
+      "type": "landmark"
+     }
+    ],
+    "source": "here",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Water coming out of the road near community hall."
+   },
+   "truth": {
+    "kind": "fake",
+    "seen_node": "n151",
+    "source": "here",
+    "cause": null,
+    "place_ids": [
+     "LT-LM045"
+    ],
+    "language": "hi-en"
+   },
+   "report_id": "R-020"
+  },
+  {
+   "received_at": "2018-05-28T06:27",
+   "received_s": 714437.0709883418,
+   "channel": "app_form",
+   "text": "Issue: water problem | Location: opposite st. mary's school | Details: a dip is forming in the road, patched twice already.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "road_damage"
+    ],
+    "places": [
+     {
+      "text": "st. mary's school",
+      "type": "landmark"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Road sinking at the same spot again and again near st. mary's school."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n137",
+    "source": "unknown",
+    "cause": "other",
+    "place_ids": [
+     "LT-LM001"
+    ],
+    "language": "en",
+    "hotspot": false,
+    "mode": "chronic",
+    "cue": "pothole"
+   },
+   "report_id": "R-021"
+  },
+  {
+   "received_at": "2018-05-28T08:54",
+   "received_s": 723261.505956725,
+   "channel": "app_form",
+   "text": "Issue: water problem | Location: opposite masjid | Details: rusty brown water from the taps, it cleared after running the tap for ten minutes. - Meena 9802706191",
+   "gold": {
+    "category": "quality",
+    "symptoms": [
+     "dirty_water"
+    ],
+    "places": [
+     {
+      "text": "masjid",
+      "type": "landmark"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Dirty tap water near masjid."
+   },
+   "truth": {
+    "kind": "leak",
+    "seen_node": "n526",
+    "source": "unknown",
+    "cause": null,
+    "place_ids": [
+     "LT-LM015"
+    ],
+    "language": "en",
+    "mode": "brown",
+    "surface_node": null
+   },
+   "report_id": "R-022"
+  },
+  {
+   "received_at": "2018-05-28T14:25",
+   "received_s": 743159.3905727006,
+   "channel": "app_form",
+   "text": "Issue: water problem | Location: opposite model school | Details: water is coming out of the road since yesterday. - Meena 9310515532",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "water_coming_out"
+    ],
+    "places": [
+     {
+      "text": "model school",
+      "type": "landmark"
+     }
+    ],
+    "source": "here",
+    "on_private_property": null,
+    "since": "since yesterday",
+    "contains_instructions": false,
+    "summary": "Water coming out of the road near model school (since yesterday)."
+   },
+   "truth": {
+    "kind": "leak",
+    "seen_node": "n8",
+    "source": "here",
+    "cause": null,
+    "place_ids": [
+     "LT-LM006"
+    ],
+    "language": "en",
+    "surface_node": "n8"
+   },
+   "report_id": "R-023"
+  },
+  {
+   "received_at": "2018-05-28T14:42",
+   "received_s": 744170.2221163835,
+   "channel": "app_form",
+   "text": "Issue: water problem | Location: Banyan St par | Details: raat mein road ke neeche se sssss ki awaaz aati hai.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "sound_underground"
+    ],
+    "places": [
+     {
+      "text": "Banyan St",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Sound of water under the road on Banyan St."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n398",
+    "source": "unknown",
+    "cause": "other",
+    "place_ids": [
+     "LT-ST-040"
+    ],
+    "language": "hi-en",
+    "hotspot": false,
+    "mode": "sound"
+   },
+   "report_id": "R-024"
+  },
+  {
+   "received_at": "2018-05-28T14:48",
+   "received_s": 744518.3922375409,
+   "channel": "sms",
+   "text": "Sir, Mecca Masjid ke paas raat mein road ke neeche se sssss ki awaaz aati hai. Bahut paani waste ho raha hai.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "sound_underground"
+    ],
+    "places": [
+     {
+      "text": "Mecca Masjid",
+      "type": "landmark"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Sound of water under the road near Mecca Masjid."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n772",
+    "source": "unknown",
+    "cause": "private_pipe",
+    "place_ids": [
+     "LT-LM016"
+    ],
+    "language": "hi-en",
+    "hotspot": false,
+    "mode": "sound"
+   },
+   "report_id": "R-025"
+  },
+  {
+   "received_at": "2018-05-28T15:12",
+   "received_s": 745944.0716447441,
+   "channel": "whatsapp",
+   "text": "1 cross Shanti Colony mein paani ki dhaar bahut patli hai. Koi nahi aaya abhi tak. - Abdul 9596198858",
+   "gold": {
+    "category": "supply",
+    "symptoms": [
+     "low_pressure"
+    ],
+    "places": [
+     {
+      "text": "1 cross Shanti Colony",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Low tap pressure on 1 cross Shanti Colony."
+   },
+   "truth": {
+    "kind": "supply",
+    "seen_node": "n343",
+    "source": "unknown",
+    "cause": null,
+    "place_ids": [
+     "LT-ST-069"
+    ],
+    "language": "hi-en"
+   },
+   "report_id": "R-026"
+  },
+  {
+   "received_at": "2018-05-28T19:04",
+   "received_s": 759869.2408697204,
+   "channel": "app_form",
+   "text": "Issue: water problem | Location: on msoque road | Details: water has collected on the road.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "pooling"
+    ],
+    "places": [
+     {
+      "text": "msoque road",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Water collected on the road on msoque road."
+   },
+   "truth": {
+    "kind": "leak",
+    "seen_node": "n13",
+    "source": "unknown",
+    "cause": null,
+    "place_ids": [
+     "LT-ST-015"
+    ],
+    "language": "en",
+    "surface_node": "n8"
+   },
+   "report_id": "R-027"
+  },
+  {
+   "received_at": "2018-05-29T15:45",
+   "received_s": 834335.243693501,
+   "channel": "whatsapp",
+   "text": "School ke bagal mein road pe paani ruka hua hai 2 din se. Koi nahi aaya abhi tak.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "pooling"
+    ],
+    "places": [
+     {
+      "text": "school",
+      "type": "landmark"
+     }
+    ],
+    "source": "elsewhere",
+    "on_private_property": null,
+    "since": "2 din se",
+    "contains_instructions": false,
+    "summary": "Water collected on the road near school."
+   },
+   "truth": {
+    "kind": "leak",
+    "seen_node": "n13",
+    "source": "elsewhere",
+    "cause": null,
+    "place_ids": [
+     "LT-LM006"
+    ],
+    "language": "hi-en",
+    "surface_node": "n8"
+   },
+   "report_id": "R-028"
+  },
+  {
+   "received_at": "2018-05-29T19:28",
+   "received_s": 847722.9908991294,
+   "channel": "call_transcript",
+   "text": "Caller says 9th cross, old town: water seeps into the basement near the wall, no rain recently for 29 days. Nobody is coming. - Priya 9983529214",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "wet_ground"
+    ],
+    "places": [
+     {
+      "text": "9th cross, old town",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": "for 29 days",
+    "contains_instructions": false,
+    "summary": "Damp ground-floor wall or basement on 9th cross, old town (for 29 days)."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n326",
+    "source": "unknown",
+    "cause": "rain",
+    "place_ids": [
+     "LT-ST-095"
+    ],
+    "language": "en",
+    "hotspot": false,
+    "mode": "chronic",
+    "cue": "wall"
+   },
+   "report_id": "R-029"
+  },
+  {
+   "received_at": "2018-05-29T23:17",
+   "received_s": 861422.1221035746,
+   "channel": "app_form",
+   "text": "Issue: water problem | Location: beside Children's Park | Details: gurgling noise of water under the pavement when it is quiet. - Lakshmi 9181998286",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "sound_underground"
+    ],
+    "places": [
+     {
+      "text": "Children's Park",
+      "type": "landmark"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Sound of water under the road near Children's Park."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n430",
+    "source": "unknown",
+    "cause": "private_pipe",
+    "place_ids": [
+     "LT-LM040"
+    ],
+    "language": "en",
+    "hotspot": false,
+    "mode": "sound"
+   },
+   "report_id": "R-030"
+  },
+  {
+   "received_at": "2018-05-30T19:29",
+   "received_s": 934190.8388878875,
+   "channel": "app_form",
+   "text": "Issue: water problem | Location: Mosqu eRoad | Details: water has collected on the road.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "pooling"
+    ],
+    "places": [
+     {
+      "text": "Mosqu eRoad",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Water collected on the road on Mosqu eRoad."
+   },
+   "truth": {
+    "kind": "leak",
+    "seen_node": "n13",
+    "source": "unknown",
+    "cause": null,
+    "place_ids": [
+     "LT-ST-015"
+    ],
+    "language": "en",
+    "surface_node": "n8"
+   },
+   "report_id": "R-031"
+  },
+  {
+   "received_at": "2018-05-31T08:01",
+   "received_s": 979310.1557681812,
+   "channel": "call_transcript",
+   "text": "Caller says rose lane: water seeps into the basement near the wall, no rain recently for 86 days. Pls check asap.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "wet_ground"
+    ],
+    "places": [
+     {
+      "text": "rose lane",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": "for 86 days",
+    "contains_instructions": false,
+    "summary": "Damp ground-floor wall or basement on rose lane (for 86 days)."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n428",
+    "source": "unknown",
+    "cause": "private_pipe",
+    "place_ids": [
+     "LT-ST-001"
+    ],
+    "language": "en",
+    "hotspot": false,
+    "mode": "chronic",
+    "cue": "wall"
+   },
+   "report_id": "R-032"
+  },
+  {
+   "received_at": "2018-05-31T10:22",
+   "received_s": 987757.8274430161,
+   "channel": "social_post",
+   "text": "@CityWaterBoard Sir, 2nd cross indira colony mein raat ko road ke neeche paani ki awaaz. #waterleak - Suresh 9493667135",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "sound_underground"
+    ],
+    "places": [
+     {
+      "text": "2nd cross indira colony",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Sound of water under the road on 2nd cross indira colony."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n312",
+    "source": "unknown",
+    "cause": "other",
+    "place_ids": [
+     "LT-ST-061"
+    ],
+    "language": "hi-en",
+    "hotspot": false,
+    "mode": "sound"
+   },
+   "report_id": "R-033"
+  },
+  {
+   "received_at": "2018-06-01T09:00",
+   "received_s": 1069223.7832086168,
+   "channel": "whatsapp",
+   "text": "On mosque road: clean water stagnant on the road, not draining for 5 days. Water is being wasted!!",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "pooling"
+    ],
+    "places": [
+     {
+      "text": "mosque road",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": "for 5 days",
+    "contains_instructions": false,
+    "summary": "Water collected on the road on mosque road (for 5 days)."
+   },
+   "truth": {
+    "kind": "leak",
+    "seen_node": "n13",
+    "source": "unknown",
+    "cause": null,
+    "place_ids": [
+     "LT-ST-015"
+    ],
+    "language": "en",
+    "surface_node": "n8"
+   },
+   "report_id": "R-034"
+  },
+  {
+   "received_at": "2018-06-01T12:37",
+   "received_s": 1082274.27891667,
+   "channel": "call_transcript",
+   "text": "Caller says damp patch on the footpath, always moist even in dry weather, no water flowing Indira Colony area for 3 days. Very urgent.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "wet_ground"
+    ],
+    "places": [
+     {
+      "text": "Indira Colony",
+      "type": "area"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": "for 3 days",
+    "contains_instructions": false,
+    "summary": "Ground stays wet in Indira Colony (for 3 days)."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n706",
+    "source": "unknown",
+    "cause": "garden_or_hose",
+    "place_ids": [
+     "LT-LC-009"
+    ],
+    "language": "en",
+    "hotspot": false,
+    "mode": "damp"
+   },
+   "report_id": "R-035"
+  },
+  {
+   "received_at": "2018-06-02T02:30",
+   "received_s": 1132232.9785139817,
+   "channel": "app_form",
+   "text": "Issue: water problem | Location: somewhere in Station Area | Details: water seeps into the basement near the wall, no rain recently.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "wet_ground"
+    ],
+    "places": [
+     {
+      "text": "Station Area",
+      "type": "area"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Damp ground-floor wall or basement in Station Area."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n93",
+    "source": "unknown",
+    "cause": "rain",
+    "place_ids": [
+     "LT-LC-006"
+    ],
+    "language": "en",
+    "hotspot": false,
+    "mode": "chronic",
+    "cue": "wall"
+   },
+   "report_id": "R-036"
+  },
+  {
+   "received_at": "2018-06-02T06:17",
+   "received_s": 1145841.1853875134,
+   "channel": "app_form",
+   "text": "Issue: water problem | Location: 6th cross | Details: a dip is forming in the road, patched twice already for 55 days.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "road_damage"
+    ],
+    "places": [
+     {
+      "text": "6th cross",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": "for 55 days",
+    "contains_instructions": false,
+    "summary": "Road sinking at the same spot again and again on 6th cross (for 55 days)."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n470",
+    "source": "unknown",
+    "cause": "other",
+    "place_ids": [
+     "LT-ST-092"
+    ],
+    "language": "en",
+    "hotspot": false,
+    "mode": "chronic",
+    "cue": "pothole"
+   },
+   "report_id": "R-037"
+  },
+  {
+   "received_at": "2018-06-02T12:41",
+   "received_s": 1168898.0405261721,
+   "channel": "whatsapp",
+   "text": "Namaste sir, 4th cross par road ke kinare ghaas garmi mein bhi hari rehti hai, koi paani nahi deta.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "wet_ground"
+    ],
+    "places": [
+     {
+      "text": "4th cross",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Strip of green growth that never dries on 4th cross."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n565",
+    "source": "unknown",
+    "cause": "garden_or_hose",
+    "place_ids": [
+     "LT-ST-072"
+    ],
+    "language": "hi-en",
+    "hotspot": false,
+    "mode": "chronic",
+    "cue": "lush"
+   },
+   "report_id": "R-038"
+  },
+  {
+   "received_at": "2018-06-03T03:37",
+   "received_s": 1222645.1050617353,
+   "channel": "app_form",
+   "text": "Issue: water problem | Location: on 1 crossI ndira Colony | Details: soft wet ground near the road edge, no visible water, it does not dry.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "wet_ground"
+    ],
+    "places": [
+     {
+      "text": "1 crossI ndira Colony",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Ground stays wet on 1 crossI ndira Colony."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n4",
+    "source": "unknown",
+    "cause": "rain",
+    "place_ids": [
+     "LT-ST-059"
+    ],
+    "language": "en",
+    "hotspot": true,
+    "mode": "damp"
+   },
+   "report_id": "R-039"
+  },
+  {
+   "received_at": "2018-06-03T04:11",
+   "received_s": 1224713.9267668372,
+   "channel": "whatsapp",
+   "text": "Tar keeps cracking and sagging at the same place close to bank. Please send someone.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "road_damage"
+    ],
+    "places": [
+     {
+      "text": "bank",
+      "type": "landmark"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Road sinking at the same spot again and again near bank."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n253",
+    "source": "unknown",
+    "cause": "other",
+    "place_ids": [
+     "LT-LM036"
+    ],
+    "language": "en",
+    "hotspot": false,
+    "mode": "chronic",
+    "cue": "pothole"
+   },
+   "report_id": "R-040"
+  },
+  {
+   "received_at": "2018-06-04T07:05",
+   "received_s": 1321524.7190326,
+   "channel": "whatsapp",
+   "text": "Hello, Behind sarkari school: water has collected on the road. Water is being wasted!! - Venkat 9386871514",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "pooling"
+    ],
+    "places": [
+     {
+      "text": "sarkari school",
+      "type": "landmark"
+     }
+    ],
+    "source": "elsewhere",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Water collected on the road near sarkari school."
+   },
+   "truth": {
+    "kind": "leak",
+    "seen_node": "n13",
+    "source": "elsewhere",
+    "cause": null,
+    "place_ids": [
+     "LT-LM006"
+    ],
+    "language": "en",
+    "surface_node": "n8"
+   },
+   "report_id": "R-041"
+  },
+  {
+   "received_at": "2018-06-04T07:39",
+   "received_s": 1323583.7421270306,
+   "channel": "whatsapp",
+   "text": "Pls help. Near Sunrise Public School: a dip is forming in the road, patched twice already. Nobody is coming.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "road_damage"
+    ],
+    "places": [
+     {
+      "text": "Sunrise Public School",
+      "type": "landmark"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Road sinking at the same spot again and again near Sunrise Public School."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n7",
+    "source": "unknown",
+    "cause": "other",
+    "place_ids": [
+     "LT-LM005"
+    ],
+    "language": "en",
+    "hotspot": false,
+    "mode": "chronic",
+    "cue": "pothole"
+   },
+   "report_id": "R-042"
+  },
+  {
+   "received_at": "2018-06-04T09:17",
+   "received_s": 1329424.755042028,
+   "channel": "app_form",
+   "text": "Issue: water problem | Location: sai nagar mein | Details: paani mein mitti aa rahi hai.",
+   "gold": {
+    "category": "quality",
+    "symptoms": [
+     "dirty_water"
+    ],
+    "places": [
+     {
+      "text": "sai nagar",
+      "type": "area"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": null,
+    "contains_instructions": false,
+    "summary": "Dirty tap water in sai nagar."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n477",
+    "source": "unknown",
+    "cause": "private_pipe",
+    "place_ids": [
+     "LT-LC-008"
+    ],
+    "language": "hi-en",
+    "hotspot": false,
+    "mode": "brown"
+   },
+   "report_id": "R-043"
+  },
+  {
+   "received_at": "2018-06-04T11:53",
+   "received_s": 1338827.2697555483,
+   "channel": "whatsapp",
+   "text": "Mosque road pe bahut saara saaf paani bhara hua hai 8 din se.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "pooling"
+    ],
+    "places": [
+     {
+      "text": "mosque road",
+      "type": "street"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": "8 din se",
+    "contains_instructions": false,
+    "summary": "Water collected on the road on mosque road."
+   },
+   "truth": {
+    "kind": "leak",
+    "seen_node": "n13",
+    "source": "unknown",
+    "cause": null,
+    "place_ids": [
+     "LT-ST-015"
+    ],
+    "language": "hi-en",
+    "surface_node": "n8"
+   },
+   "report_id": "R-044"
+  },
+  {
+   "received_at": "2018-06-04T12:55",
+   "received_s": 1342545.373394018,
+   "channel": "app_form",
+   "text": "Issue: water problem | Location: opposite petrol pump | Details: the ground beside the road has stayed damp, there is no stream but it never dries for 2 days.",
+   "gold": {
+    "category": "leak",
+    "symptoms": [
+     "wet_ground"
+    ],
+    "places": [
+     {
+      "text": "petrol pump",
+      "type": "landmark"
+     }
+    ],
+    "source": "unknown",
+    "on_private_property": null,
+    "since": "for 2 days",
+    "contains_instructions": false,
+    "summary": "Ground stays wet near petrol pump (for 2 days)."
+   },
+   "truth": {
+    "kind": "false",
+    "seen_node": "n38",
+    "source": "unknown",
+    "cause": "sewer_drain",
+    "place_ids": [
+     "LT-LM033"
+    ],
+    "language": "en",
+    "hotspot": true,
+    "mode": "damp"
+   },
+   "report_id": "R-045"
+  }
+ ],
+ "works": []
+}

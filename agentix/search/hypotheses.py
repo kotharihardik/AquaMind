@@ -76,7 +76,10 @@ def build(slate: list, tb) -> list[Hypothesis]:
                        [str(x) for x in (h.get("explains") or [])][:6], str(h.get("cause") or "")[:40])
         if kind == "network_leak":
             w = H.where.strip()
-            sid = next((s for s in list(secs.areas) if s.lower() == w.lower()), None)
+            import re
+            m_sec = re.search(r"\b(S\d{2})\b", w, re.IGNORECASE)
+            sid = (m_sec.group(1).upper() if (m_sec and m_sec.group(1).upper() in secs.areas)
+                   else next((s for s in list(secs.areas) if s.lower() == w.lower()), None))
             if sid is not None:
                 H.region = np.asarray(secs.areas[sid]["mask"], bool)
             else:
@@ -113,7 +116,7 @@ def p_positive(tb, o, h: Hypothesis) -> float | None:
     """Chance that option `o` gives a positive result (listening hears something / a section lights up) if hypothesis `h` is true.
     Step tests use the board's own step model (each section's night-use noise and the leak-size belief), not a fixed hit rate."""
     b, D = tb.board, tb.net.pipe_distance
-    if o.kind in ("canvass", "inspect"):
+    if o.kind == "canvass":
         return None
     if o.kind == "step":
         pw, fp_any = _step_power(tb, o.args["sections"])

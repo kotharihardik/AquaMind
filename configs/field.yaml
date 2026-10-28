@@ -1,0 +1,39 @@
+# Field operations of the simulated utility (TRUTH side: how the real tools behave). Same for every method.
+# Methods keep their own, rougher beliefs about these tools (agentix/search/tool_models.py), as a real utility would.
+budget:
+  field_checks: 5          # step-test nights + listening surveys + temporary loggers per case (calls are free)
+  max_digs: 2              # SOP-2
+  horizon_days: 5          # the case must be closed within 5 days of opening
+step_test:                 # one night (01-05 h): close the valves of up to N sections one after another,
+  max_sections: 6          # watch the zone inflow drop after each closure
+  meter_noise_lps: 0.15
+  use_rel_noise: 0.06      # the section's use also wobbles during the test itself
+  valve_fail: 0.08         # a boundary valve will not close: no result for that section
+listen:                    # acoustic survey: listening sticks / ground microphone on fittings within a radius
+  max_radius_m: 250
+  p_detect_1lps: 0.45      # P(hear | leak inside) = min(max, p_1lps * sqrt(q)) * (1 - far_penalty * d / R)
+  p_detect_max: 0.85
+  far_penalty: 0.4
+  false_positive: 0.05     # traffic / customer use sounds like a leak
+  pinpoint_sigma_m: 20     # ground-microphone pinpointing error once heard
+  duration_h: 8
+logger:                    # temporary pressure logger on a hydrant, one night
+  max: 3
+call:                      # calling back the person who sent a message
+  answer_prob: 0.75
+  delay_h: [0.5, 3.0]
+  max_per_message: 2
+dig:
+  duration_h: 6
+  success_radius_m: 100    # a crew opening the road finds a leak within ~100 m of pipe (proposal metric)
+canvass:                   # neighbour canvass: an SMS / door-to-door survey of the residents around a junction (ADR-009)
+  max_per_case: 2          # privacy and survey fatigue: two per case
+  radius_m: 200
+  contact_rate: 0.6        # share of the residents' weight that answers; answers come in by the next morning
+  p_hear_a: 0.6            # P(a resident within hearing range hears the hiss at night) = min(max, a * sqrt(q)) * exp(-d / len)
+  p_hear_max: 0.92
+  len_m: 35
+  false_pos: 0.05          # pumps, generators, traffic
+  damp_len_m: 30
+  p_damp: 0.5              # P(a resident close to a damp patch / wet road reports it)
+  damp_false_pos: 0.03
