@@ -1,4 +1,4 @@
-"""Build the AgentiX benchmark: dev and test cases, sensor layouts, and the frozen test list.
+"""Build the AquaMind benchmark: dev and test cases, sensor layouts, and the frozen test list.
 
 usage: python -I scripts/build_benchmark.py <out_dir> [--test 150] [--dev 60] [--workers 3] [--only dev|test]
 
@@ -43,10 +43,10 @@ _W = {}
 
 
 def _init():
-    from agentix.search.pressure import Fingerprints
-    from agentix.sim.cases import CaseBuilder
-    from agentix.sim.world import SimTown
-    from agentix.town.assets import Town
+    from aquamind.search.pressure import Fingerprints
+    from aquamind.sim.cases import CaseBuilder
+    from aquamind.sim.world import SimTown
+    from aquamind.town.assets import Town
     town = Town()
     sim = SimTown(town)
     fp = Fingerprints(town.signatures_path)
@@ -57,7 +57,7 @@ def _init():
 
 
 def _build(job):
-    from agentix.sim.cases import SUITES
+    from aquamind.sim.cases import SUITES
     suite, name, seed, out = job
     t0 = time.time()
     r = _W["builder"].build(SUITES[suite], name, seed, out)
@@ -124,9 +124,9 @@ if __name__ == "__main__":
         os.makedirs(f"{a.out}/hidden", exist_ok=True)
         wp = f"{a.out}/hidden/_weak_pipes.json"
         if not os.path.exists(wp):
-            from agentix.sim.records import build_records_h
-            from agentix.sim.terrain import Terrain
-            from agentix.town.assets import Town
+            from aquamind.sim.records import build_records_h
+            from aquamind.sim.terrain import Terrain
+            from aquamind.town.assets import Town
             t = Town()
             rec = build_records_h(t.net, t.places, Terrain(t.net), seed=0)
             open(f"{a.out}/records.md", "w").write(rec["markdown"])
@@ -143,9 +143,9 @@ if __name__ == "__main__":
         os.makedirs(f"{a.out}/hidden", exist_ok=True)
         wp = f"{a.out}/hidden/_weak_pipes.json"
         if not os.path.exists(wp):                      # the town's failure history, built once per benchmark (public records + truth)
-            from agentix.sim.records import build_records_h
-            from agentix.sim.terrain import Terrain
-            from agentix.town.assets import Town
+            from aquamind.sim.records import build_records_h
+            from aquamind.sim.terrain import Terrain
+            from aquamind.town.assets import Town
             t = Town()
             rec = build_records_h(t.net, t.places, Terrain(t.net), seed=0)
             open(f"{a.out}/records.md", "w").write(rec["markdown"])
@@ -165,7 +165,7 @@ if __name__ == "__main__":
         os.environ["AGENTIX_BENCH_V4"] = "1"
         os.environ["AGENTIX_BENCH_V3"] = "1"
     os.makedirs(a.out, exist_ok=True)
-    from agentix.town.assets import Town
+    from aquamind.town.assets import Town
     if not os.path.exists(f"{a.out}/layouts.json"):
         json.dump(layouts(Town()), open(f"{a.out}/layouts.json", "w"), indent=1)
     jobs = []

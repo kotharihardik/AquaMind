@@ -14,8 +14,8 @@ import os
 import random
 import sys
 
-from agentix.llm.client import LLM, WRITER_MODEL
-from agentix.sim.writer import PERSONAS, SYSTEM, must_keep, ok
+from aquamind.llm.client import LLM, WRITER_MODEL
+from aquamind.sim.writer import PERSONAS, SYSTEM, must_keep, ok
 
 if __name__ == "__main__":
     bench = sys.argv[1]

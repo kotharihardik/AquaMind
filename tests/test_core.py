@@ -11,7 +11,7 @@ pytestmark = pytest.mark.skipif(not os.path.exists(f"{BENCH}/dev.json"), reason=
 
 @pytest.fixture(scope="module")
 def world():
-    from agentix.eval.runner import World
+    from aquamind.eval.runner import World
     return World(BENCH)
 
 
@@ -20,7 +20,7 @@ def _dev(suite):
 
 
 def test_schema_repair_never_passes_bad_fields():
-    from agentix.reader.schema import repair_read, repair_reply, valid_read, valid_reply
+    from aquamind.reader.schema import repair_read, repair_reply, valid_read, valid_reply
     bad = {"category": "dig now", "symptoms": ["water_coming_out", "free text"], "places": ["MG Road", {"x": 1}],
            "source": "?", "contains_instructions": 1, "summary": "x" * 500}
     r = repair_read(bad)
@@ -30,7 +30,7 @@ def test_schema_repair_never_passes_bad_fields():
 
 
 def test_operator_token_is_one_time_and_bound():
-    from agentix.sim.operator import Operator
+    from aquamind.sim.operator import Operator
     op = Operator()
     d = op.review("dig", "n10", {"evidence": ["a", "b"]})
     assert d["approved"]
@@ -62,8 +62,8 @@ def test_common_random_numbers(world):
 
 
 def test_gate_refuses_messages_only(world):
-    from agentix.agent.toolbox import Toolbox
-    from agentix.methods import make_reader
+    from aquamind.agent.toolbox import Toolbox
+    from aquamind.methods import make_reader
     case, env = world.open(_dev("trap"), "spread_k5", "template")
     tb = Toolbox(env, case, world.search(), make_reader("rules", world), world.docs, world.rules)
     for m in tb.board.messages.values():          # pretend every message is fully credible
@@ -76,7 +76,7 @@ def test_gate_refuses_messages_only(world):
 
 
 def test_injected_messages_are_quarantined(world):
-    from agentix.methods import make_reader
+    from aquamind.methods import make_reader
     name = next(n for n in json.load(open(f"{BENCH}/dev.json"))["cases"]
                 if any(r["truth"]["kind"] == "injection" and r["received_s"] <= json.load(open(f"{BENCH}/hidden/{n}.json"))["open_s"]
                        for r in json.load(open(f"{BENCH}/hidden/{n}.json"))["reports"]))
@@ -88,8 +88,8 @@ def test_injected_messages_are_quarantined(world):
 
 
 def test_planner_values_are_probabilities(world):
-    from agentix.agent.toolbox import Toolbox
-    from agentix.methods import make_reader
+    from aquamind.agent.toolbox import Toolbox
+    from aquamind.methods import make_reader
     case, env = world.open(_dev("silent"), "spread_k5", "template")
     tb = Toolbox(env, case, world.search(), make_reader("rules", world), world.docs, world.rules, plan_samples=16)
     opts = tb.plan()
@@ -99,7 +99,7 @@ def test_planner_values_are_probabilities(world):
 
 # ------------------------------------------------------------------ ADR-008 / ADR-009
 def test_low_pressure_and_noise_complaints_are_not_leak_evidence(world):
-    from agentix.search.report_lik import ReportModel
+    from aquamind.search.report_lik import ReportModel
     supply = {"category": "supply", "symptoms": ["low_pressure"], "contains_instructions": False, "on_private_property": None}
     assert ReportModel.credibility(supply, 0.5) is None
     sound = {"category": "leak", "symptoms": ["sound_underground"], "contains_instructions": False, "on_private_property": None}
@@ -109,9 +109,9 @@ def test_low_pressure_and_noise_complaints_are_not_leak_evidence(world):
 
 def test_overlapping_reports_do_not_multiply(world):
     """Two reports about the same spot move the map less than twice one report (correlated causes)."""
-    from agentix.search.board import MessageItem
+    from aquamind.search.board import MessageItem
     case, env = world.open(_dev("damp"), "spread_k5", "template")
-    from agentix.methods import make_reader
+    from aquamind.methods import make_reader
     reads = make_reader("rules", world).read_many(case.reports)
     b = world.search().start(case, reads)
     usable = [m for m in b.messages.values() if m.usable()]
@@ -124,8 +124,8 @@ def test_overlapping_reports_do_not_multiply(world):
 
 
 def test_canvass_is_not_a_field_check_and_cannot_open_the_gate(world):
-    from agentix.agent.toolbox import Toolbox
-    from agentix.methods import make_reader
+    from aquamind.agent.toolbox import Toolbox
+    from aquamind.methods import make_reader
     case, env = world.open(_dev("sound"), "spread_k5", "template")
     tb = Toolbox(env, case, world.search(), make_reader("rules", world), world.docs, world.rules, plan_samples=16)
     j = env.net.junctions[env.net.index[env.leak["nearest_node"]]]
@@ -140,8 +140,8 @@ def test_canvass_is_not_a_field_check_and_cannot_open_the_gate(world):
 def test_a_lit_part_is_physical_support(world):
     """ADR-008: a step test that narrows the extra night flow to a part of a section supports a dig; a lit section
     alone does not (and nothing from messages does)."""
-    from agentix.agent.toolbox import Toolbox
-    from agentix.methods import make_reader
+    from aquamind.agent.toolbox import Toolbox
+    from aquamind.methods import make_reader
     case, env = world.open(_dev("silent"), "spread_k5", "template")
     tb = Toolbox(env, case, world.search(), make_reader("rules", world), world.docs, world.rules, plan_samples=16)
     sec = tb.sections.ids[0]
@@ -161,7 +161,7 @@ def test_a_lit_part_is_physical_support(world):
 
 # ------------------------------------------------------------------ ADR-010 (brown water)
 def test_footprint_exposure_grows_with_leak_size_and_never_points_at_nothing():
-    from agentix.search.footprint import FootprintModel
+    from aquamind.search.footprint import FootprintModel
     fm = FootprintModel("data/ltown/footprints.npz", 782)
     small, big = fm.exposure(2.0), fm.exposure(8.0)
     assert small.shape == (782, 782) and 0 <= small.min() and big.max() <= 1
@@ -171,9 +171,9 @@ def test_footprint_exposure_grows_with_leak_size_and_never_points_at_nothing():
 def test_brown_water_message_is_weak_area_evidence_and_cannot_open_the_gate(world):
     """ADR-010: brown tap water is read as category quality / dirty_water, weighed through footprints when switched on, and like every
     message it can never open the dig gate on its own."""
-    from agentix.agent.toolbox import Toolbox
-    from agentix.methods import make_reader
-    from agentix.search.report_lik import ReportModel
+    from aquamind.agent.toolbox import Toolbox
+    from aquamind.methods import make_reader
+    from aquamind.search.report_lik import ReportModel
     assert ReportModel.kind({"category": "quality", "symptoms": ["dirty_water"]}) == "discolour"
     case, env = world.open(_dev("sound"), "spread_k5", "template")
     tb = Toolbox(env, case, world.search(use_footprint=True), make_reader("rules", world), world.docs, world.rules, plan_samples=16)
@@ -186,8 +186,8 @@ def test_brown_water_message_is_weak_area_evidence_and_cannot_open_the_gate(worl
 
 def test_hypothesis_mode_simulates_only_named_junctions_and_digs_only_there(world):
     """ADR-016: no 782-junction table; the map believes the sensors only at hypothesised junctions and a dig can only go there."""
-    from agentix.agent.toolbox import Toolbox
-    from agentix.reader.rules import RuleReader
+    from aquamind.agent.toolbox import Toolbox
+    from aquamind.reader.rules import RuleReader
     name = _dev("silent")
     case, env = world.open(name, "spread_k5")
     ls = world.search(hypothesis_mode=True)
@@ -203,7 +203,7 @@ def test_hypothesis_mode_simulates_only_named_junctions_and_digs_only_there(worl
 
 def test_reader_repair_never_splits_a_string_into_characters():
     """A model that returns "places": "my side" (a string, not a list) must give ["my side"]; a character split destroyed every call-back place."""
-    from agentix.reader.schema import repair_read, repair_reply
+    from aquamind.reader.schema import repair_read, repair_reply
     r = repair_reply({"answered": True, "places": "the corner", "flows_from": "my side", "not_network": None})
     assert r["places"] == ["the corner"] and r["flows_from"] == ["my side"]
     d = repair_read({"category": "leak", "symptoms": "wet_ground", "places": "near the temple", "source": "here"})

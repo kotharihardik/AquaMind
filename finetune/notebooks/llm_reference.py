@@ -7,8 +7,8 @@ import sys
 import time
 
 sys.path.insert(0, ".")
-from agentix.llm.client import LLM  # noqa: E402
-from agentix.reader.llm_reader import LLMReader  # noqa: E402
+from aquamind.llm.client import LLM  # noqa: E402
+from aquamind.reader.llm_reader import LLMReader  # noqa: E402
 
 nb = json.load(open("finetune/notebooks/agentix_reader_finetune.ipynb"))
 codes = ["\n".join(l for l in "".join(c["source"]).splitlines() if not l.strip().startswith("!")) for c in nb["cells"] if c["cell_type"] == "code"]

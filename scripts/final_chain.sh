@@ -28,7 +28,7 @@ ABL=agentix_one_shot,agentix_no_rag,agentix_no_gate,agentix_no_fieldchecks,agent
 for k in 5 3 10; do
   $R --methods $CODE,$EXPLORE --layouts spread_k$k --workers 2 --out $F/rq2.jsonl >> $F/rq2.log 2>&1
 done
-# AgentiX (about 1 LLM call per case)
+# AquaMind (about 1 LLM call per case)
 for k in 5 3 10; do
   $R --methods agentix --layouts spread_k$k --workers 3 --out $F/rq2.jsonl >> $F/rq2.log 2>&1
 done

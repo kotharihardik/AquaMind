@@ -37,7 +37,7 @@ def f1(tp, np_, ng):
 
 
 def evaluate(rows, reader) -> dict:
-    from agentix.reader.schema import valid_read, valid_reply
+    from aquamind.reader.schema import valid_read, valid_reply
     acc = {k: [] for k in ("valid", "category", "source", "private", "since", "r_answered", "r_source", "r_cause")}
     counts = {k: [0, 0, 0] for k in ("symptoms", "places_exact", "places_relaxed", "r_places")}
     inj = [0, 0, 0]
@@ -92,16 +92,16 @@ if __name__ == "__main__":
     rows = [json.loads(l) for l in open(a.test)]
     if a.limit:
         rows = rows[: a.limit]
-    from agentix.town.assets import Town
+    from aquamind.town.assets import Town
     if a.reader == "rules":
-        from agentix.reader.rules import RuleReader
+        from aquamind.reader.rules import RuleReader
         reader = RuleReader(Town().places)
     elif a.reader == "llm":
-        from agentix.llm.client import LLM
-        from agentix.reader.llm_reader import LLMReader
+        from aquamind.llm.client import LLM
+        from aquamind.reader.llm_reader import LLMReader
         reader = LLMReader(LLM(), batch=1)
     else:
-        from agentix.reader.local_reader import LocalReader
+        from aquamind.reader.local_reader import LocalReader
         reader = LocalReader()
     res = {"reader": a.reader, "test": a.test, **evaluate(rows, reader)}
     print(json.dumps(res, indent=1))

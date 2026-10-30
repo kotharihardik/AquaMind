@@ -1,9 +1,9 @@
-"""Verification test script for AgentiX v2."""
+"""Verification test script for AquaMind v2."""
 import json
 import time
 
-from agentix.eval.runner import World, run_case
-from agentix.methods import registry
+from aquamind.eval.runner import World, run_case
+from aquamind.methods import registry
 
 TEST_CASES = [
     ("data/benchmark/agentix_ltown", "dev-silent-000", "Hidden SCADA Leak"),

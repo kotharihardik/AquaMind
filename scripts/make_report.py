@@ -1,7 +1,7 @@
 """Result tables (proposal Section 11 metrics) from rows.jsonl files -> a Markdown file.
 
 usage: python -I scripts/make_report.py <out.md> <rows.jsonl> [more rows.jsonl ...] [--one-look one_look.jsonl]
-Every rate has a 95 % bootstrap interval over cases; paired comparisons with AgentiX use the exact McNemar test.
+Every rate has a 95 % bootstrap interval over cases; paired comparisons with AquaMind use the exact McNemar test.
 """
 import collections
 import json
@@ -15,8 +15,8 @@ GROUPS = {"visible water (sanity check)": ["visible"],
           "NON-OBVIOUS (displaced + damp + sound + brown water + chronic + SCADA-only)": ["displaced", "damp", "sound", "brown", "chronic", "silent"]}
 ORDER = ["agentix", "agentix_code", "agentix_code_canvass", "agentix_no_reports_code", "agentix_no_reports_canvass", "agentix_canvass", "react_agent", "plain_llm", "fixed_rules", "crew_practice", "agentix_no_reports",
          "agentix_no_fieldchecks", "agentix_no_rag", "agentix_no_gate", "agentix_one_shot"]
-NAMES = {"agentix": "**AgentiX (ours)**", "agentix_code_canvass": "exploratory: code-only planner + neighbour canvass",
-         "agentix_no_reports_code": "code-only planner, no citizen messages", "agentix_canvass": "exploratory: AgentiX + neighbour canvass", "agentix_no_reports_canvass": "exploratory: no messages, with neighbour canvass", "agentix_code": "AgentiX without the LLM (code-only planner)",
+NAMES = {"agentix": "**AquaMind (ours)**", "agentix_code_canvass": "exploratory: code-only planner + neighbour canvass",
+         "agentix_no_reports_code": "code-only planner, no citizen messages", "agentix_canvass": "exploratory: AquaMind + neighbour canvass", "agentix_no_reports_canvass": "exploratory: no messages, with neighbour canvass", "agentix_code": "AquaMind without the LLM (code-only planner)",
          "react_agent": "Standard tool-using agent (ReAct)", "plain_llm": "Plain LLM, no tools",
          "fixed_rules": "Fixed rules, no LLM", "crew_practice": "Crews' current practice (no software)",
          "agentix_no_reports": "ablation: no citizen messages", "agentix_no_fieldchecks": "ablation: no field checks",
@@ -96,8 +96,8 @@ def table(rows, title):
     out.append("")
     if "agentix" in by:
         ref = {(r["case"], r["layout"]): r for r in by["agentix"] if r["has_leak"]}
-        out += ["Paired on the same leak cases (AgentiX vs each method; exact McNemar):", "",
-                "| Other method | leaks found by AgentiX only / by the other only | p |", "|---|---|---|"]
+        out += ["Paired on the same leak cases (AquaMind vs each method; exact McNemar):", "",
+                "| Other method | leaks found by AquaMind only / by the other only | p |", "|---|---|---|"]
         for m in by:
             if m == "agentix":
                 continue
@@ -136,7 +136,7 @@ if __name__ == "__main__":
         i = args.index("--one-look")
         ol = args[i + 1]
         del args[i:i + 2]
-    lines = ["# AgentiX results", ""]
+    lines = ["# AquaMind results", ""]
     if ol:
         lines += one_look_table(ol)
     for p in args:

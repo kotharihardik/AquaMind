@@ -1,0 +1,2110 @@
+====================================================================================================
+AGENTIX EVALUATION: ABLATION_NO_FORENSIC (v2) | CASES
+Category: ABLATIONS | Layout: k5 | First started: 2026-10-29 03:45:41 | Last resumed: 2026-10-29 04:06:21
+Title: rerun ablation_no_forensic dev spread_k5 local reader
+Session: data/benchmark/agentix_master | ablation_no_forensic | reader=local | text=realistic | regime=- | checks=5
+Case numbers: position in the benchmark of 210 cases (the same on every resume)
+====================================================================================================
+
+CASE-BY-CASE DETAILED LOG:
+----------------------------------------------------------------------------------------------------
+--- [k5 | CASE #001/210] dev-brown-000 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.89 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Sunrise Public School on Patel Street (n15)
+  Distance Error:  11.7 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 0 | Tokens: 0 | Wall Time: 50.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S15 -> step test lit S15.3 -> acoustic listening confirmed noise -> dig at near Sunrise Public School on Patel Street (n15) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #002/210] dev-brown-001 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.66 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  531.4 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 2 | Tokens: 5,001 | Wall Time: 57.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #003/210] dev-brown-002 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (4.90 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  1591.8 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 0 | Tokens: 0 | Wall Time: 54.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #004/210] dev-brown-003 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (4.34 L/s, Underground / Silent Leak)
+  Predicted Spot:  near CSI Church on School Lane (n105)
+  Distance Error:  18.3 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 12,325 | Wall Time: 51.9s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near CSI Church on School Lane (n105) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #005/210] dev-brown-004 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (5.42 L/s, Underground / Silent Leak)
+  Predicted Spot:  near SBI ATM on Station Road (n199)
+  Distance Error:  11.9 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 3/5)
+  AI Resources:    LLM Calls: 3 | Tokens: 6,882 | Wall Time: 31.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near SBI ATM on Station Road (n199) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #006/210] dev-brown-005 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.12 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  911.4 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 12,857 | Wall Time: 45.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #007/210] dev-brown-006 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.82 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Sunrise Public School on Old Mill Road (n354)
+  Distance Error:  10.3 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 13,536 | Wall Time: 83.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near Sunrise Public School on Old Mill Road (n354) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #008/210] dev-brown-007 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.35 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Community Hall on Sai Baba Road (n157)
+  Distance Error:  83.0 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 19,240 | Wall Time: 50.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S10.1 -> dig at near Community Hall on Sai Baba Road (n157) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #009/210] dev-cd_damp-000 [cd_damp] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.48 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Main Bazaar (n487)
+  Distance Error:  7.7 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 0 | Tokens: 0 | Wall Time: 13.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Main Bazaar (n487) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #010/210] dev-cd_damp-001 [cd_damp] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.12 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  22.1 m  [SUCCESS <= 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,880 | Wall Time: 24.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #011/210] dev-cd_damp-002 [cd_damp] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.76 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  2281.5 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,181 | Wall Time: 64.9s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #012/210] dev-cd_damp-003 [cd_damp] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.58 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Durga Temple on 4th Cross, Teachers Colony (n499)
+  Distance Error:  292.2 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 1, Wrong: 1, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 13,930 | Wall Time: 69.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S01 -> dig at near Durga Temple on 4th Cross, Teachers Colony (n499) (dry hole) -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #013/210] dev-cd_damp-004 [cd_damp] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.73 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  9.3 m  [SUCCESS <= 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 12,836 | Wall Time: 32.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #014/210] dev-cd_damp_decoy-000 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.71 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  251.1 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 0 | Tokens: 0 | Wall Time: 12.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #015/210] dev-cd_damp_decoy-001 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.03 L/s, Underground / Silent Leak)
+  Predicted Spot:  near St. Mary's School on Hill Road (n134)
+  Distance Error:  2147.5 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 1, Wrong: 1, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 15,895 | Wall Time: 25.8s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near St. Mary's School on Hill Road (n134) (dry hole) -> closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #016/210] dev-cd_damp_decoy-002 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.70 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  169.3 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 14,274 | Wall Time: 29.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #017/210] dev-cd_damp_decoy-003 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.45 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Noor Masjid on Bus Stand Road (n152)
+  Distance Error:  21.9 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 2/5)
+  AI Resources:    LLM Calls: 2 | Tokens: 6,785 | Wall Time: 26.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near Noor Masjid on Bus Stand Road (n152) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #018/210] dev-cd_damp_decoy-004 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.80 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Community Hall on Hill Road (n160)
+  Distance Error:  22.8 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 4/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,411 | Wall Time: 20.3s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> step test lit S10 -> dig at near Community Hall on Hill Road (n160) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #019/210] dev-cd_damp_decoy-005 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.77 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  210.6 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 12,275 | Wall Time: 73.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #020/210] dev-cd_damp_decoy-006 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.14 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  1110.9 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 12,958 | Wall Time: 50.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #021/210] dev-cd_sound-000 [cd_sound] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.64 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Lake Park on 1st Cross, Canal Side (n586)
+  Distance Error:  111.7 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 1, Wrong: 1, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 1 | Tokens: 3,325 | Wall Time: 7.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S04 -> dig at near Lake Park on 1st Cross, Canal Side (n586) (dry hole) -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #022/210] dev-cd_sound-001 [cd_sound] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.08 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  340.1 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,771 | Wall Time: 18.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #023/210] dev-cd_sound-002 [cd_sound] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.29 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Durga Temple on 4th Cross, Teachers Colony (n127)
+  Distance Error:  15.6 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 1 | Tokens: 3,067 | Wall Time: 9.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Durga Temple on 4th Cross, Teachers Colony (n127) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #024/210] dev-cd_sound-003 [cd_sound] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.49 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  2837.9 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 12,414 | Wall Time: 14.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #025/210] dev-cd_sound-004 [cd_sound] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.53 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Colony Bus Stop on 1st Cross, Teachers Colony (n123)
+  Distance Error:  73.9 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 12,497 | Wall Time: 29.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S12 -> step test lit S12.4 -> dig at near Colony Bus Stop on 1st Cross, Teachers Colony (n123) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #026/210] dev-cd_sound_decoy-000 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.92 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  1098.2 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 2 | Tokens: 4,879 | Wall Time: 12.3s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #027/210] dev-cd_sound_decoy-001 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.21 L/s, Underground / Silent Leak)
+  Predicted Spot:  on College Road (n240)
+  Distance Error:  47.0 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 2 | Tokens: 5,532 | Wall Time: 19.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S09 -> step test lit S09.3 -> dig at on College Road (n240) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #028/210] dev-cd_sound_decoy-002 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.15 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Venkateswara Temple on 3rd Cross, Station Area (n778)
+  Distance Error:  16.5 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 15,259 | Wall Time: 20.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> step test lit S07 -> dig at near Venkateswara Temple on 3rd Cross, Station Area (n778) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #029/210] dev-cd_sound_decoy-003 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.49 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Hanuman Temple on Bazaar Street (n478)
+  Distance Error:  28.6 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 2/5)
+  AI Resources:    LLM Calls: 2 | Tokens: 5,986 | Wall Time: 11.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> step test lit S01 -> dig at near Hanuman Temple on Bazaar Street (n478) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #030/210] dev-cd_sound_decoy-004 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.20 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  870.5 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,035 | Wall Time: 21.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #031/210] dev-cd_sound_decoy-005 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.81 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  136.9 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,990 | Wall Time: 31.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #032/210] dev-cd_sound_decoy-006 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.03 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Main Bus Stand on 7th Cross, Sai Nagar (n111)
+  Distance Error:  29.8 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 1 | Tokens: 2,646 | Wall Time: 4.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Main Bus Stand on 7th Cross, Sai Nagar (n111) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #033/210] dev-chronic-000 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.79 L/s, Underground / Silent Leak)
+  Predicted Spot:  near CSI Church on 2nd Cross, Sai Nagar (n504)
+  Distance Error:  17.9 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 2/5)
+  AI Resources:    LLM Calls: 0 | Tokens: 0 | Wall Time: 1.8s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near CSI Church on 2nd Cross, Sai Nagar (n504) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #034/210] dev-chronic-001 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.96 L/s, Underground / Silent Leak)
+  Predicted Spot:  on 2nd Cross, Sai Nagar (n538)
+  Distance Error:  97.3 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 12,734 | Wall Time: 30.3s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S12 -> step test lit S12.6 -> dig at on 2nd Cross, Sai Nagar (n538) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #035/210] dev-chronic-002 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.84 L/s, Underground / Silent Leak)
+  Predicted Spot:  near CSI Church on 1st Cross, Teachers Colony (n492)
+  Distance Error:  13.7 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 2/5)
+  AI Resources:    LLM Calls: 2 | Tokens: 5,399 | Wall Time: 6.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near CSI Church on 1st Cross, Teachers Colony (n492) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #036/210] dev-chronic-003 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.90 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Hospital Bus Stop on Netaji Road (n283)
+  Distance Error:  43.2 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 16,415 | Wall Time: 26.9s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S05 -> step test lit S05.5 -> dig at near Hospital Bus Stop on Netaji Road (n283) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #037/210] dev-chronic-004 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.09 L/s, Underground / Silent Leak)
+  Predicted Spot:  on Ring Road (n262)
+  Distance Error:  10.1 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 2/5)
+  AI Resources:    LLM Calls: 2 | Tokens: 4,858 | Wall Time: 7.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at on Ring Road (n262) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #038/210] dev-chronic-005 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.88 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Durga Temple on 4th Cross, Teachers Colony (n119)
+  Distance Error:  14.8 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 0 | Tokens: 0 | Wall Time: 1.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Durga Temple on 4th Cross, Teachers Colony (n119) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #039/210] dev-chronic-006 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.12 L/s, Underground / Silent Leak)
+  Predicted Spot:  near St. Joseph's Church on Bus Stand Road (n172)
+  Distance Error:  12.1 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 4/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 12,217 | Wall Time: 19.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near St. Joseph's Church on Bus Stand Road (n172) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #040/210] dev-chronic-007 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.99 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  892.1 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,605 | Wall Time: 22.8s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #041/210] dev-chronic-008 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.98 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  2705.9 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,668 | Wall Time: 27.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #042/210] dev-chronic-009 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.09 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  1300.8 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,503 | Wall Time: 31.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #043/210] dev-chronic-010 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.53 L/s, Underground / Silent Leak)
+  Predicted Spot:  on Rose Lane (n390)
+  Distance Error:  4.9 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 3/5)
+  AI Resources:    LLM Calls: 3 | Tokens: 7,744 | Wall Time: 9.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at on Rose Lane (n390) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #044/210] dev-displaced-000 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.42 L/s, Surface Burst)
+  Predicted Spot:  -
+  Distance Error:  179.4 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 2 | Tokens: 4,934 | Wall Time: 10.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #045/210] dev-displaced-001 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.71 L/s, Surface Burst)
+  Predicted Spot:  near Vegetable Market (n317)
+  Distance Error:  27.1 m  [SUCCESS <= 100m]
+  Outcome:         HAND_OVER (Digs: 2, Wrong: 2, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 6 | Tokens: 17,098 | Wall Time: 54.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S05 -> step test lit S05.2 -> dig at near Vegetable Market on Tank Bund Road (n761) (dry hole) -> dig at near Vegetable Market (n317) (dry hole)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #046/210] dev-displaced-002 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.61 L/s, Surface Burst)
+  Predicted Spot:  -
+  Distance Error:  162.9 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 8,955 | Wall Time: 15.9s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #047/210] dev-displaced-003 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.78 L/s, Surface Burst)
+  Predicted Spot:  near Durga Temple on 4th Cross, Teachers Colony (n114)
+  Distance Error:  12.4 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 13,749 | Wall Time: 25.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near Durga Temple on 4th Cross, Teachers Colony (n114) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #048/210] dev-displaced-004 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.79 L/s, Surface Burst)
+  Predicted Spot:  near Lake Park on Green Park Road (n585)
+  Distance Error:  78.0 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 11,674 | Wall Time: 26.8s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S04 -> dig at near Lake Park on Green Park Road (n585) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #049/210] dev-displaced-005 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.03 L/s, Surface Burst)
+  Predicted Spot:  near Market Bus Stop on Ganesh Gully (n210)
+  Distance Error:  23.9 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 15,826 | Wall Time: 18.9s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near Market Bus Stop on Ganesh Gully (n210) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #050/210] dev-false_alarm-000 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,342 | Wall Time: 21.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #051/210] dev-false_alarm-001 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,232 | Wall Time: 12.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #052/210] dev-false_alarm-002 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 8,224 | Wall Time: 18.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #053/210] dev-false_alarm-003 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,950 | Wall Time: 13.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #054/210] dev-false_alarm-004 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,637 | Wall Time: 40.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #055/210] dev-false_alarm-005 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,197 | Wall Time: 12.3s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #056/210] dev-trap-000 [trap] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  near Gandhi Park on 7th Cross, Indira Colony (n270)
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         HAND_OVER (Digs: 1, Wrong: 1, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 13,251 | Wall Time: 19.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Gandhi Park on 7th Cross, Indira Colony (n270) (dry hole) -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #057/210] dev-trap-001 [trap] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.25 L/s, Surface Burst)
+  Predicted Spot:  near Indian Oil Petrol Pump on 5th Cross, Sai Nagar (n474)
+  Distance Error:  18.7 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 3/5)
+  AI Resources:    LLM Calls: 3 | Tokens: 8,589 | Wall Time: 12.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Indian Oil Petrol Pump on 5th Cross, Sai Nagar (n474) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #058/210] dev-trap-002 [trap] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.15 L/s, Surface Burst)
+  Predicted Spot:  near Lake Park on Lotus Lane (n196)
+  Distance Error:  122.1 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 1, Wrong: 1, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 16,129 | Wall Time: 31.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Lake Park on Lotus Lane (n196) (dry hole) -> step test lit S01 -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #059/210] dev-trap-003 [trap] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (7.95 L/s, Surface Burst)
+  Predicted Spot:  near HP Petrol Bunk on Jasmine Street (n235)
+  Distance Error:  10.6 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 2/5)
+  AI Resources:    LLM Calls: 2 | Tokens: 5,287 | Wall Time: 10.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near HP Petrol Bunk on Jasmine Street (n235) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #060/210] dev-visible-000 [visible] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (4.28 L/s, Surface Burst)
+  Predicted Spot:  near Canara Bank on Shivaji Marg (n271)
+  Distance Error:  29.1 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 14,978 | Wall Time: 44.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S05 -> step test lit S05.1 -> dig at near Canara Bank on Shivaji Marg (n271) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #061/210] test-brown-000 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.55 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Jama Masjid on Green Park Road (n144)
+  Distance Error:  12.8 m  [SUCCESS <= 100m]
+  Outcome:         HAND_OVER (Digs: 2, Wrong: 2, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 6 | Tokens: 19,739 | Wall Time: 68.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S06 -> step test lit S06.2 -> dig at near Ganesh Temple on Sai Baba Road (n129) (dry hole) -> dig at near Jama Masjid on Green Park Road (n144) (dry hole)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #062/210] test-brown-001 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (4.71 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  2035.9 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,103 | Wall Time: 59.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #063/210] test-brown-002 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (5.49 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  654.1 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,923 | Wall Time: 182.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> step test lit S10 -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #064/210] test-brown-003 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.40 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  418.1 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 8,242 | Wall Time: 24.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #065/210] test-brown-004 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.36 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  348.9 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,242 | Wall Time: 31.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #066/210] test-brown-005 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.93 L/s, Underground / Silent Leak)
+  Predicted Spot:  near St. Mary's School on Hill Road (n134)
+  Distance Error:  13.1 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 13,770 | Wall Time: 84.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S01 -> dig at near St. Mary's School on Hill Road (n134) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #067/210] test-brown-006 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.20 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  183.4 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 8,913 | Wall Time: 83.3s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #068/210] test-brown-007 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.39 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  89.9 m  [SUCCESS <= 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,300 | Wall Time: 33.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S07 -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #069/210] test-brown-008 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.24 L/s, Underground / Silent Leak)
+  Predicted Spot:  on Netaji Road (n685)
+  Distance Error:  8.4 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 3/5)
+  AI Resources:    LLM Calls: 3 | Tokens: 8,436 | Wall Time: 87.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at on Netaji Road (n685) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #070/210] test-brown-009 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (5.77 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  407.2 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 12,462 | Wall Time: 36.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #071/210] test-brown-010 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.14 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  80.9 m  [SUCCESS <= 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,680 | Wall Time: 24.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S08 -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #072/210] test-brown-011 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.52 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Community Hall on Sai Baba Road (n157)
+  Distance Error:  286.6 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 1, Wrong: 1, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 14,140 | Wall Time: 34.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S10 -> dig at near Community Hall on Sai Baba Road (n157) (dry hole) -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #073/210] test-brown-012 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.25 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  501.0 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,175 | Wall Time: 23.8s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> acoustic listening confirmed noise -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #074/210] test-brown-013 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (4.93 L/s, Underground / Silent Leak)
+  Predicted Spot:  on Mosque Road (n356)
+  Distance Error:  879.8 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 1, Wrong: 1, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 16,139 | Wall Time: 31.3s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at on Mosque Road (n356) (dry hole) -> closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #075/210] test-brown-014 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (4.32 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  686.6 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 8,747 | Wall Time: 40.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #076/210] test-brown-015 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.94 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  3054.7 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,802 | Wall Time: 34.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #077/210] test-brown-016 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.20 L/s, Underground / Silent Leak)
+  Predicted Spot:  on College Road (n228)
+  Distance Error:  204.9 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 1, Wrong: 1, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 14,194 | Wall Time: 27.9s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S07 -> dig at on College Road (n228) (dry hole) -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #078/210] test-brown-017 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.88 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  2139.3 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,776 | Wall Time: 13.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #079/210] test-brown-018 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.25 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  2098.4 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,703 | Wall Time: 51.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #080/210] test-brown-019 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.78 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  2822.5 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,054 | Wall Time: 13.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #081/210] test-brown-020 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.38 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  2371.7 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,923 | Wall Time: 21.9s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #082/210] test-cd_damp-000 [cd_damp] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.93 L/s, Underground / Silent Leak)
+  Predicted Spot:  on 6th Cross, Market Area (n258)
+  Distance Error:  28.6 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 2, Wrong: 1, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 6 | Tokens: 19,670 | Wall Time: 29.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S09.1 -> dig at near HP Petrol Bunk on Jasmine Street (n251) (dry hole) -> dig at on 6th Cross, Market Area (n258) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #083/210] test-cd_damp-001 [cd_damp] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.73 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Shiva Temple on Sunrise Road (n522)
+  Distance Error:  8.6 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 3/5)
+  AI Resources:    LLM Calls: 3 | Tokens: 7,368 | Wall Time: 13.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near Shiva Temple on Sunrise Road (n522) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #084/210] test-cd_damp-002 [cd_damp] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.10 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  2958.0 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 13,996 | Wall Time: 24.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #085/210] test-cd_damp-003 [cd_damp] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.85 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Hanuman Temple on Bazaar Street (n479)
+  Distance Error:  53.1 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 13,967 | Wall Time: 24.8s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Hanuman Temple on Bazaar Street (n479) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #086/210] test-cd_damp-004 [cd_damp] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.51 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  2039.4 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,391 | Wall Time: 24.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #087/210] test-cd_damp-005 [cd_damp] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.21 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  567.9 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 15,455 | Wall Time: 36.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #088/210] test-cd_damp-006 [cd_damp] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.10 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Durga Temple on 4th Cross, Teachers Colony (n131)
+  Distance Error:  97.7 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 3/5)
+  AI Resources:    LLM Calls: 3 | Tokens: 8,967 | Wall Time: 11.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near Durga Temple on 4th Cross, Teachers Colony (n131) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #089/210] test-cd_damp-007 [cd_damp] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.21 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  84.8 m  [SUCCESS <= 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,700 | Wall Time: 54.9s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #090/210] test-cd_damp-008 [cd_damp] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.76 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  285.9 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,279 | Wall Time: 13.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #091/210] test-cd_damp-009 [cd_damp] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.92 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Model School on Mosque Road (n8)
+  Distance Error:  13.9 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 0 | Tokens: 0 | Wall Time: 2.9s
+  Safety Audit:    WARNING: 0 unsafe, 1 violations
+  Key Action:      acoustic listening confirmed noise -> dig at near Model School on Mosque Road (n8) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #092/210] test-cd_damp-010 [cd_damp] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.28 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  20.7 m  [SUCCESS <= 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 14,089 | Wall Time: 25.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> step test lit S10 -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #093/210] test-cd_damp-011 [cd_damp] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.24 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  30.8 m  [SUCCESS <= 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,711 | Wall Time: 63.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #094/210] test-cd_damp_decoy-000 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.75 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  33.1 m  [SUCCESS <= 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,879 | Wall Time: 12.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #095/210] test-cd_damp_decoy-001 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.44 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Sai Baba Temple on Netaji Road (n322)
+  Distance Error:  26.6 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 16,460 | Wall Time: 31.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S02 -> step test lit S02.4 -> dig at near Sai Baba Temple on Netaji Road (n322) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #096/210] test-cd_damp_decoy-002 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.40 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Lake Park on Green Park Road (n191)
+  Distance Error:  37.4 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 4/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,816 | Wall Time: 17.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near Lake Park on Green Park Road (n191) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #097/210] test-cd_damp_decoy-003 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.89 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  102.6 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 12,318 | Wall Time: 19.3s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S01.1 -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #098/210] test-cd_damp_decoy-004 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.46 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Balaji General Store on Mango Lane (n319)
+  Distance Error:  7.8 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 16,940 | Wall Time: 41.9s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S02 -> step test lit S02.5 -> dig at near Balaji General Store on Mango Lane (n319) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #099/210] test-cd_damp_decoy-005 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.75 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  2686.8 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 13,630 | Wall Time: 19.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #100/210] test-cd_damp_decoy-006 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.43 L/s, Underground / Silent Leak)
+  Predicted Spot:  on 2nd Cross, Sai Nagar (n538)
+  Distance Error:  88.5 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 14,809 | Wall Time: 47.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S12 -> step test lit S12.6 -> dig at on 2nd Cross, Sai Nagar (n538) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #101/210] test-cd_damp_decoy-007 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.90 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Noor Masjid on 2nd Cross, Tank Bund Area (n547)
+  Distance Error:  33.9 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 18,072 | Wall Time: 17.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S10 -> step test lit S10.1 -> acoustic listening confirmed noise -> dig at near Noor Masjid on 2nd Cross, Tank Bund Area (n547) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #102/210] test-cd_damp_decoy-008 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.75 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  99.5 m  [SUCCESS <= 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,206 | Wall Time: 11.8s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #103/210] test-cd_damp_decoy-009 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.16 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Annapurna Stores on Patel Street (n20)
+  Distance Error:  78.1 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 17,221 | Wall Time: 31.8s
+  Safety Audit:    WARNING: 0 unsafe, 1 violations
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near Annapurna Stores on Patel Street (n20) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #104/210] test-cd_damp_decoy-010 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.72 L/s, Underground / Silent Leak)
+  Predicted Spot:  near HP Petrol Bunk on 3rd Cross, Market Area (n650)
+  Distance Error:  32.7 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 4/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,177 | Wall Time: 9.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near HP Petrol Bunk on 3rd Cross, Market Area (n650) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #105/210] test-cd_damp_decoy-011 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.71 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  2937.5 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,511 | Wall Time: 16.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #106/210] test-cd_damp_decoy-012 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.82 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  35.9 m  [SUCCESS <= 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,638 | Wall Time: 15.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #107/210] test-cd_damp_decoy-013 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.72 L/s, Underground / Silent Leak)
+  Predicted Spot:  near SBI ATM on Station Road (n199)
+  Distance Error:  32.3 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 16,167 | Wall Time: 25.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S04 -> dig at near SBI ATM on Station Road (n199) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #108/210] test-cd_damp_decoy-014 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.72 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  324.5 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 13,638 | Wall Time: 22.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #109/210] test-cd_damp_decoy-015 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.88 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  95.0 m  [SUCCESS <= 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 12,039 | Wall Time: 18.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #110/210] test-cd_damp_decoy-016 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.99 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  1509.4 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 12,729 | Wall Time: 14.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #111/210] test-cd_damp_decoy-017 [cd_damp_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.95 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  2402.5 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 12,750 | Wall Time: 18.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #112/210] test-cd_sound-000 [cd_sound] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.87 L/s, Underground / Silent Leak)
+  Predicted Spot:  near CSI Church on School Lane (n122)
+  Distance Error:  13.8 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 3/5)
+  AI Resources:    LLM Calls: 3 | Tokens: 7,927 | Wall Time: 13.3s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near CSI Church on School Lane (n122) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #113/210] test-cd_sound-001 [cd_sound] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.19 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  86.3 m  [SUCCESS <= 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,561 | Wall Time: 16.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #114/210] test-cd_sound-002 [cd_sound] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.30 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  911.1 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,062 | Wall Time: 24.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #115/210] test-cd_sound-003 [cd_sound] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.83 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  205.0 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,015 | Wall Time: 37.9s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S10 -> step test lit S10.3 -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #116/210] test-cd_sound-004 [cd_sound] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.99 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  504.1 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 14,466 | Wall Time: 15.3s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #117/210] test-cd_sound-005 [cd_sound] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.87 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Hospital Bus Stop on 1st Cross, Old Town (n282)
+  Distance Error:  31.5 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 2/5)
+  AI Resources:    LLM Calls: 2 | Tokens: 5,307 | Wall Time: 37.9s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Hospital Bus Stop on 1st Cross, Old Town (n282) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #118/210] test-cd_sound-006 [cd_sound] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.35 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  1235.3 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,028 | Wall Time: 10.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #119/210] test-cd_sound-007 [cd_sound] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.13 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Vegetable Market on Tank Bund Road (n321)
+  Distance Error:  275.2 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 2, Wrong: 2, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 6 | Tokens: 17,043 | Wall Time: 28.9s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S05 -> step test lit S05.2 -> dig at near Lakshmi Kirana on 6th Cross, Indira Colony (n315) (dry hole) -> dig at near Vegetable Market on Tank Bund Road (n321) (dry hole)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #120/210] test-cd_sound-008 [cd_sound] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.88 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Lakshmi Kirana on 3rd Cross, Old Town (n763)
+  Distance Error:  36.1 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 3/5)
+  AI Resources:    LLM Calls: 3 | Tokens: 8,158 | Wall Time: 38.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near Lakshmi Kirana on 3rd Cross, Old Town (n763) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #121/210] test-cd_sound-009 [cd_sound] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.22 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Government High School on Market Road (n180)
+  Distance Error:  26.0 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 13,091 | Wall Time: 24.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near Government High School on Market Road (n180) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #122/210] test-cd_sound-010 [cd_sound] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.01 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Om Sai Kirana on 1st Cross, Tank Bund Area (n573)
+  Distance Error:  20.7 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 4/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,076 | Wall Time: 13.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near Om Sai Kirana on 1st Cross, Tank Bund Area (n573) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #123/210] test-cd_sound-011 [cd_sound] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.98 L/s, Underground / Silent Leak)
+  Predicted Spot:  near New Krishna Stores on 2nd Cross, Lake View (n59)
+  Distance Error:  19.9 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 2/5)
+  AI Resources:    LLM Calls: 2 | Tokens: 5,219 | Wall Time: 9.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near New Krishna Stores on 2nd Cross, Lake View (n59) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #124/210] test-cd_sound_decoy-000 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.86 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  1521.9 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,979 | Wall Time: 15.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #125/210] test-cd_sound_decoy-001 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.62 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  272.9 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,769 | Wall Time: 19.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #126/210] test-cd_sound_decoy-002 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.95 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Community Hall on Sai Baba Road (n157)
+  Distance Error:  67.6 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 2, Wrong: 1, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 6 | Tokens: 17,422 | Wall Time: 20.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S10.1 -> dig at near Community Hall on 2nd Cross, Tank Bund Area (n548) (dry hole) -> dig at near Community Hall on Sai Baba Road (n157) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #127/210] test-cd_sound_decoy-003 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.27 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  224.0 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 8,800 | Wall Time: 12.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #128/210] test-cd_sound_decoy-004 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.88 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Sri Ram Stores on 6th Cross, Old Town (n300)
+  Distance Error:  11.2 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 1 | Tokens: 2,981 | Wall Time: 11.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Sri Ram Stores on 6th Cross, Old Town (n300) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #129/210] test-cd_sound_decoy-005 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.85 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  1677.2 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,885 | Wall Time: 13.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #130/210] test-cd_sound_decoy-006 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.61 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  1295.6 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 12,883 | Wall Time: 20.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #131/210] test-cd_sound_decoy-007 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.05 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  335.9 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,900 | Wall Time: 59.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #132/210] test-cd_sound_decoy-008 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.97 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  1632.5 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,985 | Wall Time: 9.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #133/210] test-cd_sound_decoy-009 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.16 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  1095.8 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,121 | Wall Time: 16.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #134/210] test-cd_sound_decoy-010 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.50 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Government High School on Green Park Road (n169)
+  Distance Error:  215.4 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 2, Wrong: 2, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 6 | Tokens: 15,952 | Wall Time: 59.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S10 -> step test lit S10.3 -> dig at near Little Flower School on Green Park Road (n578) (dry hole) -> dig at near Government High School on Green Park Road (n169) (dry hole)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #135/210] test-cd_sound_decoy-011 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.38 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  1700.0 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,979 | Wall Time: 18.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #136/210] test-cd_sound_decoy-012 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.90 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  816.0 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 13,499 | Wall Time: 15.3s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #137/210] test-cd_sound_decoy-013 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.33 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  1141.3 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,988 | Wall Time: 25.3s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #138/210] test-cd_sound_decoy-014 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.18 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Mecca Masjid on Mango Lane (n331)
+  Distance Error:  41.3 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 3/5)
+  AI Resources:    LLM Calls: 3 | Tokens: 10,688 | Wall Time: 27.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near Mecca Masjid on Mango Lane (n331) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #139/210] test-cd_sound_decoy-015 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.32 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Kalyana Mandapam on 3rd Cross, Lake View (n64)
+  Distance Error:  36.3 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 2, Wrong: 1, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 6 | Tokens: 18,928 | Wall Time: 26.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S08 -> step test lit S08.1 -> dig at on 2nd Cross, Hill Top (n78) (dry hole) -> dig at near Kalyana Mandapam on 3rd Cross, Lake View (n64) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #140/210] test-cd_sound_decoy-016 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.46 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Rose Garden on Water Tank Road (n632)
+  Distance Error:  19.0 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 3/5)
+  AI Resources:    LLM Calls: 3 | Tokens: 8,240 | Wall Time: 25.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> step test lit S07 -> dig at near Rose Garden on Water Tank Road (n632) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #141/210] test-cd_sound_decoy-017 [cd_sound_decoy] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.55 L/s, Underground / Silent Leak)
+  Predicted Spot:  near HP Petrol Bunk on 8th Cross, Market Area (n654)
+  Distance Error:  20.1 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 3/5)
+  AI Resources:    LLM Calls: 3 | Tokens: 9,463 | Wall Time: 29.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> step test lit S07 -> dig at near HP Petrol Bunk on 8th Cross, Market Area (n654) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #142/210] test-chronic-000 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.14 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Lake Park on Lotus Lane (n596)
+  Distance Error:  41.7 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 1 | Tokens: 3,511 | Wall Time: 2.9s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Lake Park on Lotus Lane (n596) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #143/210] test-chronic-001 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.16 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  253.8 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,842 | Wall Time: 12.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #144/210] test-chronic-002 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.45 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  187.1 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,451 | Wall Time: 49.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #145/210] test-chronic-003 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.73 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Little Flower School on Market Road (n579)
+  Distance Error:  1216.7 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 1, Wrong: 1, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 13,154 | Wall Time: 22.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Little Flower School on Market Road (n579) (dry hole) -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #146/210] test-chronic-004 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.02 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  71.4 m  [SUCCESS <= 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 12,994 | Wall Time: 17.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #147/210] test-chronic-005 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.03 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  942.8 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,310 | Wall Time: 14.9s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #148/210] test-chronic-006 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.26 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Ram Mandir on Nehru Street (n340)
+  Distance Error:  79.1 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 13,501 | Wall Time: 23.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S03 -> dig at near Ram Mandir on Nehru Street (n340) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #149/210] test-chronic-007 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.74 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  31.6 m  [SUCCESS <= 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 12,142 | Wall Time: 25.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #150/210] test-chronic-008 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.65 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  87.7 m  [SUCCESS <= 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,862 | Wall Time: 19.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #151/210] test-chronic-009 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.37 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Om Sai Kirana on Hill Road (n173)
+  Distance Error:  9.8 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 0 | Tokens: 0 | Wall Time: 1.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Om Sai Kirana on Hill Road (n173) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #152/210] test-chronic-010 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.52 L/s, Underground / Silent Leak)
+  Predicted Spot:  on Water Tank Road (n635)
+  Distance Error:  11.8 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 14,792 | Wall Time: 14.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S07 -> step test lit S07.1 -> acoustic listening confirmed noise -> dig at on Water Tank Road (n635) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #153/210] test-chronic-011 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.58 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Om Sai Kirana on Hill Road (n173)
+  Distance Error:  40.9 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 4/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,781 | Wall Time: 36.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near Om Sai Kirana on Hill Road (n173) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #154/210] test-chronic-012 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.57 L/s, Underground / Silent Leak)
+  Predicted Spot:  near CSI Church on 5th Cross, Sai Nagar (n100)
+  Distance Error:  12.0 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 16,834 | Wall Time: 26.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near CSI Church on 5th Cross, Sai Nagar (n100) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #155/210] test-chronic-013 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.32 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Noor Masjid on Bus Stand Road (n152)
+  Distance Error:  12.3 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 2/5)
+  AI Resources:    LLM Calls: 2 | Tokens: 6,119 | Wall Time: 23.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Noor Masjid on Bus Stand Road (n152) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #156/210] test-chronic-014 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.43 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Community Hall on 2nd Cross, Tank Bund Area (n548)
+  Distance Error:  180.5 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 2, Wrong: 2, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 6 | Tokens: 15,124 | Wall Time: 49.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S10 -> step test lit S10.1 -> dig at near Community Hall on Sai Baba Road (n157) (dry hole) -> dig at near Community Hall on 2nd Cross, Tank Bund Area (n548) (dry hole)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #157/210] test-chronic-015 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.25 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  171.5 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,396 | Wall Time: 14.9s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #158/210] test-chronic-016 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.68 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  100.0 m  [SUCCESS <= 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,735 | Wall Time: 22.9s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #159/210] test-chronic-017 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.46 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Main Bus Stand on Sunrise Road (n117)
+  Distance Error:  82.4 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 12,783 | Wall Time: 22.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S06 -> dig at near Main Bus Stand on Sunrise Road (n117) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #160/210] test-chronic-018 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.59 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Sri Ram Stores on 6th Cross, Old Town (n748)
+  Distance Error:  9.2 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 1 | Tokens: 3,372 | Wall Time: 5.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Sri Ram Stores on 6th Cross, Old Town (n748) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #161/210] test-chronic-019 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.71 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Rose Garden on 1st Cross, Station Area (n221)
+  Distance Error:  24.3 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 13,618 | Wall Time: 20.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Rose Garden on 1st Cross, Station Area (n221) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #162/210] test-chronic-020 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.18 L/s, Underground / Silent Leak)
+  Predicted Spot:  on 1st Cross, Hill Top (n446)
+  Distance Error:  16.1 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 1 | Tokens: 2,759 | Wall Time: 1.9s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at on 1st Cross, Hill Top (n446) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #163/210] test-chronic-021 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.76 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Gandhi Park on Jasmine Street (n278)
+  Distance Error:  19.0 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 1 | Tokens: 2,743 | Wall Time: 13.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Gandhi Park on Jasmine Street (n278) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #164/210] test-chronic-022 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.07 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Hospital Bus Stop on MG Road (n286)
+  Distance Error:  10.4 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 2, Wrong: 1, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 6 | Tokens: 16,238 | Wall Time: 22.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Hospital Bus Stop on MG Road (n719) (dry hole) -> dig at near Hospital Bus Stop on MG Road (n286) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #165/210] test-chronic-023 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.38 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Main Bazaar on Bazaar Street (n481)
+  Distance Error:  29.1 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 2/5)
+  AI Resources:    LLM Calls: 2 | Tokens: 6,297 | Wall Time: 6.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Main Bazaar on Bazaar Street (n481) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #166/210] test-chronic-024 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (0.98 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Lakshmi Kirana on 6th Cross, Indira Colony (n315)
+  Distance Error:  25.2 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 1 | Tokens: 3,130 | Wall Time: 8.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Lakshmi Kirana on 6th Cross, Indira Colony (n315) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #167/210] test-chronic-025 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.05 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Balaji General Store on Mango Lane (n319)
+  Distance Error:  13.1 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 0 | Tokens: 0 | Wall Time: 3.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S02 -> step test lit S02.5 -> acoustic listening confirmed noise -> dig at near Balaji General Store on Mango Lane (n319) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #168/210] test-chronic-026 [chronic (silent underground leak)] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.10 L/s, Underground / Silent Leak)
+  Predicted Spot:  near Shiva Temple on 8th Cross, Tank Bund Area (n143)
+  Distance Error:  14.2 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 13,402 | Wall Time: 37.3s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Shiva Temple on 8th Cross, Tank Bund Area (n143) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #169/210] test-displaced-000 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (7.40 L/s, Surface Burst)
+  Predicted Spot:  -
+  Distance Error:  405.6 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,087 | Wall Time: 14.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #170/210] test-displaced-001 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.10 L/s, Surface Burst)
+  Predicted Spot:  on Canal Road (n45)
+  Distance Error:  94.4 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,166 | Wall Time: 14.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S14.3 -> dig at on Canal Road (n45) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #171/210] test-displaced-002 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (5.37 L/s, Surface Burst)
+  Predicted Spot:  on Water Tank Road (n635)
+  Distance Error:  71.6 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 13,184 | Wall Time: 17.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S07 -> step test lit S07.1 -> dig at on Water Tank Road (n635) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #172/210] test-displaced-003 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.63 L/s, Surface Burst)
+  Predicted Spot:  near Overhead Water Tank on Bus Stand Road (n175)
+  Distance Error:  20.6 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 4/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,472 | Wall Time: 17.3s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Overhead Water Tank on Bus Stand Road (n175) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #173/210] test-displaced-004 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (4.95 L/s, Surface Burst)
+  Predicted Spot:  on Park Avenue (n55)
+  Distance Error:  16.2 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 3/5)
+  AI Resources:    LLM Calls: 3 | Tokens: 7,642 | Wall Time: 12.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at on Park Avenue (n55) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #174/210] test-displaced-005 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (8.54 L/s, Surface Burst)
+  Predicted Spot:  -
+  Distance Error:  15.8 m  [SUCCESS <= 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 13,015 | Wall Time: 33.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S06 -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #175/210] test-displaced-006 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (4.83 L/s, Surface Burst)
+  Predicted Spot:  on Rose Lane (n47)
+  Distance Error:  14.6 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 3/5)
+  AI Resources:    LLM Calls: 3 | Tokens: 7,801 | Wall Time: 10.6s
+  Safety Audit:    WARNING: 0 unsafe, 1 violations
+  Key Action:      acoustic listening confirmed noise -> dig at on Rose Lane (n47) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #176/210] test-displaced-007 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.97 L/s, Surface Burst)
+  Predicted Spot:  near Balaji General Store on Indira Nagar Main Road (n314)
+  Distance Error:  11.3 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 3/5)
+  AI Resources:    LLM Calls: 3 | Tokens: 7,502 | Wall Time: 22.9s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Balaji General Store on Indira Nagar Main Road (n314) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #177/210] test-displaced-008 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.80 L/s, Surface Burst)
+  Predicted Spot:  near Children's Park on 2nd Cross, Lake View (n416)
+  Distance Error:  14.0 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 3/5)
+  AI Resources:    LLM Calls: 3 | Tokens: 7,719 | Wall Time: 10.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Children's Park on 2nd Cross, Lake View (n416) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #178/210] test-displaced-009 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.46 L/s, Surface Burst)
+  Predicted Spot:  near Police Station on Sunrise Road (n58)
+  Distance Error:  25.5 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 13,583 | Wall Time: 18.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> step test lit S06 -> dig at near Police Station on Sunrise Road (n58) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #179/210] test-displaced-010 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.25 L/s, Surface Burst)
+  Predicted Spot:  near Annapurna Stores on Patel Street (n23)
+  Distance Error:  27.7 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 4/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 12,507 | Wall Time: 21.4s
+  Safety Audit:    WARNING: 0 unsafe, 1 violations
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near Annapurna Stores on Patel Street (n23) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #180/210] test-displaced-011 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (5.79 L/s, Surface Burst)
+  Predicted Spot:  near Colony Bus Stop on 1st Cross, Teachers Colony (n507)
+  Distance Error:  24.5 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 4/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 13,103 | Wall Time: 20.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      step test lit S12 -> acoustic listening confirmed noise -> dig at near Colony Bus Stop on 1st Cross, Teachers Colony (n507) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #181/210] test-displaced-012 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.62 L/s, Surface Burst)
+  Predicted Spot:  on Lake View Road (n80)
+  Distance Error:  29.7 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 17,427 | Wall Time: 30.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at on Lake View Road (n80) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #182/210] test-displaced-013 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.01 L/s, Surface Burst)
+  Predicted Spot:  near Sri Ram Stores on Indira Nagar Main Road (n738)
+  Distance Error:  75.4 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 16,188 | Wall Time: 18.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> step test lit S02 -> step test lit S02.3 -> dig at near Sri Ram Stores on Indira Nagar Main Road (n738) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #183/210] test-displaced-014 [displaced] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (6.06 L/s, Surface Burst)
+  Predicted Spot:  -
+  Distance Error:  343.7 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,352 | Wall Time: 13.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #184/210] test-false_alarm-000 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,515 | Wall Time: 12.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #185/210] test-false_alarm-001 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 8,938 | Wall Time: 21.3s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #186/210] test-false_alarm-002 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,709 | Wall Time: 26.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #187/210] test-false_alarm-003 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 8,266 | Wall Time: 30.8s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #188/210] test-false_alarm-004 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,139 | Wall Time: 35.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #189/210] test-false_alarm-005 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 8,603 | Wall Time: 14.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #190/210] test-false_alarm-006 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,329 | Wall Time: 14.8s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #191/210] test-false_alarm-007 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 8,957 | Wall Time: 17.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #192/210] test-false_alarm-008 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,747 | Wall Time: 15.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #193/210] test-false_alarm-009 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,775 | Wall Time: 14.8s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #194/210] test-false_alarm-010 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,075 | Wall Time: 16.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #195/210] test-false_alarm-011 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,014 | Wall Time: 30.0s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #196/210] test-false_alarm-012 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,668 | Wall Time: 15.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #197/210] test-false_alarm-013 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,307 | Wall Time: 18.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #198/210] test-false_alarm-014 [false_alarm] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,727 | Wall Time: 20.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #199/210] test-trap-000 [trap] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (4.47 L/s, Surface Burst)
+  Predicted Spot:  near Head Post Office on Ambedkar Road (n358)
+  Distance Error:  12.5 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 1 | Tokens: 2,818 | Wall Time: 4.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Head Post Office on Ambedkar Road (n358) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #200/210] test-trap-001 [trap] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,470 | Wall Time: 21.8s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #201/210] test-trap-002 [trap] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 9,821 | Wall Time: 9.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #202/210] test-trap-003 [trap] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.00 L/s, Surface Burst)
+  Predicted Spot:  near CSI Church on School Lane (n105)
+  Distance Error:  73.7 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 14,486 | Wall Time: 31.7s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> step test lit S12 -> step test lit S12.5 -> dig at near CSI Church on School Lane (n105) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #203/210] test-trap-004 [trap] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.88 L/s, Surface Burst)
+  Predicted Spot:  near Durga Temple on 2nd Cross, Teachers Colony (n116)
+  Distance Error:  23.2 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 2/5)
+  AI Resources:    LLM Calls: 2 | Tokens: 5,681 | Wall Time: 10.6s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Durga Temple on 2nd Cross, Teachers Colony (n116) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #204/210] test-trap-005 [trap] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (4.47 L/s, Surface Burst)
+  Predicted Spot:  near Community Hall on Hill Road (n156)
+  Distance Error:  6.8 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 5 | Tokens: 18,735 | Wall Time: 41.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> acoustic listening confirmed noise -> dig at near Community Hall on Hill Road (n156) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #205/210] test-trap-006 [trap] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (7.44 L/s, Surface Burst)
+  Predicted Spot:  near Government High School on 2nd Cross, Green Park (n170)
+  Distance Error:  28.7 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 1 | Tokens: 2,837 | Wall Time: 5.1s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> dig at near Government High School on 2nd Cross, Green Park (n170) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #206/210] test-trap-007 [trap] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (4.51 L/s, Surface Burst)
+  Predicted Spot:  near Model School on Mosque Road (n8)
+  Distance Error:  13.9 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 2/5)
+  AI Resources:    LLM Calls: 2 | Tokens: 6,011 | Wall Time: 7.3s
+  Safety Audit:    WARNING: 0 unsafe, 1 violations
+  Key Action:      acoustic listening confirmed noise -> step test lit S14 -> dig at near Model School on Mosque Road (n8) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #207/210] test-trap-008 [trap] ---
+  Trigger:         citizen_message
+  Actual Leak:     NO (Clean False Alarm / Decoy)
+  Predicted Spot:  -
+  Distance Error:  N/A (No dig proposed)
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,158 | Wall Time: 12.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #208/210] test-visible-000 [visible] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.06 L/s, Surface Burst)
+  Predicted Spot:  -
+  Distance Error:  1598.3 m  [MISS > 100m]
+  Outcome:         NO_LEAK (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 11,704 | Wall Time: 26.4s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      closed as no_leak
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #209/210] test-visible-001 [visible] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (2.53 L/s, Surface Burst)
+  Predicted Spot:  -
+  Distance Error:  2081.6 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 4 | Tokens: 10,436 | Wall Time: 15.5s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> closed as hand_over
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #210/210] test-visible-002 [visible] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (6.07 L/s, Surface Burst)
+  Predicted Spot:  near Model School on Mosque Road (n11)
+  Distance Error:  14.4 m  [SUCCESS <= 100m]
+  Outcome:         FOUND (Digs: 1, Wrong: 0, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 1 | Tokens: 3,220 | Wall Time: 2.8s
+  Safety Audit:    WARNING: 0 unsafe, 1 violations
+  Key Action:      acoustic listening confirmed noise -> dig at near Model School on Mosque Road (n11) (LEAK CONFIRMED)
+-------------------------------------------------------------------------------------

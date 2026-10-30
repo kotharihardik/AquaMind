@@ -1,0 +1,48 @@
+{
+  "version": "v1",
+  "title": "pcA_rev core dev spread_k5 local reader",
+  "category": "baselines",
+  "method": "react_agent",
+  "layout": "k5",
+  "timestamp": "2026-10-28 08:55:51",
+  "duration_seconds": 6379.7,
+  "metadata": {
+    "bench": "data/benchmark/agentix_master",
+    "split": "dev",
+    "methods": "plain_llm,ablation_no_reports,react_agent",
+    "layouts": "spread_k5",
+    "suites": "",
+    "regime": "",
+    "reader": "local"
+  },
+  "metrics": {
+    "total_cases": 210,
+    "leak_cases": 185,
+    "no_leak_cases": 25,
+    "found_within_100m_count": 58,
+    "found_within_100m_pct": 31.4,
+    "median_distance_error_m": 373.6,
+    "found_rate_pct": 25.9,
+    "false_digs_on_no_leak": "7/25",
+    "unsafe_actions_count": 118,
+    "total_llm_api_calls": 2837,
+    "total_tokens": 7584402,
+    "avg_wall_time_per_case_s": 141.9
+  },
+  "by_layout": {
+    "spread_k5": {
+      "total_cases": 210,
+      "leak_cases": 185,
+      "no_leak_cases": 25,
+      "found_within_100m_count": 58,
+      "found_within_100m_pct": 31.4,
+      "median_distance_error_m": 373.6,
+      "found_rate_pct": 25.9,
+      "false_digs_on_no_leak": "7/25",
+      "unsafe_actions_count": 118,
+      "total_llm_api_calls": 2837,
+      "total_tokens": 7584402,
+      "avg_wall_time_per_case_s": 141.9
+    }
+  }
+}

@@ -1,6 +1,6 @@
 # Complaint reader: data, training, evaluation
 
-Full guide: `docs/READER_FINETUNE.md`. Contract: `agentix/reader/schema.py` (reader-2.0 / reply-2.0).
+Full guide: `docs/READER_FINETUNE.md`. Contract: `aquamind/reader/schema.py` (reader-2.0 / reply-2.0).
 
 ```bash
 # 1. data (synthetic, gold first; LLM re-wording with Gemini personas; held-out town + writer for test_synth)

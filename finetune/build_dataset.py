@@ -1,6 +1,6 @@
 """Build the complaint reader's fine-tuning data (reader-2.0 and reply-2.0), gold-first.
 
-1. GOLD FIRST: the simulator's message generator (agentix/sim/reports.py) decides the facts and the exact
+1. GOLD FIRST: the simulator's message generator (aquamind/sim/reports.py) decides the facts and the exact
    reader-2.0 label, then renders text, on 4 naming skins of the town (different street/landmark names).
 2. RE-WORDING: part of the messages are re-written by writer LLMs with personas (round-trip checked: every gold
    place and time phrase must stay verbatim, else the rule-made text is kept).
@@ -19,12 +19,12 @@ import sys
 
 import numpy as np
 
-from agentix.reader.prompts import FT_READ_SYSTEM as READ_SYSTEM, FT_REPLY_SYSTEM as REPLY_SYSTEM
-from agentix.sim.citizen import Citizen
-from agentix.sim.reports import ReportGenerator, TownContext
-from agentix.sim.terrain import Terrain
-from agentix.sim.writer import PERSONAS, SYSTEM, ok
-from agentix.town.assets import Town
+from aquamind.reader.prompts import FT_READ_SYSTEM as READ_SYSTEM, FT_REPLY_SYSTEM as REPLY_SYSTEM
+from aquamind.sim.citizen import Citizen
+from aquamind.sim.reports import ReportGenerator, TownContext
+from aquamind.sim.terrain import Terrain
+from aquamind.sim.writer import PERSONAS, SYSTEM, ok
+from aquamind.town.assets import Town
 
 OUT = os.environ.get("AGENTIX_FT_OUT", "data/finetune")
 QUESTIONS = [
@@ -93,7 +93,7 @@ def reword(items, writer, rng):
 if __name__ == "__main__":
     n = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 2400
     use_llm = "--no-llm" not in sys.argv
-    from agentix.llm.client import LLM
+    from aquamind.llm.client import LLM
     town = Town()
     terrain = Terrain(town.net)
     geometry = json.load(open(f"{town.dir}/gazetteer/geometry.json"))

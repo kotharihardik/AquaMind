@@ -1,4 +1,4 @@
-"""Build the brand-new, diverse Master Evaluation Suite for AgentiX.
+"""Build the brand-new, diverse Master Evaluation Suite for AquaMind.
 
 Generates 50 fresh, brand-new cases (fresh seeds 850,000+) across all validated categories:
 - Adversarial Acoustic Decoys (cd_sound_decoy: 6)
@@ -41,10 +41,10 @@ _W = {}
 
 
 def _init(weak_pipes_path: str):
-    from agentix.search.pressure import Fingerprints
-    from agentix.sim.cases import CaseBuilder
-    from agentix.sim.world import SimTown
-    from agentix.town.assets import Town
+    from aquamind.search.pressure import Fingerprints
+    from aquamind.sim.cases import CaseBuilder
+    from aquamind.sim.world import SimTown
+    from aquamind.town.assets import Town
     town = Town()
     sim = SimTown(town)
     fp = Fingerprints(town.signatures_path)
@@ -56,7 +56,7 @@ def _init(weak_pipes_path: str):
 
 
 def _build(job):
-    from agentix.sim.cases import SUITES
+    from aquamind.sim.cases import SUITES
     suite, name, seed, out = job
     t0 = time.time()
     r = _W["builder"].build(SUITES[suite], name, seed, out)

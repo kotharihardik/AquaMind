@@ -1,4 +1,4 @@
-"""Unified Experiment Runner for AgentiX Final Evaluation Phase.
+"""Unified Experiment Runner for AquaMind Final Evaluation Phase.
 
 Orchestrates baseline and ablation experiments with modular support for:
 - Fast Non-LLM execution across 3, 5, 10 sensors (completes in minutes, zero API cost).
@@ -28,7 +28,7 @@ import sys
 
 
 def main():
-    ap = argparse.ArgumentParser(description="AgentiX Final Evaluation Orchestrator")
+    ap = argparse.ArgumentParser(description="AquaMind Final Evaluation Orchestrator")
     ap.add_argument("--mode", choices=["fast-non-llm", "llm-pilot-5sensor", "rq1-first-look", "custom"],
                     default="fast-non-llm", help="experiment execution mode")
     ap.add_argument("--bench", default="data/benchmark/agentix_master" if os.path.exists("data/benchmark/agentix_master") else "data/benchmark/agentix_ltown")
@@ -94,7 +94,7 @@ def main():
         cmd.extend(["--suites", a.suites])
 
     print("=" * 70)
-    print(f" AgentiX Final Evaluation Phase — Mode: {a.mode.upper()}")
+    print(f" AquaMind Final Evaluation Phase — Mode: {a.mode.upper()}")
     print(f" Layouts: {layouts} (3, 5, 10 sensor configs)")
     print(f" Methods: {methods}")
     print(f" Split: {a.split} | Suites: {a.suites or 'all'} | Limit: {a.limit or 'all'}")

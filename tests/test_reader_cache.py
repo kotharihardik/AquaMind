@@ -1,7 +1,7 @@
 """The local reader's disk cache: a repeated read is answered from disk, a failure is never cached, a different model never reuses a read."""
 import json
 
-import agentix.reader.local_reader as lr
+import aquamind.reader.local_reader as lr
 
 
 def fake(monkeypatch, tmp_path, answers, mid="m1"):

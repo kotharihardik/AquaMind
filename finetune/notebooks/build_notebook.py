@@ -5,7 +5,7 @@ import os
 import sys
 
 sys.path.insert(0, ".")
-from agentix.reader.prompts import FT_READ_SYSTEM, FT_REPLY_SYSTEM, READ_SYSTEM, REPLY_SYSTEM  # noqa: E402
+from aquamind.reader.prompts import FT_READ_SYSTEM, FT_REPLY_SYSTEM, READ_SYSTEM, REPLY_SYSTEM  # noqa: E402
 
 OUT = "finetune/notebooks/agentix_reader_finetune.ipynb"
 cells = []
@@ -20,7 +20,7 @@ def code(s):
 
 
 md("""
-# AgentiX complaint reader: QLoRA fine-tune of Qwen2.5-3B-Instruct (reader-2.0 / reply-2.0)
+# AquaMind complaint reader: QLoRA fine-tune of Qwen2.5-3B-Instruct (reader-2.0 / reply-2.0)
 
 **What this trains.** One citizen message to a water utility (WhatsApp, X, SMS, web form, email, call-centre note; English, Hinglish, Hindi,
 Kannada, Marathi, Tamil, typos) -> one JSON object (`reader-2.0`): category, symptoms, places copied verbatim, source (here / elsewhere),
@@ -345,7 +345,7 @@ for ax, name in zip(axes, ("test_hand", "test_real", "test_bench")):
         ax.bar([i + 0.27 for i in x], [ref[name].get(k, 0) for k in ks], 0.27, label="API reader")
     ax.set_xticks(list(x)); ax.set_xticklabels(ks, rotation=60, ha="right"); ax.set_title(name); ax.set_ylim(0, 1)
 axes[0].legend(); plt.tight_layout(); plt.savefig(f"{OUT}/reader_comparison.png", dpi=130); plt.show()
-# acceptance gate for replacing the API reader in AgentiX (proposal Section 6: field F1 for place, symptom, time)
+# acceptance gate for replacing the API reader in AquaMind (proposal Section 6: field F1 for place, symptom, time)
 for name in ("test_hand", "test_bench", "test_real"):
     f_ = results[f"finetuned/{name}"]["overall"]
     print(name, {k: f_.get(k) for k in ("json_valid", "category", "symptoms_f1", "places_relaxed_f1", "since_relaxed_f1", "source", "reply_cause")})
@@ -354,7 +354,7 @@ for k, v in sorted(results["finetuned/test_hand"]["by_kind"].items()):
     print(f"  {k:22s} n={v['n']:3d} category={v.get('category')} source={v.get('source')} since={v.get('since_exact')}")
 """)
 
-md("## Save the adapter (plug into AgentiX as `--reader local`)")
+md("## Save the adapter (plug into AquaMind as `--reader local`)")
 code("""
 model.save_pretrained(f"{OUT}/reader_adapter"); tok.save_pretrained(f"{OUT}/reader_adapter")
 json.dump({"base_model": BASE, "lora": {"r": 16, "alpha": 32, "dropout": 0.05, "targets": "all attention + MLP projections"},
@@ -412,7 +412,7 @@ print(os.listdir(OUT))
 """)
 
 md("""
-## How to use the result in AgentiX
+## How to use the result in AquaMind
 1. From the notebook's Output tab download the single file `agentix_reader_outputs.zip` (results, predictions, chart, training log, adapter and the merged model, about 6 GB) and unzip it.
 2. Put the merged folder at `finetune/models/reader_qwen3b_hf/` in the project, then on the Mac: `zsh finetune/convert_reader.sh`
    (4-bit MLX model, about 2 GB) and `zsh finetune/serve_reader.sh` (OpenAI-compatible server on 127.0.0.1:8471).

@@ -10,19 +10,19 @@ import os
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-from agentix.eval.splits import cases_for
+from aquamind.eval.splits import cases_for
 
 _W = {}
 
 
 def _init(bench, model, reader):
-    from agentix.eval.runner import World
-    from agentix.methods import registry
+    from aquamind.eval.runner import World
+    from aquamind.methods import registry
     _W["world"], _W["methods"] = World(bench), registry(model, reader)
 
 
 def _job(job):
-    from agentix.eval.runner import run_case
+    from aquamind.eval.runner import run_case
     method, name, layout, text, max_checks = job
     r = run_case(_W["world"], _W["methods"][method], name, layout, text, max_checks)
     r["budget"] = max_checks or 5
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--suites", default="")
     ap.add_argument("--stride", type=int, default=1, help="take every Nth case (a stratified subset for the expensive LLM baselines)")
-    ap.add_argument("--regime", default="", help="stress regimes (agentix/regime.py): survey, plastic, plastic_blind, drift, outage")
+    ap.add_argument("--regime", default="", help="stress regimes (aquamind/regime.py): survey, plastic, plastic_blind, drift, outage")
     ap.add_argument("--max-checks", type=int, default=None, help="field-check budget (default 5); the value-of-evidence curve uses 2 and 3")
     ap.add_argument("--model", default=None)
     ap.add_argument("--reader", default="rules", help="rules | llm | local: the same reader for every method")
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     a = ap.parse_args()
     os.environ["AGENTIX_REGIME"] = a.regime
 
-    from agentix.eval.logger import LoggerSet
+    from aquamind.eval.logger import LoggerSet
     run_title = a.title or f"{a.methods} on {a.split} ({a.layouts})"
     # every case of the benchmark in one fixed order: a case's number in the log is its position here (stable over resumes and splits)
     order = []

@@ -1,0 +1,221 @@
+====================================================================================================
+AGENTIX EVALUATION: ABLATION_NO_RAG (v1) | BENCHMARK CASE-BY-CASE OVERVIEW TABLE
+Category: ABLATIONS | Layout: k5 | First started: 2026-10-28 15:05:50 | Last resumed: 2026-10-28 19:46:32
+Title: pcB core ablation_no_rag dev spread_k5 local reader
+Session: data/benchmark/agentix_master | ablation_no_rag | reader=local | text=realistic | regime=- | checks=5
+Case numbers: position in the benchmark of 210 cases (the same on every resume)
+====================================================================================================
+
+#    Case ID                  Suite           Trigger        Predicted  Dist Err   <=100m  Outcome    Digs  Checks  LLM   Time   
+-----------------------------------------------------------------------------------------------------------------------------
+1    dev-brown-000            brown           citizen_messa  n15        11.7 m     YES     found      1     3       9     277s
+2    dev-brown-001            brown           citizen_messa  n116       22.5 m     YES     found      1     3       9     295s
+3    dev-brown-002            brown           citizen_messa  n246       15.9 m     YES     found      1     4       10    434s
+4    dev-brown-003            brown           citizen_messa  n113       33.9 m     YES     found      1     3       9     316s
+5    dev-brown-004            brown           citizen_messa  n199       11.9 m     YES     found      1     3       9     268s
+6    dev-brown-005            brown           citizen_messa  n59        12.8 m     YES     found      1     4       10    333s
+7    dev-brown-006            brown           citizen_messa  n344       36.4 m     YES     found      1     3       9     204s
+8    dev-brown-007            brown           citizen_messa  n553       22.4 m     YES     found      1     4       10    247s
+9    dev-cd_damp-000          cd_damp         citizen_messa  n108       34.1 m     YES     found      2     4       11    208s
+10   dev-cd_damp-001          cd_damp         citizen_messa  -          196.3 m    NO      no_leak    0     5       10    338s
+11   dev-cd_damp-002          cd_damp         citizen_messa  -          2414.2 m   NO      no_leak    0     5       10    262s
+12   dev-cd_damp-003          cd_damp         citizen_messa  n114       31.6 m     YES     found      1     3       9     160s
+13   dev-cd_damp-004          cd_damp         citizen_messa  n585       9.3 m      YES     found      1     4       10    238s
+14   dev-cd_damp_decoy-000    cd_damp_decoy   citizen_messa  n147       15.6 m     YES     found      1     5       11    236s
+15   dev-cd_damp_decoy-001    cd_damp_decoy   citizen_messa  -          274.7 m    NO      hand_over  0     5       10    236s
+16   dev-cd_damp_decoy-002    cd_damp_decoy   citizen_messa  -          169.3 m    NO      no_leak    0     5       10    278s
+17   dev-cd_damp_decoy-003    cd_damp_decoy   citizen_messa  n152       21.9 m     YES     found      1     5       11    355s
+18   dev-cd_damp_decoy-004    cd_damp_decoy   citizen_messa  n157       73.2 m     YES     found      1     5       11    237s
+19   dev-cd_damp_decoy-005    cd_damp_decoy   citizen_messa  -          61.5 m     YES     no_leak    0     5       10    290s
+20   dev-cd_damp_decoy-006    cd_damp_decoy   citizen_messa  n222       17.3 m     YES     found      1     5       11    372s
+21   dev-cd_sound-000         cd_sound        citizen_messa  n93        23.1 m     YES     found      1     4       10    178s
+22   dev-cd_sound-001         cd_sound        citizen_messa  n114       29.1 m     YES     hand_over  1     5       11    345s
+23   dev-cd_sound-002         cd_sound        citizen_messa  n114       262.7 m    NO      hand_over  1     5       11    251s
+24   dev-cd_sound-003         cd_sound        citizen_messa  -          248.1 m    NO      no_leak    0     5       11    288s
+25   dev-cd_sound-004         cd_sound        citizen_messa  n123       73.9 m     YES     found      1     5       11    252s
+26   dev-cd_sound_decoy-000   cd_sound_decoy  citizen_messa  -          958.7 m    NO      no_leak    0     5       11    284s
+27   dev-cd_sound_decoy-001   cd_sound_decoy  citizen_messa  -          210.4 m    NO      hand_over  0     5       10    227s
+28   dev-cd_sound_decoy-002   cd_sound_decoy  citizen_messa  n778       16.5 m     YES     found      1     2       8     224s
+29   dev-cd_sound_decoy-003   cd_sound_decoy  citizen_messa  n479       16.8 m     YES     found      2     5       12    196s
+30   dev-cd_sound_decoy-004   cd_sound_decoy  citizen_messa  -          403.2 m    NO      no_leak    0     5       10    266s
+31   dev-cd_sound_decoy-005   cd_sound_decoy  citizen_messa  n725       42.5 m     YES     found      1     3       9     182s
+32   dev-cd_sound_decoy-006   cd_sound_decoy  citizen_messa  n111       29.8 m     YES     found      1     4       10    316s
+33   dev-chronic-000          chronic*        citizen_messa  n504       17.9 m     YES     found      1     4       10    177s
+34   dev-chronic-001          chronic*        citizen_messa  n154       23.6 m     YES     found      1     5       11    183s
+35   dev-chronic-002          chronic*        citizen_messa  n493       35.7 m     YES     found      1     3       9     250s
+36   dev-chronic-003          chronic*        citizen_messa  n280       22.6 m     YES     found      1     4       10    327s
+37   dev-chronic-004          chronic*        citizen_messa  -          228.6 m    NO      hand_over  0     5       11    264s
+38   dev-chronic-005          chronic*        citizen_messa  n114       40.8 m     YES     found      1     3       1     162s
+39   dev-chronic-006          chronic*        citizen_messa  -          12.1 m     YES     no_leak    0     5       2     160s
+40   dev-chronic-007          chronic*        citizen_messa  -          216.9 m    NO      hand_over  0     5       10    530s
+41   dev-chronic-008          chronic*        citizen_messa  -          169.0 m    NO      no_leak    0     5       10    589s
+42   dev-chronic-009          chronic*        citizen_messa  -          101.1 m    NO      no_leak    0     5       10    488s
+43   dev-chronic-010          chronic*        citizen_messa  n390       4.9 m      YES     found      1     4       10    221s
+44   dev-displaced-000        displaced       citizen_messa  n59        41.8 m     YES     found      1     5       11    181s
+45   dev-displaced-001        displaced       citizen_messa  n716       19.9 m     YES     found      1     4       10    174s
+46   dev-displaced-002        displaced       citizen_messa  n209       25.3 m     YES     found      1     5       11    289s
+47   dev-displaced-003        displaced       citizen_messa  n114       12.4 m     YES     found      1     5       11    205s
+48   dev-displaced-004        displaced       citizen_messa  n198       30.8 m     YES     found      1     4       10    201s
+49   dev-displaced-005        displaced       citizen_messa  n210       23.9 m     YES     found      1     2       8     161s
+50   dev-false_alarm-000      false_alarm     citizen_messa  -          -          -       no_leak    0     5       10    324s
+51   dev-false_alarm-001      false_alarm     citizen_messa  -          -          -       no_leak    0     5       10    167s
+52   dev-false_alarm-002      false_alarm     citizen_messa  -          -          -       no_leak    0     5       10    188s
+53   dev-false_alarm-003      false_alarm     citizen_messa  -          -          -       no_leak    0     5       10    194s
+54   dev-false_alarm-004      false_alarm     citizen_messa  -          -          -       no_leak    0     5       10    195s
+55   dev-false_alarm-005      false_alarm     citizen_messa  -          -          -       no_leak    0     5       10    223s
+56   dev-trap-000             trap            citizen_messa  -          -          -       no_leak    0     5       10    296s
+57   dev-trap-001             trap            citizen_messa  n97        77.6 m     YES     found      2     5       12    297s
+58   dev-trap-002             trap            citizen_messa  n485       31.2 m     YES     found      1     4       10    163s
+59   dev-trap-003             trap            citizen_messa  n235       10.6 m     YES     found      1     5       11    294s
+60   dev-visible-000          visible         citizen_messa  n672       21.7 m     YES     found      1     5       11    173s
+61   test-brown-000           brown           citizen_messa  n129       167.7 m    NO      hand_over  2     5       12    378s
+62   test-brown-001           brown           citizen_messa  n481       56.2 m     YES     found      1     5       11    319s
+63   test-brown-002           brown           citizen_messa  -          544.8 m    NO      hand_over  0     5       10    546s
+64   test-brown-003           brown           citizen_messa  n230       18.4 m     YES     found      1     5       11    351s
+65   test-brown-004           brown           citizen_messa  n269       19.7 m     YES     found      1     3       9     284s
+66   test-brown-005           brown           citizen_messa  n134       13.1 m     YES     found      1     3       9     307s
+67   test-brown-006           brown           citizen_messa  n691       8.0 m      YES     found      1     4       10    229s
+68   test-brown-007           brown           citizen_messa  -          89.9 m     YES     hand_over  0     5       10    356s
+69   test-brown-008           brown           citizen_messa  n685       8.4 m      YES     found      1     5       11    410s
+70   test-brown-009           brown           citizen_messa  n652       20.9 m     YES     found      1     4       10    288s
+71   test-brown-010           brown           citizen_messa  n74        80.9 m     YES     found      1     5       11    293s
+72   test-brown-011           brown           citizen_messa  n159       11.9 m     YES     found      1     4       10    320s
+73   test-brown-012           brown           citizen_messa  n146       20.2 m     YES     found      1     5       11    409s
+74   test-brown-013           brown           citizen_messa  n444       20.6 m     YES     found      1     5       11    330s
+75   test-brown-014           brown           citizen_messa  n708       14.6 m     YES     found      1     3       9     171s
+76   test-brown-015           brown           citizen_messa  n373       71.8 m     YES     found      2     5       12    277s
+77   test-brown-016           brown           citizen_messa  n628       11.1 m     YES     found      1     5       11    470s
+78   test-brown-017           brown           citizen_messa  n116       40.7 m     YES     found      1     3       9     181s
+79   test-brown-018           brown           citizen_messa  n1         27.9 m     YES     found      1     4       10    206s
+80   test-brown-019           brown           citizen_messa  n700       40.5 m     YES     found      1     3       9     262s
+81   test-brown-020           brown           citizen_messa  -          228.3 m    NO      hand_over  0     5       1     140s
+82   test-cd_damp-000         cd_damp         citizen_messa  n666       22.0 m     YES     found      1     5       11    237s
+83   test-cd_damp-001         cd_damp         citizen_messa  n492       219.7 m    NO      hand_over  1     5       11    343s
+84   test-cd_damp-002         cd_damp         citizen_messa  -          27.6 m     YES     no_leak    0     5       10    307s
+85   test-cd_damp-003         cd_damp         citizen_messa  -          388.8 m    NO      no_leak    0     5       10    268s
+86   test-cd_damp-004         cd_damp         citizen_messa  n177       262.8 m    NO      hand_over  1     5       11    254s
+87   test-cd_damp-005         cd_damp         citizen_messa  n97        23.1 m     YES     found      1     3       9     297s
+88   test-cd_damp-006         cd_damp         citizen_messa  n131       97.7 m     YES     found      1     5       11    274s
+89   test-cd_damp-007         cd_damp         citizen_messa  n173       22.7 m     YES     found      1     3       9     201s
+90   test-cd_damp-008         cd_damp         citizen_messa  -          82.4 m     YES     no_leak    0     5       10    213s
+91   test-cd_damp-009         cd_damp         citizen_messa  n8         13.9 m     YES     found      1     2       8     269s
+92   test-cd_damp-010         cd_damp         citizen_messa  n169       20.7 m     YES     found      1     5       11    232s
+93   test-cd_damp-011         cd_damp         citizen_messa  -          30.8 m     YES     hand_over  0     5       10    251s
+94   test-cd_damp_decoy-000   cd_damp_decoy   citizen_messa  -          934.1 m    NO      no_leak    0     5       11    302s
+95   test-cd_damp_decoy-001   cd_damp_decoy   citizen_messa  n322       26.6 m     YES     found      1     3       9     188s
+96   test-cd_damp_decoy-002   cd_damp_decoy   citizen_messa  n184       36.9 m     YES     found      1     3       9     215s
+97   test-cd_damp_decoy-003   cd_damp_decoy   citizen_messa  -          652.7 m    NO      no_leak    0     5       10    194s
+98   test-cd_damp_decoy-004   cd_damp_decoy   citizen_messa  n319       7.8 m      YES     found      1     5       11    180s
+99   test-cd_damp_decoy-005   cd_damp_decoy   citizen_messa  -          57.1 m     YES     no_leak    0     5       10    258s
+100  test-cd_damp_decoy-006   cd_damp_decoy   citizen_messa  n136       11.5 m     YES     found      1     3       9     212s
+101  test-cd_damp_decoy-007   cd_damp_decoy   citizen_messa  n548       22.2 m     YES     found      1     4       10    191s
+102  test-cd_damp_decoy-008   cd_damp_decoy   citizen_messa  n479       8.8 m      YES     found      1     5       11    234s
+103  test-cd_damp_decoy-009   cd_damp_decoy   citizen_messa  n31        31.5 m     YES     found      1     4       10    224s
+104  test-cd_damp_decoy-010   cd_damp_decoy   citizen_messa  n235       70.5 m     YES     found      1     5       11    247s
+105  test-cd_damp_decoy-011   cd_damp_decoy   citizen_messa  -          1006.3 m   NO      no_leak    0     5       10    222s
+106  test-cd_damp_decoy-012   cd_damp_decoy   citizen_messa  -          2305.1 m   NO      no_leak    0     5       11    310s
+107  test-cd_damp_decoy-013   cd_damp_decoy   citizen_messa  n608       9.9 m      YES     found      1     2       8     166s
+108  test-cd_damp_decoy-014   cd_damp_decoy   citizen_messa  -          62.6 m     YES     no_leak    0     5       10    235s
+109  test-cd_damp_decoy-015   cd_damp_decoy   citizen_messa  -          95.0 m     YES     no_leak    0     5       10    190s
+110  test-cd_damp_decoy-016   cd_damp_decoy   citizen_messa  n731       76.2 m     YES     found      2     5       12    225s
+111  test-cd_damp_decoy-017   cd_damp_decoy   citizen_messa  -          55.9 m     YES     no_leak    0     5       10    279s
+112  test-cd_sound-000        cd_sound        citizen_messa  n120       31.9 m     YES     found      1     5       0     116s
+113  test-cd_sound-001        cd_sound        citizen_messa  n308       91.8 m     YES     found      1     5       11    149s
+114  test-cd_sound-002        cd_sound        citizen_messa  n195       14.3 m     YES     found      1     3       9     187s
+115  test-cd_sound-003        cd_sound        citizen_messa  n182       92.4 m     YES     found      2     5       12    216s
+116  test-cd_sound-004        cd_sound        citizen_messa  n509       24.0 m     YES     found      1     4       10    285s
+117  test-cd_sound-005        cd_sound        citizen_messa  n286       15.0 m     YES     found      1     5       11    196s
+118  test-cd_sound-006        cd_sound        citizen_messa  -          60.0 m     YES     hand_over  0     5       10    167s
+119  test-cd_sound-007        cd_sound        citizen_messa  n321       275.2 m    NO      hand_over  2     5       12    273s
+120  test-cd_sound-008        cd_sound        citizen_messa  n318       19.4 m     YES     found      1     5       11    200s
+121  test-cd_sound-009        cd_sound        citizen_messa  -          175.1 m    NO      hand_over  0     5       0     240s
+122  test-cd_sound-010        cd_sound        citizen_messa  n573       20.7 m     YES     found      1     5       11    201s
+123  test-cd_sound-011        cd_sound        citizen_messa  -          25.9 m     YES     hand_over  0     5       6     252s
+124  test-cd_sound_decoy-000  cd_sound_decoy  citizen_messa  -          355.1 m    NO      hand_over  0     5       8     375s
+125  test-cd_sound_decoy-001  cd_sound_decoy  citizen_messa  n172       13.4 m     YES     found      1     4       8     374s
+126  test-cd_sound_decoy-002  cd_sound_decoy  citizen_messa  n160       17.3 m     YES     found      1     3       9     353s
+127  test-cd_sound_decoy-003  cd_sound_decoy  citizen_messa  n295       50.4 m     YES     found      1     4       10    211s
+128  test-cd_sound_decoy-004  cd_sound_decoy  citizen_messa  n300       11.2 m     YES     found      1     5       11    205s
+129  test-cd_sound_decoy-005  cd_sound_decoy  citizen_messa  -          1677.2 m   NO      no_leak    0     3       8     377s
+130  test-cd_sound_decoy-006  cd_sound_decoy  citizen_messa  -          31.4 m     YES     no_leak    0     5       10    408s
+131  test-cd_sound_decoy-007  cd_sound_decoy  citizen_messa  -          205.0 m    NO      no_leak    0     5       10    304s
+132  test-cd_sound_decoy-008  cd_sound_decoy  citizen_messa  -          925.6 m    NO      no_leak    0     5       11    210s
+133  test-cd_sound_decoy-009  cd_sound_decoy  citizen_messa  -          349.1 m    NO      no_leak    0     5       10    284s
+134  test-cd_sound_decoy-010  cd_sound_decoy  citizen_messa  n181       8.0 m      YES     found      1     5       11    252s
+135  test-cd_sound_decoy-011  cd_sound_decoy  citizen_messa  -          183.6 m    NO      no_leak    0     5       10    298s
+136  test-cd_sound_decoy-012  cd_sound_decoy  citizen_messa  n562       18.8 m     YES     found      1     2       8     162s
+137  test-cd_sound_decoy-013  cd_sound_decoy  citizen_messa  n433       39.0 m     YES     found      1     5       11    309s
+138  test-cd_sound_decoy-014  cd_sound_decoy  citizen_messa  n328       13.0 m     YES     found      1     4       10    338s
+139  test-cd_sound_decoy-015  cd_sound_decoy  citizen_messa  n64        36.3 m     YES     found      2     5       12    355s
+140  test-cd_sound_decoy-016  cd_sound_decoy  citizen_messa  -          100.2 m    NO      hand_over  0     5       10    273s
+141  test-cd_sound_decoy-017  cd_sound_decoy  citizen_messa  n654       20.1 m     YES     found      1     3       9     174s
+142  test-chronic-000         chronic*        citizen_messa  n196       10.2 m     YES     found      1     2       8     228s
+143  test-chronic-001         chronic*        citizen_messa  n537       22.2 m     YES     found      1     4       10    278s
+144  test-chronic-002         chronic*        citizen_messa  n361       15.3 m     YES     found      1     5       11    256s
+145  test-chronic-003         chronic*        citizen_messa  -          279.4 m    NO      no_leak    0     5       10    184s
+146  test-chronic-004         chronic*        citizen_messa  -          148.9 m    NO      hand_over  0     5       10    411s
+147  test-chronic-005         chronic*        citizen_messa  -          981.6 m    NO      no_leak    0     5       10    206s
+148  test-chronic-006         chronic*        citizen_messa  n461       19.8 m     YES     found      1     5       11    266s
+149  test-chronic-007         chronic*        citizen_messa  -          31.6 m     YES     no_leak    0     5       10    231s
+150  test-chronic-008         chronic*        citizen_messa  n550       32.2 m     YES     found      1     5       11    190s
+151  test-chronic-009         chronic*        citizen_messa  n573       43.6 m     YES     found      1     4       10    266s
+152  test-chronic-010         chronic*        citizen_messa  n635       11.8 m     YES     found      1     4       10    189s
+153  test-chronic-011         chronic*        citizen_messa  n173       40.9 m     YES     found      1     3       9     219s
+154  test-chronic-012         chronic*        citizen_messa  n100       12.0 m     YES     found      1     4       10    221s
+155  test-chronic-013         chronic*        citizen_messa  n152       12.3 m     YES     found      1     2       8     191s
+156  test-chronic-014         chronic*        citizen_messa  n165       25.5 m     YES     found      1     5       11    208s
+157  test-chronic-015         chronic*        citizen_messa  -          493.8 m    NO      no_leak    0     5       10    234s
+158  test-chronic-016         chronic*        citizen_messa  n193       23.9 m     YES     found      1     4       10    234s
+159  test-chronic-017         chronic*        citizen_messa  n117       82.4 m     YES     found      1     5       11    212s
+160  test-chronic-018         chronic*        citizen_messa  n746       76.9 m     YES     found      1     2       8     222s
+161  test-chronic-019         chronic*        citizen_messa  n220       45.1 m     YES     found      1     5       11    258s
+162  test-chronic-020         chronic*        citizen_messa  n447       30.6 m     YES     found      1     3       9     144s
+163  test-chronic-021         chronic*        citizen_messa  n278       19.0 m     YES     found      1     4       10    256s
+164  test-chronic-022         chronic*        citizen_messa  n286       10.4 m     YES     found      1     2       8     155s
+165  test-chronic-023         chronic*        citizen_messa  n479       61.6 m     YES     found      1     5       11    180s
+166  test-chronic-024         chronic*        citizen_messa  -          121.6 m    NO      hand_over  0     5       10    195s
+167  test-chronic-025         chronic*        citizen_messa  n319       13.1 m     YES     found      1     3       9     316s
+168  test-chronic-026         chronic*        citizen_messa  n143       14.2 m     YES     found      1     3       9     257s
+169  test-displaced-000       displaced       citizen_messa  n220       20.8 m     YES     found      1     3       9     152s
+170  test-displaced-001       displaced       citizen_messa  n39        18.4 m     YES     found      1     5       11    201s
+171  test-displaced-002       displaced       citizen_messa  n635       71.6 m     YES     found      1     5       11    222s
+172  test-displaced-003       displaced       citizen_messa  n177       33.9 m     YES     found      1     1       6     106s
+173  test-displaced-004       displaced       citizen_messa  n55        16.2 m     YES     found      1     5       11    282s
+174  test-displaced-005       displaced       citizen_messa  n144       15.8 m     YES     found      1     5       11    344s
+175  test-displaced-006       displaced       citizen_messa  n47        14.6 m     YES     found      1     4       10    277s
+176  test-displaced-007       displaced       citizen_messa  n319       72.5 m     YES     found      1     5       11    256s
+177  test-displaced-008       displaced       citizen_messa  n416       14.0 m     YES     found      1     4       10    242s
+178  test-displaced-009       displaced       citizen_messa  n58        25.5 m     YES     found      1     3       9     208s
+179  test-displaced-010       displaced       citizen_messa  n377       10.2 m     YES     found      1     4       10    256s
+180  test-displaced-011       displaced       citizen_messa  n507       24.5 m     YES     found      1     3       9     236s
+181  test-displaced-012       displaced       citizen_messa  n144       16.9 m     YES     found      1     5       11    378s
+182  test-displaced-013       displaced       citizen_messa  n298       19.1 m     YES     found      1     3       9     324s
+183  test-displaced-014       displaced       citizen_messa  n109       15.4 m     YES     found      1     5       11    301s
+184  test-false_alarm-000     false_alarm     citizen_messa  -          -          -       no_leak    0     5       10    512s
+185  test-false_alarm-001     false_alarm     citizen_messa  -          -          -       no_leak    0     5       10    355s
+186  test-false_alarm-002     false_alarm     citizen_messa  -          -          -       no_leak    0     5       11    376s
+187  test-false_alarm-003     false_alarm     citizen_messa  -          -          -       no_leak    0     5       10    300s
+188  test-false_alarm-004     false_alarm     citizen_messa  -          -          -       no_leak    0     5       10    351s
+189  test-false_alarm-005     false_alarm     citizen_messa  -          -          -       no_leak    0     5       10    257s
+190  test-false_alarm-006     false_alarm     citizen_messa  -          -          -       no_leak    0     5       10    414s
+191  test-false_alarm-007     false_alarm     citizen_messa  -          -          -       no_leak    0     5       10    235s
+192  test-false_alarm-008     false_alarm     citizen_messa  -          -          -       no_leak    0     5       10    215s
+193  test-false_alarm-009     false_alarm     citizen_messa  -          -          -       no_leak    0     5       11    272s
+194  test-false_alarm-010     false_alarm     citizen_messa  -          -          -       no_leak    0     5       10    194s
+195  test-false_alarm-011     false_alarm     citizen_messa  -          -          -       no_leak    0     5       10    182s
+196  test-false_alarm-012     false_alarm     citizen_messa  -          -          -       no_leak    0     5       10    170s
+197  test-false_alarm-013     false_alarm     citizen_messa  -          -          -       no_leak    0     5       10    201s
+198  test-false_alarm-014     false_alarm     citizen_messa  -          -          -       no_leak    0     5       11    194s
+199  test-trap-000            trap            citizen_messa  n358       12.5 m     YES     found      1     4       10    209s
+200  test-trap-001            trap            citizen_messa  -          -          -       no_leak    0     5       10    165s
+201  test-trap-002            trap            citizen_messa  -          -          -       no_leak    0     2       7     144s
+202  test-trap-003            trap            citizen_messa  n100       13.8 m     YES     found      1     3       9     141s
+203  test-trap-004            trap            citizen_messa  n116       23.2 m     YES     found      1     4       10    263s
+204  test-trap-005            trap            citizen_messa  n156       6.8 m      YES     found      1     5       11    244s
+205  test-trap-006            trap            citizen_messa  n170       28.7 m     YES     found      1     4       10    225s
+206  test-trap-007            trap            citizen_messa  -          3212.3 m   NO      no_leak    0     5       10    210s
+207  test-trap-008            trap            citizen_messa  -          -          -       no_leak    0     5       10    178s
+208  test-visible-000         visible         citizen_messa  n143       9.4 m      YES     found      1     5       11    201s
+209  test-visible-001         visible         citizen_messa  n662       51.5 m     YES     found      1     3       9     150s
+210  test-visible-002         visible         citizen_messa  n11        14.4 m     YES     found      1     2       8     163s
+* 'chronic*' = silent underground hidden leak, no surface water.

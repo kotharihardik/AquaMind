@@ -57,7 +57,7 @@ dev = json.load(open("data/benchmark/agentix_master/dev.json"))["cases"]
 print(f"benchmark: {len(dev)} dev + {len(f['cases'])} frozen test = {len(dev) + len(f['cases'])} cases; frozen-test hash {'OK' if ok else 'MISMATCH'}")
 import os
 print("reader model:", "present" if os.path.exists("finetune/models/reader_qwen3b_mlx/model.safetensors") else "MISSING (needed for --reader local)")
-from agentix.methods import registry
+from aquamind.methods import registry
 r = registry(None, "local")
 print(f"methods registered: {len(r)}; agentix_crew {'yes' if 'agentix_crew' in r else 'MISSING'}")
 import os
@@ -68,7 +68,7 @@ EOF
 chmod +x $STAGE/setup_pc.sh $STAGE/verify_pack.sh $STAGE/scripts/*.sh 2>/dev/null
 
 cat > $STAGE/SETUP_AND_RUN.md <<'EOF'
-# AgentiX evaluation pack: set up and run on another PC
+# AquaMind evaluation pack: set up and run on another PC
 
 Same code, same prompts, same 210 benchmark cases (60 dev + 150 frozen test) as the main PC. Results of all PCs are merged afterwards.
 

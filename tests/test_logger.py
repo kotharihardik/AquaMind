@@ -1,7 +1,7 @@
 """Logs: one folder per (method, layout), five files; resume = append, fresh = new version, exact case numbers, one table row per case."""
 import json
 
-from agentix.eval.logger import EvaluationLogger
+from aquamind.eval.logger import EvaluationLogger
 
 ORDER = [f"dev-x-{i:03d}" for i in range(3)] + [f"test-x-{i:03d}" for i in range(4)]        # 7 cases: dev 1-3, test 4-7
 S = "bench | agentix_crew | reader=local"
@@ -117,7 +117,7 @@ def test_summary_by_case_type_and_failed_cases_are_below_the_metrics(tmp_path):
 
 
 def test_several_methods_and_layouts_in_one_run_never_mix(tmp_path):
-    from agentix.eval.logger import LoggerSet
+    from aquamind.eval.logger import LoggerSet
     ls = LoggerSet(["fixed_rules", "react_agent"], ["spread_k5", "spread_k3"], str(tmp_path), "bench", "reader=local | text=realistic | regime=- | checks=5", case_order=ORDER)
     for m in ("fixed_rules", "react_agent"):
         for lay in ("spread_k5", "spread_k3"):

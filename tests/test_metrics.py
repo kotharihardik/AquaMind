@@ -1,7 +1,7 @@
-"""The evaluation metrics (agentix/eval/metrics.py) on small hand-checkable rows."""
+"""The evaluation metrics (aquamind/eval/metrics.py) on small hand-checkable rows."""
 import math
 
-from agentix.eval import metrics as M
+from aquamind.eval import metrics as M
 
 
 def row(case, found, wrong=0, digs=None, err=None, **kw):

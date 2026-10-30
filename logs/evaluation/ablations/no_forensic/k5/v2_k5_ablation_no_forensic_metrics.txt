@@ -1,0 +1,140 @@
+====================================================================================================
+AGENTIX EVALUATION: ABLATION_NO_FORENSIC (v2) | SUMMARY METRICS
+Category: ABLATIONS | Layout: k5 | First started: 2026-10-29 03:45:41 | Last resumed: 2026-10-29 04:06:21
+Title: rerun ablation_no_forensic dev spread_k5 local reader
+Session: data/benchmark/agentix_master | ablation_no_forensic | reader=local | text=realistic | regime=- | checks=5
+Case numbers: position in the benchmark of 210 cases (the same on every resume)
+====================================================================================================
+
+SUMMARY BENCHMARK METRICS (spread_k5):
+---------------------------------------------------------------------------
+  Total Cases Logged:          210 (leak 185, no leak 25)
+  Accuracy (Found <= 100m):    110/185 (59.5%)
+  Correct digs (leak found):   49.2%
+  Median Distance Error:       75.4 m
+  False Digs (on No-Leak):     1/25
+  Unsafe / Unapproved Digs:    0
+  Total LLM API Calls:         780
+  Total Tokens Consumed:       2,190,117
+  Average Time / Case:         25.4s
+
+
+=============================================================================================================================
+SUMMARY BY CASE TYPE (suite).  Success = a dig found the leak (leak case) / the case was closed without a dig (no-leak case).
+-----------------------------------------------------------------------------------------------------------------------------
+Suite            Cases  Success  Failed  Success %  Leak never dug  Dug, missed  False dig  Guess<=100m  Median err
+-----------------------------------------------------------------------------------------------------------------------------
+brown            29     7        22      24.1       18              4            0          10/29        407 m     
+cd_damp          17     6        11      35.3       10              1            0          11/17        53 m      
+cd_damp_decoy    25     10       15      40.0       14              1            0          14/25        95 m      
+cd_sound         17     8        9       47.1       7               2            0          9/17         86 m      
+cd_sound_decoy   25     10       15      40.0       14              1            0          10/25        224 m     
+chronic*         38     25       13      65.8       11              2            0          29/38        30 m      
+displaced        21     15       6       71.4       5               1            0          17/21        27 m      
+false_alarm      21     21       0       100.0      0               0            0          -            -         
+trap             13     11       2       84.6       0               1            1          8/9          19 m      
+visible          4      2        2       50.0       2               0            0          2/4          814 m     
+-----------------------------------------------------------------------------------------------------------------------------
+ALL CASES        210    115      95      54.8       81              13           1          110/185      75 m      
+=============================================================================================================================
+
+FAILED CASES (95 of 210):
+-----------------------------------------------------------------------------------------------------------------------------
+#    Case ID                  Suite           Reason                               Guess error  Digs  Checks
+-----------------------------------------------------------------------------------------------------------------------------
+2    dev-brown-001            brown           never dug (handed over / closed)     531 m        0     5     
+3    dev-brown-002            brown           never dug (handed over / closed)     1592 m       0     5     
+6    dev-brown-005            brown           never dug (handed over / closed)     911 m        0     5     
+10   dev-cd_damp-001          cd_damp         never dug (handed over / closed)     22 m         0     5     
+11   dev-cd_damp-002          cd_damp         never dug (handed over / closed)     2282 m       0     5     
+12   dev-cd_damp-003          cd_damp         dug but missed the leak              292 m        1     5     
+13   dev-cd_damp-004          cd_damp         never dug (handed over / closed)     9 m          0     5     
+14   dev-cd_damp_decoy-000    cd_damp_decoy   never dug (handed over / closed)     251 m        0     5     
+15   dev-cd_damp_decoy-001    cd_damp_decoy   dug but missed the leak              2148 m       1     5     
+16   dev-cd_damp_decoy-002    cd_damp_decoy   never dug (handed over / closed)     169 m        0     5     
+19   dev-cd_damp_decoy-005    cd_damp_decoy   never dug (handed over / closed)     211 m        0     5     
+20   dev-cd_damp_decoy-006    cd_damp_decoy   never dug (handed over / closed)     1111 m       0     5     
+21   dev-cd_sound-000         cd_sound        dug but missed the leak              112 m        1     5     
+22   dev-cd_sound-001         cd_sound        never dug (handed over / closed)     340 m        0     5     
+24   dev-cd_sound-003         cd_sound        never dug (handed over / closed)     2838 m       0     5     
+26   dev-cd_sound_decoy-000   cd_sound_decoy  never dug (handed over / closed)     1098 m       0     5     
+30   dev-cd_sound_decoy-004   cd_sound_decoy  never dug (handed over / closed)     870 m        0     5     
+31   dev-cd_sound_decoy-005   cd_sound_decoy  never dug (handed over / closed)     137 m        0     5     
+40   dev-chronic-007          chronic         never dug (handed over / closed)     892 m        0     5     
+41   dev-chronic-008          chronic         never dug (handed over / closed)     2706 m       0     5     
+42   dev-chronic-009          chronic         never dug (handed over / closed)     1301 m       0     5     
+44   dev-displaced-000        displaced       never dug (handed over / closed)     179 m        0     5     
+45   dev-displaced-001        displaced       dug but missed the leak              27 m         2     5     
+46   dev-displaced-002        displaced       never dug (handed over / closed)     163 m        0     5     
+56   dev-trap-000             trap            crew sent, no leak (false dig)       -            1     5     
+58   dev-trap-002             trap            dug but missed the leak              122 m        1     5     
+61   test-brown-000           brown           dug but missed the leak              13 m         2     5     
+62   test-brown-001           brown           never dug (handed over / closed)     2036 m       0     5     
+63   test-brown-002           brown           never dug (handed over / closed)     654 m        0     5     
+64   test-brown-003           brown           never dug (handed over / closed)     418 m        0     5     
+65   test-brown-004           brown           never dug (handed over / closed)     349 m        0     5     
+67   test-brown-006           brown           never dug (handed over / closed)     183 m        0     5     
+68   test-brown-007           brown           never dug (handed over / closed)     90 m         0     5     
+70   test-brown-009           brown           never dug (handed over / closed)     407 m        0     5     
+71   test-brown-010           brown           never dug (handed over / closed)     81 m         0     5     
+72   test-brown-011           brown           dug but missed the leak              287 m        1     5     
+73   test-brown-012           brown           never dug (handed over / closed)     501 m        0     5     
+74   test-brown-013           brown           dug but missed the leak              880 m        1     5     
+75   test-brown-014           brown           never dug (handed over / closed)     687 m        0     5     
+76   test-brown-015           brown           never dug (handed over / closed)     3055 m       0     5     
+77   test-brown-016           brown           dug but missed the leak              205 m        1     5     
+78   test-brown-017           brown           never dug (handed over / closed)     2139 m       0     5     
+79   test-brown-018           brown           never dug (handed over / closed)     2098 m       0     5     
+80   test-brown-019           brown           never dug (handed over / closed)     2822 m       0     5     
+81   test-brown-020           brown           never dug (handed over / closed)     2372 m       0     5     
+84   test-cd_damp-002         cd_damp         never dug (handed over / closed)     2958 m       0     5     
+86   test-cd_damp-004         cd_damp         never dug (handed over / closed)     2039 m       0     5     
+87   test-cd_damp-005         cd_damp         never dug (handed over / closed)     568 m        0     5     
+89   test-cd_damp-007         cd_damp         never dug (handed over / closed)     85 m         0     5     
+90   test-cd_damp-008         cd_damp         never dug (handed over / closed)     286 m        0     5     
+92   test-cd_damp-010         cd_damp         never dug (handed over / closed)     21 m         0     5     
+93   test-cd_damp-011         cd_damp         never dug (handed over / closed)     31 m         0     5     
+94   test-cd_damp_decoy-000   cd_damp_decoy   never dug (handed over / closed)     33 m         0     5     
+97   test-cd_damp_decoy-003   cd_damp_decoy   never dug (handed over / closed)     103 m        0     5     
+99   test-cd_damp_decoy-005   cd_damp_decoy   never dug (handed over / closed)     2687 m       0     5     
+102  test-cd_damp_decoy-008   cd_damp_decoy   never dug (handed over / closed)     100 m        0     5     
+105  test-cd_damp_decoy-011   cd_damp_decoy   never dug (handed over / closed)     2938 m       0     5     
+106  test-cd_damp_decoy-012   cd_damp_decoy   never dug (handed over / closed)     36 m         0     5     
+108  test-cd_damp_decoy-014   cd_damp_decoy   never dug (handed over / closed)     324 m        0     5     
+109  test-cd_damp_decoy-015   cd_damp_decoy   never dug (handed over / closed)     95 m         0     5     
+110  test-cd_damp_decoy-016   cd_damp_decoy   never dug (handed over / closed)     1509 m       0     5     
+111  test-cd_damp_decoy-017   cd_damp_decoy   never dug (handed over / closed)     2402 m       0     5     
+113  test-cd_sound-001        cd_sound        never dug (handed over / closed)     86 m         0     5     
+114  test-cd_sound-002        cd_sound        never dug (handed over / closed)     911 m        0     5     
+115  test-cd_sound-003        cd_sound        never dug (handed over / closed)     205 m        0     5     
+116  test-cd_sound-004        cd_sound        never dug (handed over / closed)     504 m        0     5     
+118  test-cd_sound-006        cd_sound        never dug (handed over / closed)     1235 m       0     5     
+119  test-cd_sound-007        cd_sound        dug but missed the leak              275 m        2     5     
+124  test-cd_sound_decoy-000  cd_sound_decoy  never dug (handed over / closed)     1522 m       0     5     
+125  test-cd_sound_decoy-001  cd_sound_decoy  never dug (handed over / closed)     273 m        0     5     
+127  test-cd_sound_decoy-003  cd_sound_decoy  never dug (handed over / closed)     224 m        0     5     
+129  test-cd_sound_decoy-005  cd_sound_decoy  never dug (handed over / closed)     1677 m       0     5     
+130  test-cd_sound_decoy-006  cd_sound_decoy  never dug (handed over / closed)     1296 m       0     5     
+131  test-cd_sound_decoy-007  cd_sound_decoy  never dug (handed over / closed)     336 m        0     5     
+132  test-cd_sound_decoy-008  cd_sound_decoy  never dug (handed over / closed)     1632 m       0     5     
+133  test-cd_sound_decoy-009  cd_sound_decoy  never dug (handed over / closed)     1096 m       0     5     
+134  test-cd_sound_decoy-010  cd_sound_decoy  dug but missed the leak              215 m        2     5     
+135  test-cd_sound_decoy-011  cd_sound_decoy  never dug (handed over / closed)     1700 m       0     5     
+136  test-cd_sound_decoy-012  cd_sound_decoy  never dug (handed over / closed)     816 m        0     5     
+137  test-cd_sound_decoy-013  cd_sound_decoy  never dug (handed over / closed)     1141 m       0     5     
+143  test-chronic-001         chronic         never dug (handed over / closed)     254 m        0     5     
+144  test-chronic-002         chronic         never dug (handed over / closed)     187 m        0     5     
+145  test-chronic-003         chronic         dug but missed the leak              1217 m       1     5     
+146  test-chronic-004         chronic         never dug (handed over / closed)     71 m         0     5     
+147  test-chronic-005         chronic         never dug (handed over / closed)     943 m        0     5     
+149  test-chronic-007         chronic         never dug (handed over / closed)     32 m         0     5     
+150  test-chronic-008         chronic         never dug (handed over / closed)     88 m         0     5     
+156  test-chronic-014         chronic         dug but missed the leak              180 m        2     5     
+157  test-chronic-015         chronic         never dug (handed over / closed)     172 m        0     5     
+158  test-chronic-016         chronic         never dug (handed over / closed)     100 m        0     5     
+169  test-displaced-000       displaced       never dug (handed over / closed)     406 m        0     5     
+174  test-displaced-005       displaced       never dug (handed over / closed)     16 m         0     5     
+183  test-displaced-014       displaced       never dug (handed over / closed)     344 m        0     5     
+208  test-visible-000         visible         never dug (handed over / closed)     1598 m       0     5     
+209  test-visible-001         visible         never dug (handed over / closed)     2082 m       0     5     
+-----------------------------------------------------------------------------------------------------------------------------

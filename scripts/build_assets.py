@@ -16,7 +16,7 @@ import sys
 
 import numpy as np
 
-from agentix.town.assets import Town
+from aquamind.town.assets import Town
 
 if __name__ == "__main__":
     config = sys.argv[1] if len(sys.argv) > 1 else "configs/ltown.yaml"
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     print(f"pipe distance: {net.pipe_distance.shape}")
 
     if not os.path.exists(f"{d}/gazetteer/gazetteer_ltown.json"):
-        from agentix.town.gazetteer import build_gazetteer, save, skin, strip_geometry
+        from aquamind.town.gazetteer import build_gazetteer, save, skin, strip_geometry
         os.makedirs(f"{d}/gazetteer", exist_ok=True)
         geo = build_gazetteer(net, seed=0)
         save(geo, f"{d}/gazetteer/geometry.json")
@@ -36,16 +36,16 @@ if __name__ == "__main__":
         town = Town(config)
 
     if not os.path.exists(f"{d}/truth/real_truth.npz"):
-        from agentix.sim.truth_model import parse_real_inp, save_cache
+        from aquamind.sim.truth_model import parse_real_inp, save_cache
         os.makedirs(f"{d}/truth", exist_ok=True)
         save_cache(parse_real_inp(cfg["real_inp"]), f"{d}/truth/real_truth.npz")
 
     if not os.path.exists(f"{d}/signatures.npz"):
-        from agentix.search.signatures import build_library
+        from aquamind.search.signatures import build_library
         build_library({**cfg, "signatures": cfg["signatures"]}, f"{d}/signatures.npz", workers=4)
 
     if not os.path.exists(f"{d}/sections.json"):
-        from agentix.town.sections import build_sections
+        from aquamind.town.sections import build_sections
         wn = net.wn
         nf = {}                                         # nominal share of mean use during 01-05 h (billing estimate)
         for j in net.junctions:
@@ -65,8 +65,8 @@ if __name__ == "__main__":
               f"{max(s['expected_night_use_lps'] for s in sec['sections'])} L/s")
 
     if not os.path.exists(f"{d}/records.md"):
-        from agentix.sim.records import build_records
-        from agentix.sim.terrain import Terrain
+        from aquamind.sim.records import build_records
+        from aquamind.sim.terrain import Terrain
         rec = build_records(net, town.places, Terrain(net), seed=0)
         open(f"{d}/records.md", "w").write(rec["markdown"])
         os.makedirs(f"{d}/truth", exist_ok=True)

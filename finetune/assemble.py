@@ -20,8 +20,8 @@ import random
 import sys
 
 sys.path.insert(0, ".")
-from agentix.reader.prompts import FT_READ_SYSTEM, FT_REPLY_SYSTEM  # noqa: E402
-from agentix.reader.schema import valid_read, valid_reply  # noqa: E402
+from aquamind.reader.prompts import FT_READ_SYSTEM, FT_REPLY_SYSTEM  # noqa: E402
+from aquamind.reader.schema import valid_read, valid_reply  # noqa: E402
 
 SRC, OUT = "finetune/data_raw", "finetune/dataset"
 N_TEST_REAL = 250

@@ -17,7 +17,7 @@ pytestmark = pytest.mark.skipif(not os.path.exists(f"{BENCH}/dev.json"), reason=
 
 @pytest.fixture(scope="module")
 def world():
-    from agentix.eval.runner import World
+    from aquamind.eval.runner import World
     return World(BENCH)
 
 
@@ -47,8 +47,8 @@ def test_sediment_scour_physics(world):
 
 def test_pipe_material_failure_records_rag(world):
     """Verify that RAG records.md contains historical failure tickets and use_repair_record raises priors."""
-    from agentix.agent.toolbox import Toolbox
-    from agentix.methods import make_reader
+    from aquamind.agent.toolbox import Toolbox
+    from aquamind.methods import make_reader
     
     name = _find_case(world, "chronic")
     case, env = world.open(name, "spread_k5", "template")
@@ -78,8 +78,8 @@ def test_geotechnical_subsidence_cues(world):
 
 def test_adversarial_decoy_discrimination(world):
     """Verify that citizen phone callbacks debunk look-alike decoy complaints."""
-    from agentix.agent.toolbox import Toolbox
-    from agentix.methods import make_reader
+    from aquamind.agent.toolbox import Toolbox
+    from aquamind.methods import make_reader
     
     name = _find_case(world, "cd_sound_decoy")
     case, env = world.open(name, "spread_k5", "template")
@@ -101,9 +101,9 @@ def test_adversarial_decoy_discrimination(world):
 
 def test_downhill_dispersion_triangulation(world):
     """Verify that topographical triangulation traces overland and trench flow uphill."""
-    import agentix.search.topography as topo
-    from agentix.agent.toolbox import Toolbox
-    from agentix.methods import make_reader
+    import aquamind.search.topography as topo
+    from aquamind.agent.toolbox import Toolbox
+    from aquamind.methods import make_reader
     
     name = _find_case(world, "displaced")
     case, env = world.open(name, "spread_k5", "template")

@@ -1,6 +1,6 @@
 #!/bin/zsh
 # Final evaluation split over 4 PCs. Every profile runs ALL 210 cases of benchmark agentix_master (150 frozen test + 60 dev), resumable.
-# Only the first agent version (agentix/agent/crew.py) is evaluated; agent_v2 is not part of any profile.
+# Only the first agent version (aquamind/agent/crew.py) is evaluated; agent_v2 is not part of any profile.
 # usage:   zsh scripts/final_eval.sh <profile>      DRY=1 prints the commands only    WORKERS=3 (one per API key)    LIMIT=n smoke test    STRIDE_ROLES=2 role ablations on every 2nd case
 #
 #   main    PC-1 (the main PC): agentix_crew on spread_k5, spread_k3, spread_k10          (runs/final_crew/run_crew.sh does the same)
@@ -34,7 +34,7 @@ case $P in
   pcA_rev) CORE=plain_llm,ablation_no_reports,react_agent;                           ROLES=;;      # the main PC, after k10: pcA's core list from the END, so it meets the PC that runs pcA from the front
   pcB_rev) CORE=ablation_one_shot,ablation_no_rag,ablation_no_temp_sensor;           ROLES=;;      # the main PC after pcA_rev: pcB's core list from the END
   pcC_roles) CORE=; ROLES=ablation_no_sop,ablation_no_triangulation;;
-  nollm) CORE=agentix_code,ablation_no_ai,fixed_rules,crew_practice,classical_bruteforce,classical_direct_inversion,classical_reference
+  nollm) CORE=agentix_code,ablation_no_ai,fixed_rules,crew_practice,classical_bruteforce,classical_direct_inversion
          LAYOUTS=(spread_k5 spread_k3 spread_k10);;
   *) echo "unknown profile $P"; exit 2;;
 esac

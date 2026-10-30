@@ -9,10 +9,10 @@ import os
 
 import numpy as np
 
-from agentix.baselines.rq1 import METHODS, one_look
-from agentix.eval.runner import World
-from agentix.eval.splits import cases_for
-from agentix.methods import make_reader
+from aquamind.baselines.rq1 import METHODS, one_look
+from aquamind.eval.runner import World
+from aquamind.eval.splits import cases_for
+from aquamind.methods import make_reader
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     w = World(a.bench)
     llm = None
     if a.reader == "llm":
-        from agentix.llm.client import LLM
+        from aquamind.llm.client import LLM
         llm = LLM()
     reader = make_reader(a.reader, w, llm)
     names = cases_for(a.bench, a.split)

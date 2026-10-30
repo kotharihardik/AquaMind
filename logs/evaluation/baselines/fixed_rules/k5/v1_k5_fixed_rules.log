@@ -1,0 +1,98 @@
+====================================================================================================
+AGENTIX EVALUATION: FIXED_RULES (v1)
+Category: BASELINES | Layouts: k5 | First started: 2026-10-27 17:36:18
+Title: fixed_rules on spread_k5
+====================================================================================================
+
+CASE-BY-CASE DETAILED LOG (HIGH-VALUE ESSENTIAL INFORMATION ONLY):
+----------------------------------------------------------------------------------------------------
+
+##### LAYOUT spread_k5 (k5): 6 cases logged #####
+
+--- [k5 | CASE #001] dev-brown-000 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.89 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  309.8 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 1, Wrong: 1, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 0 | Tokens: 0 | Wall Time: 2.4s
+  Safety Audit:    WARNING: 0 unsafe, 1 violations
+  Key Action:      Investigation decided hand_over (distance error: 309.8m)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #002] dev-brown-001 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.66 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  352.7 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 1, Wrong: 1, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 0 | Tokens: 0 | Wall Time: 8.3s
+  Safety Audit:    WARNING: 0 unsafe, 3 violations
+  Key Action:      Investigation decided hand_over (distance error: 352.7m)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #003] dev-brown-003 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (4.34 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  156.9 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 1, Wrong: 1, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 0 | Tokens: 0 | Wall Time: 9.9s
+  Safety Audit:    WARNING: 0 unsafe, 2 violations
+  Key Action:      Investigation decided hand_over (distance error: 156.9m)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #004] dev-brown-002 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (4.90 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  571.7 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 1, Wrong: 1, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 0 | Tokens: 0 | Wall Time: 31.4s
+  Safety Audit:    WARNING: 0 unsafe, 1 violations
+  Key Action:      Investigation decided hand_over (distance error: 571.7m)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #005] dev-brown-004 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (5.42 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  398.9 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 1, Wrong: 1, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 0 | Tokens: 0 | Wall Time: 26.0s
+  Safety Audit:    WARNING: 0 unsafe, 1 violations
+  Key Action:      Investigation decided hand_over (distance error: 398.9m)
+-------------------------------------------------------------------------------------
+--- [k5 | CASE #006] dev-brown-005 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (3.12 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  124.7 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 1, Wrong: 1, Field Checks: 1/5)
+  AI Resources:    LLM Calls: 0 | Tokens: 0 | Wall Time: 27.9s
+  Safety Audit:    WARNING: 0 unsafe, 1 violations
+  Key Action:      Investigation decided hand_over (distance error: 124.7m)
+-------------------------------------------------------------------------------------
+
+=============================================================================================================================
+LAYOUT spread_k5: BENCHMARK CASE-BY-CASE OVERVIEW TABLE:
+-----------------------------------------------------------------------------------------------------------------------------
+#    Case ID            Suite        Trigger       Predicted  Dist Err    <=100m?  Outcome    Digs  Checks  LLM Calls  Time  
+-----------------------------------------------------------------------------------------------------------------------------
+1    dev-brown-000      brown        citizen_mess  -          309.8 m     NO       hand_over  1     1       0          2.4s
+2    dev-brown-001      brown        citizen_mess  -          352.7 m     NO       hand_over  1     1       0          8.3s
+3    dev-brown-003      brown        citizen_mess  -          156.9 m     NO       hand_over  1     1       0          9.9s
+4    dev-brown-002      brown        citizen_mess  -          571.7 m     NO       hand_over  1     1       0          31.4s
+5    dev-brown-004      brown        citizen_mess  -          398.9 m     NO       hand_over  1     1       0          26.0s
+6    dev-brown-005      brown        citizen_mess  -          124.7 m     NO       hand_over  1     1       0          27.9s
+-----------------------------------------------------------------------------------------------------------------------------
+* 'chronic*' indicates silent underground hidden leaks with no surface water.
+
+SUMMARY BENCHMARK METRICS (spread_k5):
+---------------------------------------------------------------------------
+  Total Cases Logged:          6
+  Accuracy (Found <= 100m):    0/6 (0.0%)
+  Median Distance Error:       331.2 m
+  False Digs (on No-Leak):     0/0
+  Unsafe / Unapproved Digs:    0
+  Total LLM API Calls:         0
+  Total Tokens Consumed:       0
+  Average Time / Case:         17.6s
+
+=============================================================================================================================

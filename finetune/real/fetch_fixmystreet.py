@@ -14,7 +14,7 @@ import urllib.parse
 import urllib.request
 
 BASE = "https://www.fixmystreet.com/open311/v2"
-H = {"User-Agent": "AgentiX-research/0.1 (university course project; polite crawler)", "Accept": "application/json"}
+H = {"User-Agent": "AquaMind-research/0.1 (university course project; polite crawler)", "Accept": "application/json"}
 OUT = "data/finetune/real/fixmystreet_raw.jsonl"
 WATER = re.compile(r"water|leak|burst|hydrant|flood|drain|sewer|puddle", re.I)
 

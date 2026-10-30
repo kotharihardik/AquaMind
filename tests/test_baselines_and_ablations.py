@@ -5,10 +5,10 @@ import shutil
 import tempfile
 import pytest
 
-from agentix.baselines.registry import BASELINE_METADATA, get_baseline_registry, is_llm_baseline
-from agentix.ablations.registry import ABLATION_METADATA, get_ablation_registry, is_llm_ablation
-from agentix.methods import registry, get_method_info
-from agentix.eval.logger import EvaluationLogger
+from aquamind.baselines.registry import BASELINE_METADATA, get_baseline_registry, is_llm_baseline
+from aquamind.ablations.registry import ABLATION_METADATA, get_ablation_registry, is_llm_ablation
+from aquamind.methods import registry, get_method_info
+from aquamind.eval.logger import EvaluationLogger
 
 BENCH = "data/benchmark/agentix_master" if os.path.exists("data/benchmark/agentix_master/dev.json") else "data/benchmark/agentix_final"
 
@@ -64,12 +64,12 @@ def test_non_llm_ablations_instantiation():
 
 def test_individual_ablation_modules():
     """Verify each ablation can be imported directly from its dedicated file."""
-    from agentix.ablations.no_reports import build_no_reports
-    from agentix.ablations.no_temp_sensor import build_no_temp_sensor
-    from agentix.ablations.no_rag import build_no_rag
-    from agentix.ablations.no_gate import build_no_gate
-    from agentix.ablations.one_shot import build_one_shot, OneShotBrain
-    from agentix.ablations.no_ai import build_no_ai
+    from aquamind.ablations.no_reports import build_no_reports
+    from aquamind.ablations.no_temp_sensor import build_no_temp_sensor
+    from aquamind.ablations.no_rag import build_no_rag
+    from aquamind.ablations.no_gate import build_no_gate
+    from aquamind.ablations.one_shot import build_one_shot, OneShotBrain
+    from aquamind.ablations.no_ai import build_no_ai
 
     # Non-LLM builder
     m_no_ai = build_no_ai()
@@ -99,7 +99,7 @@ def test_individual_ablation_modules():
 
 def test_multi_api_key_loading(monkeypatch, tmp_path):
     """Verify LLM client loads multiple API keys and sets up per-key rate pacing. Self-contained: fake keys, so it passes on any PC with or without a .env."""
-    from agentix.llm.client import LLM
+    from aquamind.llm.client import LLM
     monkeypatch.chdir(tmp_path)                                 # no .env here: the keys below are the only ones
     for k in ("NVIDIA_API_KEY", "NVIDIA_API_KEY_1", "NVIDIA_API_KEY_2", "NVIDIA_API_KEY_3"):
         monkeypatch.delenv(k, raising=False)
@@ -173,7 +173,7 @@ def test_evaluation_logger_subfolders_and_versioning():
 @pytest.mark.skipif(not os.path.exists(f"{BENCH}/dev.json"), reason="benchmark not assembled")
 def test_fast_non_llm_execution():
     """Integration test: execute classical_direct_inversion on a real case."""
-    from agentix.eval.runner import World, run_case
+    from aquamind.eval.runner import World, run_case
     w = World(BENCH)
     methods = registry(None, "rules")
     method = methods["classical_direct_inversion"]
@@ -193,7 +193,7 @@ ONE_LOOK_ONLY = {"sensitivity_match", "report_hotspot", "lila_style"}      # RQ1
 
 
 def test_registry_has_every_documented_method():
-    """Regression: a refactor once left agentix_crew, classical_reference and the crew-role ablations out of registry() (inside an `except: pass`)."""
+    """Regression: a refactor once left agentix_crew and the crew-role ablations out of registry() (inside an `except: pass`)."""
     m = registry(None, "rules")
     must = {"agentix_crew", "agentix_crew_no_override", "agentix_code", "react_agent", "plain_llm", "fixed_rules", "crew_practice",
             "classical_bruteforce"}

@@ -9,7 +9,7 @@ GROUPS = {"visible (sanity)": ["visible"], "displaced pool": ["displaced"], "dam
           "NON-OBVIOUS pooled": ["displaced", "damp", "sound", "brown", "chronic", "silent"]}
 NAMES = {"agentix_code": "autopilot, complaints used", "agentix_no_reports_code": "autopilot, NO complaints (sensors + field checks)",
          "agentix_code_brown": "autopilot + brown-water footprints", "agentix_code_brown_nowork": "  ... without the works log",
-         "agentix": "AgentiX (LLM)", "fixed_rules": "fixed rules", "crew_practice": "crews' current practice"}
+         "agentix": "AquaMind (LLM)", "fixed_rules": "fixed rules", "crew_practice": "crews' current practice"}
 
 def ci(x, n=1000):
     x = np.asarray(x, float); rng = np.random.default_rng(0)

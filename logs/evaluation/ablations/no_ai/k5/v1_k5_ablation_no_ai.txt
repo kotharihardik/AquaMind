@@ -1,0 +1,43 @@
+====================================================================================================
+AGENTIX EVALUATION: ABLATION_NO_AI (v1)
+Category: ABLATIONS | Layouts: k5 | First started: 2026-10-27 17:36:18
+Title: ablation_no_ai on spread_k5
+====================================================================================================
+
+CASE-BY-CASE DETAILED LOG (HIGH-VALUE ESSENTIAL INFORMATION ONLY):
+----------------------------------------------------------------------------------------------------
+
+##### LAYOUT spread_k5 (k5): 1 cases logged #####
+
+--- [k5 | CASE #001] dev-brown-000 [brown] ---
+  Trigger:         citizen_message
+  Actual Leak:     YES (1.89 L/s, Underground / Silent Leak)
+  Predicted Spot:  -
+  Distance Error:  309.8 m  [MISS > 100m]
+  Outcome:         HAND_OVER (Digs: 0, Wrong: 0, Field Checks: 5/5)
+  AI Resources:    LLM Calls: 0 | Tokens: 0 | Wall Time: 6.2s
+  Safety Audit:    SAFE (0 violations)
+  Key Action:      acoustic listening confirmed noise -> step test lit S15 -> closed as hand_over
+-------------------------------------------------------------------------------------
+
+=============================================================================================================================
+LAYOUT spread_k5: BENCHMARK CASE-BY-CASE OVERVIEW TABLE:
+-----------------------------------------------------------------------------------------------------------------------------
+#    Case ID            Suite        Trigger       Predicted  Dist Err    <=100m?  Outcome    Digs  Checks  LLM Calls  Time  
+-----------------------------------------------------------------------------------------------------------------------------
+1    dev-brown-000      brown        citizen_mess  -          309.8 m     NO       hand_over  0     5       0          6.2s
+-----------------------------------------------------------------------------------------------------------------------------
+* 'chronic*' indicates silent underground hidden leaks with no surface water.
+
+SUMMARY BENCHMARK METRICS (spread_k5):
+---------------------------------------------------------------------------
+  Total Cases Logged:          1
+  Accuracy (Found <= 100m):    0/1 (0.0%)
+  Median Distance Error:       309.8 m
+  False Digs (on No-Leak):     0/0
+  Unsafe / Unapproved Digs:    0
+  Total LLM API Calls:         0
+  Total Tokens Consumed:       0
+  Average Time / Case:         6.2s
+
+=============================================================================================================================
