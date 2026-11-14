@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AquaMind Control Room</title>
+  <meta name="description" content="AquaMind: finding water leaks with few sensors, citizen messages and a crew of four AI agents. Demo of the AgentiX LMA project.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2338bdf8' d='M12 2C9 6.5 5 10.6 5 14.5A7 7 0 0 0 19 14.5C19 10.6 15 6.5 12 2z'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand" data-go="overview" title="AquaMind">
+      <div class="brand-logo" id="logo"></div>
+      <div>
+        <div class="brand-name">AquaMind</div>
+        <div class="brand-sub">AgentiX · LMA 2026</div>
+      </div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="top-right">
+      <span class="status-dot" id="st-reader" title="Fine-tuned reader"><i></i><span>Reader</span></span>
+      <span class="status-dot" id="st-live" title="LLM API keys for live runs"><i></i><span>Live</span></span>
+      <button class="icon-btn" id="btn-theme" title="Light / dark theme (T)"></button>
+      <button class="icon-btn" id="btn-full" title="Full screen (F)"></button>
+    </div>
+  </header>
+  <main id="main">
+    <section class="view scroll" id="view-overview"></section>
+    <section class="view" id="view-mission"></section>
+    <section class="view" id="view-h2h"></section>
+    <section class="view scroll" id="view-safety"></section>
+    <section class="view scroll" id="view-lab"></section>
+    <section class="view scroll" id="view-results"></section>
+  </main>
+  <div id="loading" style="position:fixed;inset:0;display:grid;place-items:center;z-index:100;background:var(--bg)">
+    <div style="text-align:center">
+      <div class="spinner" style="width:34px;height:34px;border-width:3px"></div>
+      <div style="margin-top:14px;color:var(--muted);font-size:13px">Loading the L-Town network and the evaluation logs…</div>
+    </div>
+  </div>
+  <script type="module" src="/static/js/main.js"></script>
+</body>
+</html>
