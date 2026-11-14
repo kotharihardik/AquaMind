@@ -23,11 +23,20 @@ _Q = np.geomspace(0.3, 15, 40)
 
 
 def p_hear(q: float) -> float:
+    """Chance a listening survey hears a leak of this size.
+
+    Args: q = leak size in L/s.
+    Returns: probability.
+    """
     return min(LISTEN_PMAX, LISTEN_P1 * np.sqrt(max(q, 0.1)))
 
 
 class ToolModels:
     def __init__(self, net, sections):
+        """The search's own (rough) models of the field tools.
+
+        Args: net = Network; sections = Sections.
+        """
         self.net, self.sections = net, sections
         self.D = net.pipe_distance
 
@@ -58,6 +67,11 @@ class ToolModels:
         return float(sum(w * frac(q) for w, q in zip(pq, _Q))), frac(0.0)
 
     def listen(self, c: int, R: float, heard: bool, at: int | None, q_hat: float) -> tuple[np.ndarray, float]:
+        """Likelihood of a listening result for a leak at each junction.
+
+        Args: c = junction listened at; R = radius (m); heard = noise heard?; at = pinpointed junction or None; q_hat = estimated leak size.
+        Returns: (likelihood per junction, likelihood if no leak).
+        """
         d = self.D[c]
         inside = d <= R
         p = np.where(inside, p_hear(q_hat) * (1 - LISTEN_EDGE * d / R), 0.0)
@@ -90,6 +104,11 @@ class ToolModels:
         return p_hear, p_damp
 
     def canvass(self, c: int, n: int, heard: int, damp: int, q_hat: float) -> tuple[np.ndarray, float]:
+        """Likelihood of a canvass result for a leak at each junction.
+
+        Args: c = canvass centre; n = answers; heard = heard hissing; damp = saw damp ground; q_hat = estimated leak size.
+        Returns: (likelihood per junction, likelihood if no leak).
+        """
         from scipy.stats import binom
         ring, w, _ = self.canvass_ring(c)
         ph, pd = self.canvass_p(ring, w, q_hat)
@@ -98,6 +117,11 @@ class ToolModels:
         return np.exp(CANV_TAU * (ll - ll0.max())), float(np.exp(CANV_TAU * (ll0 - ll0.max())))
 
     def logger(self, n: int, reading: float, offset: float, q_hat: float, fp) -> tuple[np.ndarray, float]:
+        """Likelihood of a temporary logger reading for a leak at each junction.
+
+        Args: n = logger junction; reading = night pressure (m); offset = calibration offset; q_hat = estimated leak size; fp = Fingerprints.
+        Returns: (likelihood per junction, likelihood if no leak).
+        """
         pred = fp.base_p_night[n] + offset - max(q_hat, 0.5) * fp.g_night[:, n]
         g = lambda x, m: np.exp(-0.5 * ((x - m) / LOGGER_SD_M) ** 2)
         return g(reading, pred), float(g(reading, fp.base_p_night[n] + offset))

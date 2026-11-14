@@ -1,4 +1,4 @@
-"""Cross-witness topology: where do the callers stand relative to each other on the hill and along the pipes? (ADR-015)
+"""Cross-witness topology: where do the callers stand relative to each other on the hill and along the pipes? (ADR-007)
 
 One leak often produces several reports at different places: a hiss heard high up, a soaked verge along the trench, water pooling at the bottom of the
 slope. Treated one by one they look like three leaks. Code states the facts (elevation of the place each caller names, the drop between callers and the
@@ -14,6 +14,9 @@ MIN_DROP_M = 1.0            # downstream must be at least this much lower than t
 
 
 def anchor(tb, rid: str) -> int | None:
+    """Args: tb = Toolbox; rid = report id.
+    Returns: the junction a message points to most, or None.
+    """
     m = tb.board.messages.get(rid)
     return int(np.argmax(m.w)) if (m is not None and m.w is not None) else None
 

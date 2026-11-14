@@ -16,7 +16,7 @@ localization operates by:
    - If acoustic surveys are silent (displaced by model mismatch or plastic pipe attenuation), the utility digs at
      its #1 hydraulic candidate (resulting in a DRY HOLE).
    - Blind excavation requests lack municipal permits on resurfaced streets and ignore school quiet hours,
-     triggering SOP violations (ADR-021).
+     triggering SOP violations (ADR-011).
 """
 from __future__ import annotations
 
@@ -30,6 +30,11 @@ class ClassicalDirectInversion:
     name = "classical_direct_inversion"
 
     def run_case(self, world, env, case) -> dict:
+        """Classical brute force: match the pressure drops against simulated leaks at all 782 junctions (with realistic model errors), then listen and dig.
+
+        Args: world = shared World; env = CaseEnv of the case; case = public Case.
+        Returns: {'final_guess': junction id, ...} for the result row.
+        """
         town, net = world.town, world.town.net
         fp = Fingerprints(town.signatures_path)
         sidx = [net.index[n] for n in case.pressure_nodes]
@@ -141,5 +146,5 @@ class ClassicalDirectInversion:
 
 
 class ClassicalBruteforce(ClassicalDirectInversion):
-    """Same method under the name the professor's question and ADR-022 use; its own name so result rows and resume-by-method stay separate."""
+    """Same method under the name the professor's question and ADR-011 use; its own name so result rows and resume-by-method stay separate."""
     name = "classical_bruteforce"

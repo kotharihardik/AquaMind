@@ -1,4 +1,4 @@
-"""On-demand hydraulic physics for HYPOTHESISED leak locations only (ADR-016).
+"""On-demand hydraulic physics for HYPOTHESISED leak locations only (ADR-006).
 
 There is no precomputed table of all 782 leak fingerprints any more in the agentic system, its ablations or the baselines. When an agent (or the
 no-AI fallback rule) names a candidate junction, this tool runs the utility's NOMINAL EPANET model with a 3 L/s leak at that junction and returns the
@@ -22,6 +22,10 @@ Q_REF = 3.0
 
 class PhysicsTool:
     def __init__(self, cfg: dict, junctions: list[str]):
+        """Simulates a leak at a junction on the utility's (nominal) model with WNTR and caches the result.
+
+        Args: cfg = town config; junctions = all junction ids.
+        """
         self.cfg, self.junctions = cfg, junctions
         self.windows = cfg["signatures"]["windows_h"]
         self._memo: dict[int, tuple[np.ndarray, np.ndarray]] = {}
@@ -31,6 +35,7 @@ class PhysicsTool:
         self.p_ref = base["night"]
 
     def _model(self):
+        """Returns: a fresh WNTR model of the nominal network with the simulation times set."""
         wn = wntr.network.WaterNetworkModel(self.cfg["nominal_inp"])
         wn.options.time.duration = int(self.cfg["signatures"]["duration_h"] * 3600)
         wn.options.time.report_timestep = 900
@@ -38,6 +43,11 @@ class PhysicsTool:
         return wn
 
     def _sim(self, node: str | None, q_lps: float = Q_REF) -> dict:
+        """Run one WNTR simulation.
+
+        Args: node = junction id with a leak (None = no leak); q_lps = leak size in L/s.
+        Returns: {time window: pressure per junction, ...}.
+        """
         wn = self._model()
         if node is not None:
             wn.get_node(node).emitter_coefficient = (q_lps / 1000.0) / np.sqrt(max(float(self.p_ref[self.junctions.index(node)]), 1.0))

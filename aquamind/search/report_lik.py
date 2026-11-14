@@ -26,6 +26,11 @@ class ReportModel:
     def __init__(self, net, places, lambda_near_m: float = 60.0, lambda_down_m: float = 220.0,
                  max_down_m: float = 1200.0, surface_radius_m: float = 60.0, lambda_damp_m: float = 90.0,
                  lambda_sound_m: float = 70.0, lambda_road_m: float = 60.0):
+        """How likely a message is, given a leak at each junction (nearby, downhill flow, damp, sound, road damage kernels).
+
+        Args: net = Network; places = Places; lambda_*_m = distance scales in metres for each kind of cue;
+              max_down_m = longest downhill travel; surface_radius_m = radius used to find downhill neighbours.
+        """
         self.net, self.places = net, places
         D = net.pipe_distance                      # damp patches and pipe noise travel along the pipe and its trench
         self.k_damp = np.exp(-D / lambda_damp_m)
@@ -83,6 +88,11 @@ class ReportModel:
 
     @staticmethod
     def kind(read: dict) -> str:
+        """Kind of evidence a message is.
+
+        Args: read = reader output.
+        Returns: 'discolour' | 'visible' | 'road_damage' | 'wet_ground' | 'sound_underground'.
+        """
         sym = set(read.get("symptoms") or [])
         if read.get("category") == "quality" and "dirty_water" in sym and not sym & VISIBLE:
             return "discolour"
@@ -98,7 +108,7 @@ class ReportModel:
         """Chance the message is unrelated to a network leak; None = not leak evidence at all."""
         if read.get("contains_instructions"):
             return None                                    # quarantined: never used as evidence (SOP-4)
-        if ReportModel.kind(read) == "discolour":          # brown / turbid tap water: evidence via the hydraulic footprint (ADR-010)
+        if ReportModel.kind(read) == "discolour":          # brown / turbid tap water: evidence via the hydraulic footprint (ADR-002)
             return 0.95 if read.get("on_private_property") is True else 0.0
         if read.get("category") != "leak" or not (set(read.get("symptoms") or []) & LEAK_SYMPTOMS):
             return None                                    # supply, quality, sewer/drain, other
@@ -113,6 +123,12 @@ class ReportModel:
         return eps
 
     def kernel(self, w: np.ndarray, source: str, pooling: bool = False, kind: str = "visible") -> np.ndarray:
+        """Spread a message's place over possible leak sites.
+
+        Args: w = place weights per junction; source = 'here' | 'flows_from' | 'unknown'; pooling = water is collected there;
+              kind = evidence kind (see kind()).
+        Returns: weight per junction for the leak site.
+        """
         if kind == "road_damage":                 # a void / sinking above the pipe: along the pipe, a bit tighter than damp ground
             return self.k_road @ w
         if kind == "wet_ground":                  # persistent damp, no stream: soaks the ground near the pipe

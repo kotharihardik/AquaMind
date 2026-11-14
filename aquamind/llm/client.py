@@ -62,6 +62,11 @@ def _discover_provider_keys(provider: str) -> list[str]:
 
     # Sort numerically if ending in numbers, else alphabetically for deterministic ordering
     def _sort_key(item):
+        """Sort key so NVIDIA_API_KEY_2 comes before NVIDIA_API_KEY_10.
+
+        Args: item = (env name, value).
+        Returns: (name prefix, number).
+        """
         k = item[0]
         parts = k.rsplit("_", 1)
         if len(parts) == 2 and parts[1].isdigit():
@@ -79,6 +84,8 @@ def _discover_provider_keys(provider: str) -> list[str]:
         if k and k not in seen:
             seen.add(k)
             deduped.append(k)
+    if provider == "nvidia":                       # NVIDIA keys always start with 'nvapi-'; anything else is rejected (HTTP 401)
+        deduped = [k for k in deduped if k.startswith("nvapi-")]
     return deduped
 
 
@@ -87,6 +94,10 @@ WRITER_MODEL = "gemini:gemini-3.1-flash-lite"                  # environment tex
 
 
 def load_dotenv(path: str = ".env") -> None:
+    """Load KEY=VALUE lines from a .env file into os.environ (existing values win).
+
+    Args: path = .env file path.
+    """
     if os.path.exists(path):
         for line in open(path):
             line = line.strip()
@@ -117,6 +128,7 @@ class LLM:
     usage: Usage = field(default_factory=Usage)
 
     def __post_init__(self):
+        """Finish setup: load .env, split 'provider:model', find the API keys, create the cache and rate folders."""
         load_dotenv()
         self.provider, self.name = self.model.split(":", 1)
         self.keys = _discover_provider_keys(self.provider)
@@ -148,10 +160,18 @@ class LLM:
         return answer
 
     def _rate_file(self, k_idx: int) -> str:
+        """Args: k_idx = index of an API key.
+        Returns: path of that key's shared rate-limit file (key stored only as a hash).
+        """
         tag = self._key_tags[k_idx]
         return f".cache/rate/{self.provider}_{tag}.json"
 
     def _key_wait_estimate(self, k_idx: int) -> tuple[float, float]:
+        """How long until this key may be used again under the rate limit.
+
+        Args: k_idx = key index.
+        Returns: (seconds to wait, gap between calls in seconds).
+        """
         base = 60.0 / RPM.get(self.provider, 20.0)
         rf = self._rate_file(k_idx)
         if not os.path.exists(rf):
@@ -214,6 +234,11 @@ class LLM:
             fcntl.flock(f, fcntl.LOCK_UN)
 
     def _ask(self, system, user, required):
+        """Call the API with retries: pick the least-busy key, wait for the rate limit, parse the JSON, retry on errors.
+
+        Args: system = system prompt; user = user prompt; required = keys the JSON answer must have.
+        Returns: parsed answer dict (with '_error' if all tries failed).
+        """
         last, tries, throttled = None, 0, 0
         preferred_k = (os.getpid() + random.randrange(len(self.keys))) % len(self.keys)
         while tries < 4 and throttled < 60:
@@ -253,6 +278,11 @@ class LLM:
         return {"_error": last}, 0, 0
 
     def _post(self, system, user, retry: bool, key_idx: int):
+        """Send one chat request to the provider.
+
+        Args: system, user = prompts; retry = True on a second try (shorter reasoning, more tokens); key_idx = API key to use.
+        Returns: the raw answer text (token usage is counted).
+        """
         sys_msg = system + "\n\nAnswer with ONE JSON object only (no markdown)."
         if retry:
             sys_msg = "Keep any reasoning very short.\n" + sys_msg
@@ -271,6 +301,11 @@ class LLM:
 
 
 def _parse(text: str, required: list[str]) -> dict:
+    """Parse an LLM answer as one JSON object (strips ``` fences and text around it).
+
+    Args: text = raw answer; required = keys that must be present.
+    Returns: dict. Raises ValueError if empty, not JSON or keys missing.
+    """
     if not text:
         raise ValueError("empty answer")
     text = text.strip()

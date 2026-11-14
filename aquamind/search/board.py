@@ -34,12 +34,19 @@ class MessageItem:
     power: float = 1.0               # correlated reports count less than independent ones (set by the board)
 
     def usable(self) -> bool:
+        """Returns: True if this message counts as evidence (it has a credibility and a place on the map)."""
         return self.eps is not None and self.w is not None
 
 
 class Board:
     def __init__(self, net, sections, rep_model, log_prior: np.ndarray, pressure_ll: np.ndarray, pressure_ll0: float,
                  prior_leak: float, q_hat: float, q_sd: float, dig_radius_m: float = 90.0):
+        """The evidence board: a Bayesian leak map over all junctions built from sensors, messages and field checks.
+
+        Args: net = Network; sections = step-test Sections; rep_model = ReportModel (message likelihoods);
+              log_prior = log prior per junction; pressure_ll = sensor log-likelihood per junction; pressure_ll0 = same for 'no leak';
+              prior_leak = prior P(leak); q_hat, q_sd = estimated leak size and its spread (L/s); dig_radius_m = dig success radius.
+        """
         self.net, self.sections, self.rep = net, sections, rep_model
         self.base = log_prior + pressure_ll
         self.base_none = pressure_ll0
@@ -54,6 +61,7 @@ class Board:
 
     # ------------------------------------------------------------------ items
     def touch(self):
+        """Mark the board as changed: clear the cached result and bump the version number."""
         self._cache = None
         self.version = getattr(self, "version", 0) + 1
 
@@ -68,6 +76,11 @@ class Board:
         return self._foot_E
 
     def message_loglik(self, m: MessageItem) -> tuple[np.ndarray, float]:
+        """Log-likelihood of one message for every possible leak junction.
+
+        Args: m = MessageItem.
+        Returns: (log-lik per junction, log-lik if there is no leak).
+        """
         if self.rep.kind(m.read) == "discolour":
             E = self._footprint()
             if E is None:
@@ -87,12 +100,21 @@ class Board:
         return m.power * np.log((1 - m.eps) * k + m.eps * bg + 1e-300), m.power * float(np.log(bg + 1e-300))
 
     def add_check(self, label: str, kind: str, lik: np.ndarray, lik_none: float, support: np.ndarray | None = None):
+        """Add the result of a field check to the board.
+
+        Args: label = name, e.g. 'listen@n123'; kind = 'step' | 'listen_hit' | 'listen_quiet' | ...;
+              lik = likelihood per junction; lik_none = likelihood if no leak; support = junctions this check physically supports.
+        """
         self.checks.append({"label": label, "kind": kind, "ll": np.log(np.maximum(lik, 1e-300)),
                             "ll0": float(np.log(max(lik_none, 1e-300))), "support": support})
         self.touch()
 
     # ------------------------------------------------------------------ the map
     def _compute(self):
+        """Combine all evidence into the leak map.
+
+        Returns: dict with 'post' (probability per junction), 'p_leak', 'dig' (best junction) and 'p_success'.
+        """
         lp, lnone = self.base.copy(), self.base_none
         prev = []
         for m in self.messages.values():
@@ -115,7 +137,7 @@ class Board:
         p_leak = float(1 / (1 + np.exp(-np.clip(lo, -40, 40))))
         cov = self.cover @ post
         cand = getattr(self, "cand", None)
-        if cand is not None:                       # ADR-016: a crew digs only where a leak was hypothesised and simulated
+        if cand is not None:                       # ADR-006: a crew digs only where a leak was hypothesised and simulated
             if not cand.any():
                 self._cache = {"post": post, "p_leak": p_leak, "cov": cov, "dig": int(np.argmax(cov)), "p_success": 0.0}
                 return self._cache
@@ -132,30 +154,35 @@ class Board:
 
     @property
     def state(self) -> dict:
+        """Returns: the computed board state (cached until the evidence changes)."""
         return self._cache or self._compute()
 
     @property
     def post(self) -> np.ndarray:
+        """Returns: probability of the leak at each junction, given there is a leak (array, sums to 1)."""
         return self.state["post"]
 
     @property
     def p_leak(self) -> float:
+        """Returns: probability that there is a leak at all."""
         return self.state["p_leak"]
 
     def best_dig(self) -> tuple[int, float]:
+        """Returns: (best junction index to dig, P(success) of digging there = finding the leak within the dig radius)."""
         return self.state["dig"], self.state["p_success"]
 
     def mass_outside(self) -> float:
-        """Share of the leak map on junctions nobody has hypothesised (ADR-016): the leak may be somewhere not yet considered."""
+        """Share of the leak map on junctions nobody has hypothesised (ADR-006): the leak may be somewhere not yet considered."""
         cand = getattr(self, "cand", None)
         return 0.0 if cand is None else float(self.post[~cand].sum())
 
     def section_mass(self) -> np.ndarray:
+        """Returns: share of the leak map in each step-test section, times P(leak)."""
         return self.sections.mass(self.post) * self.p_leak
 
     def section_mass_nomsg(self) -> np.ndarray:
         """Section mass of the leak map WITHOUT any citizen message: sensors, documents and field checks only. Complaints can mislead (a false
-        complaint made more credible by a call-back); the hedged first check also covers where this map points (ADR-014)."""
+        complaint made more credible by a call-back); the hedged first check also covers where this map points (ADR-007)."""
         if getattr(self, "_nm_version", None) != self.version:
             lp = self.base.copy()
             for c in self.checks:
@@ -184,14 +211,14 @@ class Board:
 
     def part_support(self, j: int) -> list[str]:
         """Step tests that lit a PART of a section (second night) holding junction j: the extra night flow is measured
-        inside a few hundred metres of main. It is physical evidence that no message can fake (ADR-008)."""
+        inside a few hundred metres of main. It is physical evidence that no message can fake (ADR-002)."""
         return [lab for lab in self.area_support(j) if self.sections.areas[lab.split(":")[-1]]["parent"] is not None]
 
     def field_support(self, j: int, final: bool = False) -> list[str]:
         """Evidence a crew would accept before opening the road (SOP-10): leak noise pinpointed near the spot, or a
         lit part of a section (the step test narrowed the extra night flow to a few hundred metres), or a lit section
         plus a citizen who confirmed water coming out of the road there. Messages alone can be wrong or faked, so they
-        never suffice. When no check can add anything (`final`), any lit step-test area counts (ADR-008)."""
+        never suffice. When no check can add anything (`final`), any lit step-test area counts (ADR-002)."""
         pins = self.pinpoints(j)
         if pins:
             return pins
@@ -219,6 +246,10 @@ class Board:
                 self.q_hat, self.q_sd = max(excess, 0.5), 0.4 + 0.15 * max(excess, 0.5)
 
     def add_listen_result(self, label: str, center: int, radius_m: float, heard: bool, at: int | None):
+        """Add a listening survey result.
+
+        Args: label = name; center = junction listened at; radius_m = radius; heard = leak noise heard?; at = pinpointed junction or None.
+        """
         lik, lik0 = self.tools.listen(center, radius_m, heard, at, self.q_hat)
         self.add_check(label, "listen_hit" if heard else "listen_quiet", lik, lik0)
         self.checks[-1]["center"] = center
@@ -226,24 +257,38 @@ class Board:
             self.checks[-1]["at"] = at
 
     def add_canvass_result(self, label: str, center: int, n: int, heard: int, damp: int):
+        """Add a neighbour-canvass result.
+
+        Args: label = name; center = junction; n = residents who answered; heard = how many heard hissing; damp = how many saw damp ground.
+        """
         lik, lik0 = self.tools.canvass(center, n, heard, damp, self.q_hat)
         self.add_check(label, "canvass", lik, lik0)
         self.checks[-1]["center"] = center
 
     def canvassed(self) -> list[int]:
+        """Returns: junctions where a canvass was done."""
         return [c["center"] for c in self.checks if c["kind"] == "canvass"]
 
     def add_logger_result(self, label: str, node: int, reading_m: float, offset_m: float, fp):
+        """Add a temporary pressure-logger reading.
+
+        Args: label = name; node = junction index; reading_m = night pressure (m); offset_m = calibration offset; fp = Fingerprints.
+        """
         lik, lik0 = self.tools.logger(node, reading_m, offset_m, self.q_hat, fp)
         self.add_check(label, "logger", lik, lik0)
 
     def add_dry_dig(self, label: str, node: int):
+        """Record a dig that found nothing: the leak is very unlikely near that spot.
+
+        Args: label = name; node = junction dug.
+        """
         self.dry.add(node)
         lik = np.where(self.cover[node] > 0, 0.03, 1.0)
         self.add_check(label, "dry_dig", lik, 1.0)
 
     # ------------------------------------------------------------------ copies for look-ahead
     def copy(self) -> "Board":
+        """Returns: an independent copy of the board (for what-if planning)."""
         b = Board.__new__(Board)
         b.__dict__.update(self.__dict__)
         b.messages = {k: MessageItem(**{**v.__dict__, "notes": list(v.notes)}) for k, v in self.messages.items()}

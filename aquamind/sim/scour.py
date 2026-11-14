@@ -1,4 +1,4 @@
-"""TRUTH side of brown water (ADR-010): which junctions' water is scoured by a leak, and when?
+"""TRUTH side of brown water (ADR-002): which junctions' water is scoured by a leak, and when?
 
 Sediment on pipe walls is mobilised when the flow in a pipe is clearly faster than the pipe has been used to (shear ~ velocity squared),
 or when it reverses. "Used to" = the largest velocity in the leak-free history AND in the same days without the leak (normal demand
@@ -11,6 +11,10 @@ import numpy as np
 
 class ScourMap:
     def __init__(self, footprint_path: str):
+        """Brown-water (scouring) truth model from pre-computed pipe flow changes.
+
+        Args: footprint_path = footprints.npz.
+        """
         z = np.load(footprint_path)
         self.pipes = [str(p) for p in z["pipes"]]
         self.ends = z["pipe_ends"]
@@ -18,6 +22,11 @@ class ScourMap:
         self.n_junctions = int(self.ends.max()) + 1 if self.ends.size else 0
 
     def to_nodes(self, m_pipe: np.ndarray, t_pipe: np.ndarray, n: int) -> tuple[np.ndarray, np.ndarray]:
+        """Move pipe-level scouring to junctions (each junction takes the strongest attached pipe).
+
+        Args: m_pipe = scour strength per pipe; t_pipe = scour time per pipe; n = number of junctions.
+        Returns: (strength per junction, time per junction).
+        """
         m = np.zeros(n, np.float32); t = np.full(n, np.inf)
         for k in (0, 1):
             for pi in np.where(self.ends[:, k] >= 0)[0]:

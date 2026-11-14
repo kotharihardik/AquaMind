@@ -13,6 +13,11 @@ the case, or a junction id. Answer JSON: {"decision": "dig" | "no_dig", "place":
 
 
 def _cert(evidence: list[str], why: str) -> dict:
+    """Build an approval certificate for the operator.
+
+    Args: evidence = list of evidence lines; why = reason.
+    Returns: {'why', 'evidence'}.
+    """
     return {"why": why, "evidence": evidence}
 
 
@@ -20,9 +25,18 @@ class PlainLLM:
     name = "plain_llm"
 
     def __init__(self, llm_factory):
+        """Plain-LLM baseline: one LLM answer, no tools.
+
+        Args: llm_factory = makes the LLM client.
+        """
         self.llm_factory = llm_factory
 
     def run_case(self, world, env, case) -> dict:
+        """Give the LLM the sensor summary and all raw messages; it answers once: dig at a place, or no dig.
+
+        Args: world = shared World; env = CaseEnv; case = public Case.
+        Returns: result dict with 'final_guess' and LLM usage.
+        """
         llm = self.llm_factory()
         text = (f"Case opened by {case.trigger.replace('_', ' ')}"
                 + (f" (message {case.trigger_report})" if getattr(case, "trigger_report", None) else "")

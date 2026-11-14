@@ -1,4 +1,4 @@
-"""Hydraulic footprints of a leak: where would a leak of size q at junction j scour the pipes? (ADR-010, code only)
+"""Hydraulic footprints of a leak: where would a leak of size q at junction j scour the pipes? (ADR-002, code only)
 
 Sediment on pipe walls is mobilised when the flow is clearly faster than the pipe is used to (shear grows with velocity squared) or
 reverses. A leak therefore turns the water brown on the pipes that FEED it, often hundreds of metres away, never at the leak itself.
@@ -13,6 +13,10 @@ import numpy as np
 
 class FootprintModel:
     def __init__(self, path: str, n_junctions: int, margin: float = 0.2, scale: float = 0.3):
+        """Brown-water footprint model: which junctions get scoured (brown water) for a leak at each site.
+
+        Args: path = footprints.npz; n_junctions = number of junctions; margin = flow increase needed to scour; scale = softness of that threshold.
+        """
         z = np.load(path)
         self.sizes = z["sizes_lps"].astype(float)
         ratio, rev, ends = z["ratio"].astype(np.float32), z["reverse"], z["pipe_ends"]

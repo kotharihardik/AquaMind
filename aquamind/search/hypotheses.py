@@ -1,4 +1,4 @@
-"""The hypothesis slate: a few competing explanations of the case, named by the agent, scored by code (ADR-014).
+"""The hypothesis slate: a few competing explanations of the case, named by the agent, scored by code (ADR-007).
 
 The leak map over the 782 junctions is a TOOL: the agent proposes what to compare (a leak in section S13, a leak near a landmark, a
 non-network cause for these complaints, no leak at all) and code answers with
@@ -56,6 +56,7 @@ class Hypothesis:
     cited_bad: int = 0
 
     def line(self) -> str:
+        """Returns: one line for the agents, e.g. 'H1: leak at Station Road | mass 42%'."""
         what = {"network_leak": f"leak at {self.where}", "non_network": f"non-network cause ({self.cause or 'unspecified'}) behind "
                 f"{', '.join(self.explains) or 'complaints'}", "no_leak": "no leak"}[self.kind]
         return f"{self.hid}: {what} | mass {self.mass:.0%}" + (f" | {self.error}" if self.error else "")
@@ -107,6 +108,11 @@ def build(slate: list, tb) -> list[Hypothesis]:
 
 
 def _step_power(tb, sids) -> tuple[dict, float]:
+    """Chance that a night step test of these sections detects the leak.
+
+    Args: tb = Toolbox; sids = section ids.
+    Returns: ({section: (power info)}, combined detection chance).
+    """
     b = tb.board
     pw = {sid: b.tools.step_power(sid, b.q_hat, b.q_sd) for sid in sids}
     return pw, 1.0 - float(np.prod([1 - fp for _, fp in pw.values()]))

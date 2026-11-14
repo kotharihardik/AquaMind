@@ -1,7 +1,7 @@
 """AquaMind: the investigation agent (proposal Section 7, component 3).
 
-Division of labour (ADR-005, revised by ADR-009 and ADR-014): code does every number and every routine step; the LLM judges.
-This is the SINGLE-AGENT version (one LLM, one prompt); the crew (crew.py) splits the job over three agents. Since ADR-014 nothing is asked by
+Division of labour (ADR-007, revised by ADR-003 and ADR-007): code does every number and every routine step; the LLM judges.
+This is the SINGLE-AGENT version (one LLM, one prompt); the crew (crew.py) splits the job over three agents. Since ADR-007 nothing is asked by
 template: this agent writes every question itself, and without it nobody is called.
 - The AUTOPILOT (code_policy.Autopilot) follows the planner's best field check and digs when the code gate opens.
 - The LLM is consulted at DECISION POINTS only, with a board built by code (never raw text):
@@ -72,6 +72,11 @@ def _dp(n: str, d: float, z: float) -> str:
 
 
 def _dq(q: float) -> str:
+    """Format a flow change for the agents, e.g. 'up 1.2 L/s'.
+
+    Args: q = change in L/s (positive = more flow).
+    Returns: short text.
+    """
     return f"up {q:.1f} L/s" if q >= 0 else f"down {-q:.1f} L/s"
 
 
@@ -79,6 +84,11 @@ class AquaMind:
     name = "agentix"
 
     def __init__(self, llm, max_rounds: int = 12, max_reviews: int = 4, one_shot: bool = False):
+        """The single-agent AquaMind brain (also used by the crew to draw the board text).
+
+        Args: llm = LLM client (None if only board_text is needed); max_rounds = loop limit;
+              max_reviews = how many LLM reviews; one_shot = True for the one-decision ablation.
+        """
         self.llm, self.max_rounds, self.max_reviews, self.one_shot = llm, max_rounds, max_reviews, one_shot
         self.turns: list[dict] = []
         self.prefer: str | None = None
@@ -86,6 +96,11 @@ class AquaMind:
 
     # ------------------------------------------------------------------ the board the LLM reads
     def board_text(self, tb, why: str) -> str:
+        """Write the case board the agents read: case status, sensors, messages, records, field results, the gates.
+
+        Args: tb = the Toolbox of the case; why = why the agent is asked now (shown on top).
+        Returns: the board as plain text.
+        """
         env, b, case = tb.env, tb.board, tb.case
         j, ps = b.best_dig()
         ev = b.pressure_evidence
@@ -158,6 +173,11 @@ class AquaMind:
 
     # ------------------------------------------------------------------ one consultation
     def review(self, tb, why: str) -> dict:
+        """Ask the LLM once and apply its answer: cite records, call back citizens, set preference and stance.
+
+        Args: tb = the Toolbox; why = reason for this review.
+        Returns: the turn record (thought, calls, records, stance, error).
+        """
         d = self.llm.json(SYSTEM + (ONE_SHOT if self.one_shot else ""), self.board_text(tb, why) + "\n\nYour decision?",
                           ["stance"], tag="agentix")
         rec = {"turn": len(self.turns), "why": why, "thought": d.get("thought"), "calls": d.get("calls"),
@@ -196,6 +216,11 @@ class AquaMind:
 
     # ------------------------------------------------------------------ the loop
     def run(self, tb):
+        """Run a whole case: reviews, then field checks and digs through the code autopilot.
+
+        Args: tb = the Toolbox of the case.
+        Returns: the tool trace (list of dicts).
+        """
         ap = Autopilot()
         if any(m.usable() for m in tb.board.messages.values()):       # nothing to judge on a SCADA-only case
             self.review(tb, "first look: nobody has been called yet; write your questions (each person can be called twice)")
@@ -243,6 +268,11 @@ class AquaMind:
         return self._end(tb, ap)
 
     def _end(self, tb, ap):
+        """Close the case if still open (autopilot decides no_leak / hand_over).
+
+        Args: tb = the Toolbox; ap = the Autopilot.
+        Returns: the tool trace.
+        """
         if not (tb.done or tb.env.done):
             ap.finish(tb)
         return tb.trace

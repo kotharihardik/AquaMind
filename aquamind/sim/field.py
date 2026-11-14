@@ -25,6 +25,11 @@ class CaseEnv:
     def __init__(self, bench_dir: str, case_name: str, net, sections, places, ctx, layout: list[str],
                  field_yaml: str = "configs/field.yaml", text_variant: str = "realistic", max_checks: int | None = None,
                  noise: SensorNoise | None = None):
+        """The simulated world of one case: actions get answers from the hidden truth; every action is logged.
+
+        Args: bench_dir = benchmark folder; case_name = case name; net, sections, places, ctx = town objects; layout = sensor junction ids;
+              field_yaml = field tool settings; text_variant = 'realistic'; max_checks = field-check budget (default from config); noise = sensor noise.
+        """
         self.net, self.sections, self.places, self.layout = net, sections, places, list(layout)
         self.ctx = ctx
         self.cfg = yaml.safe_load(open(field_yaml))
@@ -53,24 +58,48 @@ class CaseEnv:
 
     # ------------------------------------------------------------------ bookkeeping
     def _rng(self, kind: str, key: str) -> np.random.Generator:
+        """Random generator that depends only on the action (common random numbers: same action, same luck for every method).
+
+        Args: kind = action kind; key = what it acts on.
+        Returns: numpy Generator.
+        """
         k = f"{kind}|{key}"
         n = self._n[k] = self._n.get(k, 0) + 1
         return np.random.default_rng(zlib.crc32(f"{self.name}|{k}|{n}".encode()))
 
     def _record(self, action: str, args: dict, result: dict, field_check: bool = False) -> dict:
+        """Log an action.
+
+        Args: action = name; args = arguments; result = result dict; field_check = counts against the budget?
+        Returns: result.
+        """
         self.log.append({"t_s": self.now, "action": action, "args": args, "result": result, "field_check": field_check})
         return result
 
     def _err(self, action: str, args: dict, msg: str) -> dict:
+        """Log a failed action.
+
+        Args: action = name; args = arguments; msg = error text.
+        Returns: {'ok': False, 'error': msg}.
+        """
         return self._record(action, args, {"ok": False, "error": msg})
 
     def clock(self, t_s: float | None = None) -> dt.datetime:
+        """Args: t_s = case time in seconds (None = now).
+        Returns: the calendar date-time.
+        """
         return self.start + dt.timedelta(seconds=float(self.now if t_s is None else t_s))
 
     def checks_left(self) -> int:
+        """Returns: field checks left in the budget."""
         return max(self.max_checks - self.checks_used, 0)
 
     def _use_check(self, action: str, args: dict) -> dict | None:
+        """Use one field check if allowed.
+
+        Args: action = name; args = arguments.
+        Returns: None if allowed, else an error result (closed, budget used up, deadline passed).
+        """
         if self.done:
             return self._err(action, args, "the case is closed")
         if self.checks_used >= self.max_checks:
@@ -81,17 +110,28 @@ class CaseEnv:
         return None
 
     def _next_night_end(self) -> float:
+        """Returns: the end (05:00) of the next night window, in case seconds (step tests run at night)."""
         d = math.floor((self.now - 1 * 3600) / 86400) + 1          # the next 01:00-05:00 window
         return d * 86400 + 5 * 3600
 
     def leak_q_at(self, t_s: float) -> float:
+        """Args: t_s = case time (s).
+        Returns: true leak flow in L/s at that time (0 if no leak).
+        """
         return float(np.interp(t_s, self.arr["time_s"], self.arr["leak_lps"])) if self.leak else 0.0
 
     def distance_to_leak(self, node: str) -> float:
+        """Args: node = junction id.
+        Returns: pipe distance in metres from that junction to the true leak.
+        """
         return float(self._dist[self.net.index[node]])
 
     # ------------------------------------------------------------------ what a method can see
     def observe(self) -> dict:
+        """What the control room sees now: sensor data and messages received so far.
+
+        Returns: {'now_s', 'time_s', 'pressure', 'flow', 'tank_level', 'reports', ...}.
+        """
         t = self.arr["time_s"]
         vis = t <= self.now
         reps = [{k: r[k] for k in ("report_id", "received_at", "channel", "text")}
@@ -122,6 +162,11 @@ class CaseEnv:
         self.now = min(self.now + max(seconds, 0.0), self.horizon)
 
     def wait(self, hours: float) -> dict:
+        """Let time pass.
+
+        Args: hours = 0-24.
+        Returns: {'ok': True, 'now_s'} or an error.
+        """
         if not 0 < hours <= 24:
             return self._err("wait", {"hours": hours}, "hours must be in (0, 24]")
         self.advance(hours * 3600)
@@ -139,12 +184,22 @@ class CaseEnv:
         return self._record("notify", {"target": str(target)[:80], "message": str(message)[:300]}, {"ok": True})
 
     def request_approval(self, action: str, target, certificate: dict) -> dict:
+        """Ask the operator for a one-time token for a step test or a dig.
+
+        Args: action = 'dig' | 'step_test'; target = junction id or section ids; certificate = {'why', 'evidence'}.
+        Returns: {'ok': True, 'approved', 'token', ...}.
+        """
         d = self.operator.review(action, target, certificate)
         return self._record("request_approval", {"action": action, "target": target, "certificate": certificate},
                             {"ok": True, **d})
 
     # ------------------------------------------------------------------ field checks (budgeted)
     def step_test(self, section_ids: list[str], token: str | None) -> dict:
+        """Night step test: close sections one by one and measure the drop in zone inflow.
+
+        Args: section_ids = 1-6 section ids; token = operator token for exactly these sections.
+        Returns: {'ok': True, 'night_of', 'steps': [{'section', 'inflow_drop_lps', 'expected_customer_use_lps'} or {'failed'}]}.
+        """
         args = {"sections": list(section_ids)}
         c = self.cfg["step_test"]
         bad = [s for s in section_ids if s not in self.sections.areas]
@@ -175,6 +230,11 @@ class CaseEnv:
                             field_check=True)
 
     def listen(self, center: str, radius_m: float) -> dict:
+        """Acoustic survey around a junction (8 h).
+
+        Args: center = junction id; radius_m = up to 250 m.
+        Returns: {'ok': True, 'heard': bool, 'pinpointed_at': junction id if heard}.
+        """
         args = {"center": center, "radius_m": radius_m}
         c = self.cfg["listen"]
         if center not in self.net.index:
@@ -241,6 +301,11 @@ class CaseEnv:
                                               "ready_at": self.clock().isoformat(timespec="minutes")})
 
     def place_logger(self, node: str) -> dict:
+        """Temporary pressure logger for one night.
+
+        Args: node = junction id.
+        Returns: {'ok': True, 'night_mean_pressure_m'} or an error.
+        """
         args = {"node": node}
         if node not in self.net.index:
             return self._err("place_logger", args, f"unknown junction '{node}'")
@@ -258,6 +323,11 @@ class CaseEnv:
 
     # ------------------------------------------------------------------ decisions
     def dig(self, node: str, token: str | None, after_school_hours: bool = False) -> dict:
+        """Dig at a junction (6 h). Success if the true leak is within 100 m of pipe.
+
+        Args: node = junction id; token = operator token for this spot; after_school_hours = wait until schools close.
+        Returns: {'ok': True, 'leak_found': bool} or an error.
+        """
         args = {"node": node, "after_school_hours": after_school_hours}
         if self.done:
             return self._err("dig", args, "the case is closed")
@@ -285,6 +355,10 @@ class CaseEnv:
 
     # ------------------------------------------------------------------ scoring (evaluation harness only)
     def score(self) -> dict:
+        """Score the finished case (evaluation only).
+
+        Returns: {'has_leak', 'found', 'n_digs', 'wrong_digs', 'outcome', 'checks_used', 'canvasses', 'hours_open', 'water_lost_m3'}.
+        """
         digs = [e for e in self.log if e["action"] == "dig" and e["result"].get("ok")]
         found = any(e["result"]["leak_found"] for e in digs)
         lost = 0.0
@@ -300,5 +374,8 @@ class CaseEnv:
 
 
 def _realistic(path: str) -> dict:
+    """Args: path = hidden/<case>.realistic.json.
+    Returns: {report_id: re-worded text}, or {} if the file does not exist.
+    """
     import os
     return json.load(open(path)) if os.path.exists(path) else {}

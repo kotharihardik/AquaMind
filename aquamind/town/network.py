@@ -15,6 +15,9 @@ import wntr
 
 
 def load_model(inp_path: str) -> wntr.network.WaterNetworkModel:
+    """Args: inp_path = EPANET .inp file.
+    Returns: WNTR water network model.
+    """
     return wntr.network.WaterNetworkModel(inp_path)
 
 
@@ -27,18 +30,22 @@ class NetworkInfo:
 
     @cached_property
     def junctions(self) -> list[str]:
+        """Returns: all junction ids, e.g. ['n1', 'n2', ...] (index i = junction i everywhere)."""
         return list(self.wn.junction_name_list)
 
     @cached_property
     def index(self) -> dict[str, int]:
+        """Returns: {junction id: index}."""
         return {n: i for i, n in enumerate(self.junctions)}
 
     @cached_property
     def elevation(self) -> np.ndarray:
+        """Returns: elevation of every junction in metres."""
         return np.array([self.wn.get_node(n).elevation for n in self.junctions])
 
     @cached_property
     def xy(self) -> np.ndarray:
+        """Returns: x, y coordinates of every junction, shape [J, 2]."""
         return np.array([self.wn.get_node(n).coordinates for n in self.junctions], dtype=float)
 
     @cached_property
@@ -104,8 +111,12 @@ class NetworkInfo:
         return L
 
     def pipes(self) -> list[str]:
+        """Returns: all pipe ids."""
         return list(self.wn.pipe_name_list)
 
     def pipe_endpoints(self, pipe: str) -> tuple[str, str]:
+        """Args: pipe = pipe id.
+        Returns: (start junction id, end junction id).
+        """
         link = self.wn.get_link(pipe)
         return link.start_node_name, link.end_node_name

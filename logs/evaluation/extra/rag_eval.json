@@ -1,0 +1,194 @@
+{
+  "A_archive_retrieval": {
+    "m4_on": {
+      "hotspot_messages": 755,
+      "hit_rate@3": 0.615,
+      "recall@3": 0.57,
+      "precision@3": 0.609,
+      "mrr": 0.609,
+      "leak_messages": 1075,
+      "leak_messages_shown_a_false_alarm_ticket": 0.26,
+      "other_messages": 7950,
+      "other_messages_with_any_ticket": 0.3
+    },
+    "m4_off": {
+      "hotspot_messages": 755,
+      "hit_rate@3": 0.591,
+      "recall@3": 0.483,
+      "precision@3": 0.486,
+      "mrr": 0.518,
+      "leak_messages": 1075,
+      "leak_messages_shown_a_false_alarm_ticket": 0.25,
+      "other_messages": 7950,
+      "other_messages_with_any_ticket": 0.602
+    },
+    "bm25_ranking": {
+      "recall@1": 0.14,
+      "hit@1": 0.342,
+      "recall@3": 0.455,
+      "hit@3": 0.602,
+      "recall@6": 0.639,
+      "hit@6": 0.654,
+      "recall@10": 0.663,
+      "hit@10": 0.687,
+      "mrr": 0.475,
+      "queries": 754
+    },
+    "archive": {
+      "tickets": 88,
+      "false_alarm_tickets": 37,
+      "repair_tickets": 51
+    }
+  },
+  "B_sop_retrieval": {
+    "m5_on": {
+      "dig_sites": 782,
+      "sites_with_location_rules": 195,
+      "location_rule_recall@6": 1.0,
+      "all_needed_recall@6": 0.528,
+      "precision@6": 0.382,
+      "mrr": 0.393,
+      "by_rule": {
+        "SOP-5_found": 63,
+        "SOP-6_found": 119,
+        "SOP-7_found": 47
+      },
+      "share_of_sites_retrieving": {
+        "SOP-1": 1.0,
+        "SOP-4": 1.0,
+        "SOP-5": 1.0,
+        "SOP-6": 1.0,
+        "SOP-7": 1.0,
+        "SOP-8": 1.0
+      }
+    },
+    "m5_off": {
+      "dig_sites": 782,
+      "sites_with_location_rules": 195,
+      "location_rule_recall@6": 1.0,
+      "all_needed_recall@6": 0.528,
+      "precision@6": 0.382,
+      "mrr": 0.391,
+      "by_rule": {
+        "SOP-5_found": 63,
+        "SOP-6_found": 119,
+        "SOP-7_found": 47
+      },
+      "share_of_sites_retrieving": {
+        "SOP-1": 1.0,
+        "SOP-4": 1.0,
+        "SOP-5": 1.0,
+        "SOP-6": 1.0,
+        "SOP-7": 1.0,
+        "SOP-8": 1.0
+      }
+    },
+    "sop_clauses": 10
+  },
+  "C_citations": {
+    "mid k5": {
+      "false_alarm_citations": 1095,
+      "false_alarm_accepted": 766,
+      "repair_citations": 1417,
+      "repair_accepted": 1417,
+      "accepted_repair_with_leak_case": 1256,
+      "accepted_repair_within_300m_of_leak": 189,
+      "accepted_citing_a_repair_ticket": 279,
+      "accepted_on_real_leak_message": 71,
+      "accepted_on_non_leak_message": 695,
+      "false_alarm_acceptance_rate": 0.7,
+      "accepted_false_alarm_precision": 0.907,
+      "accepted_citing_repair_ticket_share": 0.364,
+      "repair_acceptance_rate": 1.0,
+      "accepted_repair_near_leak_rate": 0.15
+    },
+    "final k5": {
+      "false_alarm_citations": 2098,
+      "false_alarm_accepted": 1157,
+      "accepted_citing_a_repair_ticket": 0,
+      "accepted_on_real_leak_message": 87,
+      "accepted_on_non_leak_message": 1070,
+      "repair_citations": 2206,
+      "repair_accepted": 2206,
+      "accepted_repair_with_leak_case": 1956,
+      "accepted_repair_within_300m_of_leak": 291,
+      "false_alarm_acceptance_rate": 0.551,
+      "accepted_false_alarm_precision": 0.925,
+      "accepted_citing_repair_ticket_share": 0.0,
+      "repair_acceptance_rate": 1.0,
+      "accepted_repair_near_leak_rate": 0.149
+    },
+    "mid k3": {
+      "repair_citations": 1391,
+      "repair_accepted": 1391,
+      "accepted_repair_with_leak_case": 1233,
+      "accepted_repair_within_300m_of_leak": 186,
+      "false_alarm_citations": 1152,
+      "false_alarm_accepted": 754,
+      "accepted_citing_a_repair_ticket": 258,
+      "accepted_on_real_leak_message": 60,
+      "accepted_on_non_leak_message": 694,
+      "false_alarm_acceptance_rate": 0.655,
+      "accepted_false_alarm_precision": 0.92,
+      "accepted_citing_repair_ticket_share": 0.342,
+      "repair_acceptance_rate": 1.0,
+      "accepted_repair_near_leak_rate": 0.151
+    },
+    "final k3": {
+      "false_alarm_citations": 2105,
+      "false_alarm_accepted": 1146,
+      "accepted_citing_a_repair_ticket": 0,
+      "accepted_on_real_leak_message": 92,
+      "accepted_on_non_leak_message": 1054,
+      "repair_citations": 2227,
+      "repair_accepted": 2227,
+      "accepted_repair_with_leak_case": 1984,
+      "accepted_repair_within_300m_of_leak": 273,
+      "false_alarm_acceptance_rate": 0.544,
+      "accepted_false_alarm_precision": 0.92,
+      "accepted_citing_repair_ticket_share": 0.0,
+      "repair_acceptance_rate": 1.0,
+      "accepted_repair_near_leak_rate": 0.138
+    },
+    "mid k10": {
+      "false_alarm_citations": 1090,
+      "false_alarm_accepted": 738,
+      "repair_citations": 1392,
+      "repair_accepted": 1391,
+      "accepted_repair_with_leak_case": 1241,
+      "accepted_repair_within_300m_of_leak": 181,
+      "accepted_citing_a_repair_ticket": 253,
+      "accepted_on_real_leak_message": 74,
+      "accepted_on_non_leak_message": 664,
+      "false_alarm_acceptance_rate": 0.677,
+      "accepted_false_alarm_precision": 0.9,
+      "accepted_citing_repair_ticket_share": 0.343,
+      "repair_acceptance_rate": 0.999,
+      "accepted_repair_near_leak_rate": 0.146
+    },
+    "final k10": {
+      "false_alarm_citations": 2078,
+      "false_alarm_accepted": 1142,
+      "accepted_citing_a_repair_ticket": 0,
+      "accepted_on_real_leak_message": 89,
+      "accepted_on_non_leak_message": 1053,
+      "repair_citations": 2261,
+      "repair_accepted": 2260,
+      "accepted_repair_with_leak_case": 1994,
+      "accepted_repair_within_300m_of_leak": 302,
+      "false_alarm_acceptance_rate": 0.55,
+      "accepted_false_alarm_precision": 0.922,
+      "accepted_citing_repair_ticket_share": 0.0,
+      "repair_acceptance_rate": 1.0,
+      "accepted_repair_near_leak_rate": 0.151
+    }
+  },
+  "D_injection_guard": {
+    "messages_with_instructions": 13,
+    "removed": 10,
+    "detection_rate": 0.769,
+    "normal_messages": 9767,
+    "wrongly_changed": 0,
+    "false_positive_rate": 0.0
+  }
+}

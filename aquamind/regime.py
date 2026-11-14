@@ -1,4 +1,4 @@
-"""Stress regimes (ADR-012): the SAME benchmark cases replayed under harder conditions. Set with `scripts/run_eval.py --regime a,b`
+"""Stress regimes (ADR-011): the SAME benchmark cases replayed under harder conditions. Set with `scripts/run_eval.py --regime a,b`
 (environment variable AGENTIX_REGIME). Applied only by the harness (aquamind/eval/runner.py), never visible to a method.
 
   survey          no complaint and no alarm opened this case: the utility is surveying a zone and does not know whether a leak exists
@@ -17,10 +17,15 @@ import numpy as np
 
 
 def active() -> set[str]:
+    """Returns: the stress regimes switched on in AGENTIX_REGIME, e.g. {'survey', 'drift'}."""
     return {x for x in os.environ.get("AGENTIX_REGIME", "").split(",") if x}
 
 
 def apply(case, env, name: str) -> None:
+    """Change a case for the active stress regimes (no messages, plastic pipes, sensor drift, outage).
+
+    Args: case = PublicCase (changed in place); env = CaseEnv (changed in place); name = case name (seeds the randomness).
+    """
     reg = active()
     if not reg:
         return

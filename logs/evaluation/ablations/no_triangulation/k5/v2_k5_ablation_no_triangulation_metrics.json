@@ -1,0 +1,48 @@
+{
+  "version": "v2",
+  "title": "final roles_2 (fine-tuned reader)",
+  "category": "ablations",
+  "method": "ablation_no_triangulation",
+  "layout": "k5",
+  "timestamp": "2026-11-13 23:28:09",
+  "duration_seconds": 5977.4,
+  "metadata": {
+    "bench": "data/benchmark/agentix_master",
+    "split": "all",
+    "methods": "ablation_no_auditor,ablation_no_sop,ablation_no_triangulation",
+    "layouts": "spread_k5",
+    "suites": "",
+    "regime": "",
+    "reader": "local"
+  },
+  "metrics": {
+    "total_cases": 210,
+    "leak_cases": 185,
+    "no_leak_cases": 25,
+    "found_within_100m_count": 155,
+    "found_within_100m_pct": 83.8,
+    "median_distance_error_m": 24.0,
+    "found_rate_pct": 76.2,
+    "false_digs_on_no_leak": "0/25",
+    "unsafe_actions_count": 0,
+    "total_llm_api_calls": 2261,
+    "total_tokens": 11293461,
+    "avg_wall_time_per_case_s": 111.6
+  },
+  "by_layout": {
+    "spread_k5": {
+      "total_cases": 210,
+      "leak_cases": 185,
+      "no_leak_cases": 25,
+      "found_within_100m_count": 155,
+      "found_within_100m_pct": 83.8,
+      "median_distance_error_m": 24.0,
+      "found_rate_pct": 76.2,
+      "false_digs_on_no_leak": "0/25",
+      "unsafe_actions_count": 0,
+      "total_llm_api_calls": 2261,
+      "total_tokens": 11293461,
+      "avg_wall_time_per_case_s": 111.6
+    }
+  }
+}

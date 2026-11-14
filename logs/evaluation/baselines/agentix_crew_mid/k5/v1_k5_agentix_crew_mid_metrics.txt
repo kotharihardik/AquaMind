@@ -1,0 +1,42 @@
+====================================================================================================
+AQUAMIND EVALUATION: AGENTIX_CREW_MID (v1) | SUMMARY METRICS
+Category: BASELINES | Layout: k5 | First started: 2026-11-06 14:21:43 | Last resumed: 2026-11-06 14:57:23
+Title: agentix_crew,agentix_crew_mid on dev (spread_k5)
+Session: data/benchmark/agentix_master | agentix_crew_mid | reader=rules | text=realistic | regime=- | checks=5
+Case numbers: position in the benchmark of 210 cases (the same on every resume)
+====================================================================================================
+
+SUMMARY BENCHMARK METRICS (spread_k5):
+---------------------------------------------------------------------------
+  Total Cases Logged:          7 (leak 7, no leak 0)
+  Accuracy (Found <= 100m):    4/7 (57.1%)
+  Correct digs (leak found):   42.9%
+  Median Distance Error:       27.1 m
+  False Digs (on No-Leak):     0/0
+  Unsafe / Unapproved Digs:    0
+  Total LLM API Calls:         58
+  Total Tokens Consumed:       295,114
+  Average Time / Case:         104.2s
+
+
+=============================================================================================================================
+SUMMARY BY CASE TYPE (suite).  Success = a dig found the leak (leak case) / the case was closed without a dig (no-leak case).
+-----------------------------------------------------------------------------------------------------------------------------
+Suite            Cases  Success  Failed  Success %  Leak never dug  Dug, missed  False dig  Guess<=100m  Median err
+-----------------------------------------------------------------------------------------------------------------------------
+brown            5      3        2       60.0       1               1            0          4/5          18 m      
+cd_damp          1      0        1       0.0        1               0            0          0/1          196 m     
+cd_damp_decoy    1      0        1       0.0        1               0            0          0/1          1944 m    
+-----------------------------------------------------------------------------------------------------------------------------
+ALL CASES        7      3        4       42.9       3               1            0          4/7          27 m      
+=============================================================================================================================
+
+FAILED CASES (4 of 7):
+-----------------------------------------------------------------------------------------------------------------------------
+#    Case ID                  Suite           Reason                               Guess error  Digs  Checks
+-----------------------------------------------------------------------------------------------------------------------------
+2    dev-brown-001            brown           dug but missed the leak              5 m          1     5     
+7    dev-brown-006            brown           never dug (handed over / closed)     1865 m       0     5     
+10   dev-cd_damp-001          cd_damp         never dug (handed over / closed)     196 m        0     5     
+19   dev-cd_damp_decoy-005    cd_damp_decoy   never dug (handed over / closed)     1944 m       0     5     
+-----------------------------------------------------------------------------------------------------------------------------

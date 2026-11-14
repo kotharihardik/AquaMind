@@ -22,7 +22,7 @@ from .tool_models import CANV_DAMP_FP, CANV_FP, CANV_RADIUS, LISTEN_EDGE, LISTEN
 
 LISTEN_R = 250.0
 DIG_BAR = 0.8
-FINAL_BAR = 0.35          # bar for the last-resort dig, when no check can add anything (ADR-008)
+FINAL_BAR = 0.35          # bar for the last-resort dig, when no check can add anything (ADR-002)
 CANVASS_BLOCK = 200.0
 CANVASS_COST = 0.02       # a canvass spends no field check but costs about a night of time: prefer a check when equal
 HOT_MASS = 0.2            # a tested section holding this share of the map is split into parts even if not "lit"
@@ -58,11 +58,13 @@ class Lite:
     mass_nm: np.ndarray | None = None               # section mass without messages (hedge, top level only)
 
     def copy(self):
+        """Returns: an independent copy of this light-weight board state."""
         return Lite(self.lp.copy(), self.lnone, self.prior_leak, self.q_hat, self.q_sd, self.support.copy(),
                     set(self.tested), list(self.quiet), list(self.lit),
                     None if self.lit_mask is None else self.lit_mask.copy(), list(self.canvassed))
 
     def post_pleak(self):
+        """Returns: (probability per junction, P(leak))."""
         m = self.lp.max()
         e = np.exp(self.lp - m)
         z = e.sum()
@@ -70,6 +72,10 @@ class Lite:
         return (e / z).astype(np.float32), float(1 / (1 + np.exp(-np.clip(lo, -40, 40))))
 
     def add(self, lik, lik0):
+        """Add one check's evidence.
+
+        Args: lik = likelihood per junction; lik0 = likelihood if no leak.
+        """
         self.lp = self.lp + np.log(np.maximum(lik, 1e-300))
         self.lnone += float(np.log(max(lik0, 1e-300)))
 
@@ -78,6 +84,12 @@ class Planner:
     def __init__(self, net, sections, tools, dig_radius_m: float = 90.0, n_samples: int = 96, seed: int = 0,
                  dig_bar: float = DIG_BAR, final_bar: float = FINAL_BAR, hedge: float = 0.0,
                  allow_step: bool = True):
+        """Look-ahead planner: values each field check by simulating its possible results.
+
+        Args: net = Network; sections = Sections; tools = ToolModels; dig_radius_m = dig success radius; n_samples = simulated scenarios;
+              seed = random seed; dig_bar / final_bar = P(success) needed to dig (normal / last resort); hedge = share kept for complaint-free areas;
+              allow_step = step tests allowed.
+        """
         self.allow_step = allow_step
         self.hedge = hedge
         self.net, self.sections, self.tools = net, sections, tools
@@ -93,6 +105,11 @@ class Planner:
 
     # ------------------------------------------------------------------ state from the board
     def lite(self, board) -> Lite:
+        """Make a light-weight copy of the board for fast what-if simulation.
+
+        Args: board = Board.
+        Returns: Lite.
+        """
         st = board.state
         post, p = st["post"], st["p_leak"]
         lp = np.log(np.maximum(post, 1e-300))
@@ -110,13 +127,19 @@ class Planner:
             if c["kind"] == "step" and c.get("support") is not None:
                 lit_mask |= c["support"]
                 if self.sections.areas[c["label"].split(":")[-1]]["parent"] is not None:
-                    support |= c["support"]                   # a lit part of a section is physical support (ADR-008)
+                    support |= c["support"]                   # a lit part of a section is physical support (ADR-002)
         return Lite(lp, lnone, board.prior_leak, board.q_hat, board.q_sd, support, tested, quiet, lit, lit_mask,
                     board.canvassed(), board.section_mass_nomsg() if self.hedge > 0 else None)
 
     # ------------------------------------------------------------------ candidate checks
     def candidates(self, s: Lite, max_sections: int = 6, n_listen: int = 3, labels: bool = True,
                    canvass_left: int = 0, hedge_on: bool = False) -> list[Option]:
+        """List the possible field checks (step tests of sections or their parts, listening spots, canvass).
+
+        Args: s = Lite state; max_sections = sections per step test; n_listen = listening options; labels = write labels;
+              canvass_left = canvasses allowed; hedge_on = keep a slot for complaint-free areas.
+        Returns: list of Option.
+        """
         post, p = s.post_pleak()
         mass = self.sections.mass(post) * p
         opts = []
@@ -169,6 +192,11 @@ class Planner:
         return opts
 
     def base_choice(self, s: Lite) -> Option | None:
+        """Simple rule choice (no look-ahead): listen if the map is concentrated, else step test.
+
+        Args: s = Lite state.
+        Returns: Option or None.
+        """
         opts = self.candidates(s, n_listen=1, labels=False)
         listen = [o for o in opts if o.kind == "listen"]
         step = [o for o in opts if o.kind == "step"]
@@ -180,6 +208,10 @@ class Planner:
 
     # ------------------------------------------------------------------ simulated outcomes
     def _simulate(self, o: Option, s: Lite, j: int | None, q: float, rng) -> None:
+        """Simulate one possible result of a check and add it to the state.
+
+        Args: o = Option; s = Lite (changed in place); j = true leak junction in this scenario (None = no leak); q = leak size; rng = random generator.
+        """
         if o.kind == "step":
             for sid in o.args["sections"]:
                 mask = self.sections.areas[sid]["mask"]
@@ -250,6 +282,11 @@ class Planner:
 
     # ------------------------------------------------------------------ public
     def evaluate(self, board, checks_left: int, digs_left: int = 2, canvass_left: int = 0) -> list[Option]:
+        """Value every candidate check by simulated scenarios (chance to find the leak / to decide).
+
+        Args: board = Board; checks_left = field checks left; digs_left = digs left; canvass_left = canvasses left.
+        Returns: list of Option with their values, best first.
+        """
         s0 = self.lite(board)
         opts = self.candidates(s0, canvass_left=canvass_left if checks_left > 0 else 0, hedge_on=True)
         if checks_left <= 0:

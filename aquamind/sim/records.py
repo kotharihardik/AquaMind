@@ -25,6 +25,11 @@ LANDMARK_CAUSE = {"park": "garden_or_hose", "market": "washing", "kirana_shop": 
 
 
 def build_records(net, places, terrain, seed: int = 0, n_hotspots: int = 10, start=dt.date(2025, 6, 1)) -> dict:
+    """Build the town's ticket archive: recurring nuisance spots (hoses, car washes, private pipes) and repair history.
+
+    Args: net = Network; places = Places; terrain = Terrain; seed = random seed; n_hotspots = recurring spots; start = first ticket date.
+    Returns: {'markdown': records.md text, 'hotspots': [...], ...}.
+    """
     rng = np.random.default_rng(seed)
     lms = [p for p in places.places.values() if p["type"] == "landmark"]
     rng.shuffle(lms)
@@ -45,6 +50,7 @@ def build_records(net, places, terrain, seed: int = 0, n_hotspots: int = 10, sta
 
     lines = []
     def when():
+        """Returns: a random ticket date (ISO text) within 480 days after start."""
         return (start + dt.timedelta(days=int(rng.integers(0, 480)))).isoformat()
     for h in hotspots:
         j = net.index[h["node"]]
@@ -69,7 +75,7 @@ def build_records(net, places, terrain, seed: int = 0, n_hotspots: int = 10, sta
     return {"hotspots": hotspots, "markdown": "\n".join(text) + "\n"}
 
 
-# ---------------------------------------------------------------------------- failure history (benchmark v4h, ADR-018)
+# ---------------------------------------------------------------------------- failure history (benchmark v4h, ADR-009)
 REPAIR_NOTES = [
     "Main burst repaired {where}. Old CI main badly corroded; clamp fitted. Recommend replacement of this stretch.",
     "Leak on distribution main repaired {where}. Pipe wall thin, heavy tuberculation found. Second repair on this stretch this year.",

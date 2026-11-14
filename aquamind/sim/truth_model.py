@@ -30,6 +30,11 @@ def _sections(path: str):
 
 
 def parse_real_inp(path: str) -> dict:
+    """Parse L-TOWN_Real.inp (pipes, demands, patterns, elevations, tanks, valves) once.
+
+    Args: path = the .inp file.
+    Returns: dict of parsed sections.
+    """
     pipes, demands, patterns, elev, emitters, tanks, valves = {}, [], {}, {}, {}, {}, {}
     for sec, tok in _sections(path):
         if not tok:
@@ -59,6 +64,10 @@ def parse_real_inp(path: str) -> dict:
 
 
 def save_cache(parsed: dict, out_path: str):
+    """Save the parsed Real model as a compact .npz cache.
+
+    Args: parsed = output of parse_real_inp; out_path = .npz path.
+    """
     p_ids = sorted(parsed["pipes"])
     pv = np.array([parsed["pipes"][p] for p in p_ids], dtype=np.float64)
     d_j = np.array([d[0] for d in parsed["demands"]])
@@ -78,6 +87,10 @@ class RealTruth:
     """Builds per-case truth models from the cached official Real model."""
 
     def __init__(self, cache_path: str):
+        """The BattLeDIM 'real' truth model, loaded from the cache: real pipe parameters and one year of real demands.
+
+        Args: cache_path = real_truth.npz.
+        """
         z = np.load(cache_path)
         self.pipe = {pid: (float(d), float(r)) for pid, d, r in
                      zip(z["pipe_ids"], z["pipe_diameter_mm"], z["pipe_roughness"])}

@@ -28,6 +28,7 @@ class LeakSpec:
     ramp_s: int = 0        # incipient: time to reach full size
 
     def to_dict(self):
+        """Returns: the leak spec as a plain dict."""
         return asdict(self)
 
 
@@ -37,6 +38,11 @@ def orifice_coeff(diameter_m: float) -> float:
 
 
 def orifice_flow_lps(diameter_m: float, pressure_m: float) -> float:
+    """Leak flow through a hole (orifice law).
+
+    Args: diameter_m = hole diameter (m); pressure_m = pressure head (m).
+    Returns: flow in L/s.
+    """
     return 1000 * orifice_coeff(diameter_m) * np.sqrt(max(pressure_m, 0.0))
 
 

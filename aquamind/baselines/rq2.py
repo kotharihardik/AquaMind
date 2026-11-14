@@ -3,7 +3,7 @@
 Modular architecture: delegates to dedicated baseline modules:
   - react_agent.py: standard tool-using ReAct LLM agent
   - plain_llm.py: zero-tool one-shot LLM
-  - fixed_rules.py: heuristic rule-based investigation agent (no LLM, ADR-017)
+  - fixed_rules.py: heuristic rule-based investigation agent (no LLM, ADR-011)
   - crew_practice.py: current municipal utility crew practice
 """
 from __future__ import annotations
@@ -15,6 +15,11 @@ from .react_agent import ReActAgent, resolve_place, format_sensor_summary, STEP_
 
 
 def registry(llm_factory) -> dict:
+    """The RQ2 baselines by name.
+
+    Args: llm_factory = makes the LLM client.
+    Returns: {'fixed_rules', 'crew_practice', 'plain_llm', 'react_agent'} -> method objects.
+    """
     return {
         "fixed_rules": FixedRules(),
         "crew_practice": CrewPractice(),

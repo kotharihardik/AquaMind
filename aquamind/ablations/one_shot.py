@@ -17,14 +17,23 @@ class OneShotBrain:
     BELIEF = 0.5
 
     def __init__(self, llm=None):
+        """Set up a crew with only the Forensic Advocate (no Skeptic, Strategist, Auditor or SOP).
+
+        Args: llm = the LLM client the Advocate uses.
+        """
         from ..agent.crew import Crew
         self.crew = Crew(llm, skeptic=False, strategist=False, auditor=False, sop=False)
 
     @property
     def turns(self):
+        """Returns: the list of agent turns (for the trace)."""
         return self.crew.turns
 
     def run(self, tb):
+        """One Advocate look, then answer at once: dig the best spot if a leak is believed, else close. No investigation loop.
+
+        Args: tb = the Toolbox of the case.
+        """
         self.crew.forensic(tb, "one shot: read the evidence, ask the people, name your hypotheses; the case is answered right after this")
         j, p = tb.board.best_dig()
         self.crew.turns.append({
@@ -41,6 +50,11 @@ class OneShotBrain:
 
 
 def build_one_shot(llm_factory: Callable[[], Any] | None, reader: str = "rules") -> dict[str, ToolboxMethod]:
+    """Build the one-shot ablation (no step-by-step investigation).
+
+    Args: llm_factory = makes the agents' LLM client (None -> no methods); reader = 'rules' | 'llm' | 'local'.
+    Returns: {method name: ToolboxMethod} ('ablation_one_shot' and 'agentix_crew_one_shot').
+    """
     if llm_factory is None:
         return {}
     H = {"hypothesis_mode": True, "reply_confirms": False}

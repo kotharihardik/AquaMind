@@ -20,10 +20,18 @@ INSTRUCTION = re.compile(r"[^.]*(approval (already )?(given|granted)|ignore (all
 
 
 def tokens(text: str) -> list[str]:
+    """Args: text = any text.
+    Returns: lower-case word tokens without stop words.
+    """
     return [t for t in _TOK.findall(text.lower()) if t not in _STOP]
 
 
 def clean(text: str) -> str:
+    """Remove instruction-like sentences from archive text (prompt-injection guard).
+
+    Args: text = ticket text.
+    Returns: cleaned text.
+    """
     return INSTRUCTION.sub("[instruction-like text removed]", text)
 
 
@@ -36,6 +44,10 @@ class Chunk:
 
 class Retriever:
     def __init__(self, chunks: list[Chunk], k1: float = 1.4, b: float = 0.75):
+        """BM25 index over SOP clauses and archive tickets.
+
+        Args: chunks = list of Chunk(id, text, provenance); k1, b = BM25 parameters.
+        """
         self.chunks = chunks
         self.by_id = {c.id: c for c in chunks}
         self.docs = [Counter(tokens(c.text)) for c in chunks]
@@ -46,6 +58,11 @@ class Retriever:
         self.k1, self.b = k1, b
 
     def search(self, query: str, k: int = 4, provenance: str | None = None) -> list[tuple[Chunk, float]]:
+        """BM25 search.
+
+        Args: query = search text; k = how many hits; provenance = 'policy' | 'record' | None (both).
+        Returns: [(Chunk, score)] best first.
+        """
         q = tokens(query)
         scored = []
         for c, d, L in zip(self.chunks, self.docs, self.len):
@@ -59,6 +76,11 @@ class Retriever:
 
 
 def load_corpus(sop_path: str, records_path: str) -> Retriever:
+    """Build the RAG corpus from the SOP file (one chunk per SOP clause) and the ticket archive (one chunk per ticket).
+
+    Args: sop_path = sop.md; records_path = records.md.
+    Returns: Retriever.
+    """
     chunks = []
     sop = open(sop_path).read()
     for m in re.finditer(r"^## (SOP-\d+)([^\n]*)\n(.*?)(?=^## |\Z)", sop, flags=re.S | re.M):

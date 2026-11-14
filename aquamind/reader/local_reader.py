@@ -21,6 +21,9 @@ DEFAULT_URL = "http://127.0.0.1:8471"                          # finetune/serve_
 
 
 def _reachable(url: str) -> bool:
+    """Args: url = reader server base URL.
+    Returns: True if the server answers within 3 s.
+    """
     import urllib.request
     try:
         urllib.request.urlopen(f"{url}/v1/models", timeout=3).read()
@@ -33,6 +36,10 @@ class LocalReader:
     name = "finetuned_local"
 
     def __init__(self, base: str = BASE, adapter: str | None = ADAPTER, max_tokens: int = 320):
+        """The fine-tuned Qwen2.5-3B reader: uses the reader server if it runs, else loads the model in-process with MLX.
+
+        Args: base = base model path; adapter = LoRA adapter path; max_tokens = answer length limit.
+        """
         self.url = os.environ.get("AGENTIX_READER_URL") or (DEFAULT_URL if _reachable(DEFAULT_URL) else None)
         self.max_tokens = max_tokens
         self.calls = self.errors = self.cached = 0
@@ -86,6 +93,11 @@ class LocalReader:
         return out
 
     def _gen_raw(self, system: str, user: str) -> dict | None:
+        """Generate one JSON answer from the model (server or MLX), greedy decoding.
+
+        Args: system, user = prompts.
+        Returns: parsed dict or None if not JSON.
+        """
         if self.url:
             return self._gen_http(system, user)
         from mlx_lm import generate
@@ -99,6 +111,11 @@ class LocalReader:
             return None
 
     def _gen_http(self, system: str, user: str) -> dict | None:
+        """Generate one JSON answer through the reader server (OpenAI-style API).
+
+        Args: system, user = prompts.
+        Returns: parsed dict or None on any error.
+        """
         import urllib.request
         body = {"messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
                 "max_tokens": self.max_tokens, "temperature": 0.0}
@@ -111,13 +128,26 @@ class LocalReader:
             return None
 
     def read(self, report: dict) -> dict:
+        """Read one citizen message.
+
+        Args: report = {'channel', 'text', ...}.
+        Returns: reader-2.0 dict (category, symptoms, places, ...).
+        """
         user = json.dumps({"channel": report.get("channel"), "text": report["text"]}, ensure_ascii=False)
         return repair_read(self._gen(self.read_sys, user))
 
     def read_many(self, reports: list[dict]) -> dict[str, dict]:
+        """Args: reports = list of message dicts.
+        Returns: {report_id: read dict}.
+        """
         return {r["report_id"]: self.read(r) for r in reports}
 
     def read_replies(self, items: list[tuple[str, str | None]]) -> list[dict]:
+        """Read call-back answers.
+
+        Args: items = [(question, answer or None)].
+        Returns: one reply-2.0 dict per item (empty if not answered).
+        """
         out = []
         for q, a in items:
             if not a:

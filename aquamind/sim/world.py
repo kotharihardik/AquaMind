@@ -10,6 +10,10 @@ from .truth_model import RealTruth
 
 class SimTown:
     def __init__(self, town, params: ReportParams | None = None):
+        """Everything the simulator needs for the town: the Real truth model, terrain and the message context.
+
+        Args: town = Town assets; params = ReportParams (message generator settings).
+        """
         self.town = town
         d = town.dir
         self.real = RealTruth(f"{d}/truth/real_truth.npz")

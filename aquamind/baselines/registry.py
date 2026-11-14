@@ -7,7 +7,7 @@ Categorized into:
    - report_hotspot: Spatial centroid of readable citizen messages (no physics, RQ1).
    - react_agent: Standard tool-using ReAct LLM agent (same tools, step budget 15, raw text, no hypothesis board, no code gate, RQ2).
    - plain_llm: Zero-tool one-shot LLM (sensor summary + raw messages as text, answers once: dig or no dig, RQ2).
-   - fixed_rules: Heuristic rule-based investigation agent (no LLM, tests what LLM adds, ADR-017, RQ2).
+   - fixed_rules: Heuristic rule-based investigation agent (no LLM, tests what LLM adds, ADR-011, RQ2).
 
 2. SUPPLEMENTARY / REAL-WORLD BASELINES (Not strictly in proposal core table, clearly separated):
    - classical_direct_inversion / classical_bruteforce: Real-world EPANET brute-force sensitivity inversion across 782 junctions with uncalibrated roughness and demand noise.
@@ -64,10 +64,10 @@ BASELINE_METADATA = {
     # ------------------ Supplementary Baselines ------------------
     "classical_bruteforce": {
         "category": "supplementary_baseline",
-        "description": "Practical model-based brute force: EPANET sensitivity inversion across 782 junctions with uncalibrated roughness and demand noise, AWWA M36 acoustic dispatch, zero valve cuts (ADR-022)",
+        "description": "Practical model-based brute force: EPANET sensitivity inversion across 782 junctions with uncalibrated roughness and demand noise, AWWA M36 acoustic dispatch, zero valve cuts (ADR-011)",
         "needs_llm": False,
         "in_proposal": False,
-        "proposal_section": "Supplementary (Practical Academic Inversion / ADR-022)",
+        "proposal_section": "Supplementary (Practical Academic Inversion / ADR-011)",
         "sensor_configs": ["spread_k3", "spread_k5", "spread_k10"],
     },
     "classical_direct_inversion": {
@@ -75,7 +75,7 @@ BASELINE_METADATA = {
         "description": "Alias for classical_bruteforce (practical sensitivity inversion)",
         "needs_llm": False,
         "in_proposal": False,
-        "proposal_section": "Supplementary (Practical Academic Inversion / ADR-022)",
+        "proposal_section": "Supplementary (Practical Academic Inversion / ADR-011)",
         "sensor_configs": ["spread_k3", "spread_k5", "spread_k10"],
     },
     "lila_style": {

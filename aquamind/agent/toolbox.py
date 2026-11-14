@@ -1,6 +1,6 @@
 """The investigation toolbox: every action a 'brain' (the LLM agent or the code-only planner) can take.
 
-Safety by design (proposal Section 7, step 4; ADR-005). The temporary logger (place_logger) is a baseline-only tool (FixedRules, ReAct); the crew's
+Safety by design (proposal Section 7, step 4; ADR-007). The temporary logger (place_logger) is a baseline-only tool (FixedRules, ReAct); the crew's
 new-measurement tool is the night step test:
 - QUARANTINE: raw citizen text is read only by the reader. The brain sees code-built summaries: fixed words,
   canonical place names from the map, numbers. Questions to citizens are free text, but answers come back as fields.
@@ -13,6 +13,7 @@ new-measurement tool is the night step test:
 """
 from __future__ import annotations
 
+import itertools
 import os
 import time
 import zlib
@@ -22,9 +23,28 @@ import numpy as np
 from ..search.planner import DIG_BAR, FINAL_BAR, Option, Planner
 from ..search.tool_models import p_hear
 
+_SEQ = itertools.count()
+
+
+def next_seq() -> int:
+    """Returns: a number that grows with every logged step (tool call or agent turn) in this process.
+    Only for replaying a run in order; a case runs in one process, so its steps are numbered in the order they happened."""
+    return next(_SEQ)
+
 SYM_WORDS = {"water_coming_out": "water coming out", "burst": "burst", "pooling": "water collected",
              "wet_ground": "wet ground", "sound_underground": "sound under road", "road_damage": "road damage",
              "low_pressure": "low pressure", "no_water": "no water", "dirty_water": "dirty water"}
+
+MITIGATIONS = ("m1_weak_leads", "m2_turn_budget", "m3_confirm_dig", "m4_ticket_type", "m5_corner_permits")
+
+
+def mitigation_flags(**given) -> dict:
+    """The five mitigation switches (Mid-project report Section 10). An explicit True/False always wins, so the mid baseline and the
+    leave-one-out ablations cannot be changed by the environment. A switch left as None follows AGENTIX_MITIGATIONS ('none', or a list such as
+    'm1,m3'), and is on when that variable is unset."""
+    env = os.environ.get("AGENTIX_MITIGATIONS", "").strip().lower()
+    mits = None if not env else set() if env == "none" else {x.strip() for x in env.split(",")}
+    return {k: bool(v) if v is not None else (mits is None or k[:2] in mits) for k, v in given.items()}
 
 
 class Toolbox:
@@ -32,8 +52,15 @@ class Toolbox:
                  use_field: bool = True, plan_samples: int = 96, use_canvass: bool = False,
                  use_planner: bool = True, min_checks_close: int = 0, auto_sop: bool = False,
                  allow_step: bool = True,
-                 m1_weak_leads: bool = True, m2_turn_budget: bool = True, m3_confirm_dig: bool = True,
-                 m4_ticket_type: bool = True, m5_corner_permits: bool = True):
+                 m1_weak_leads: bool | None = None, m2_turn_budget: bool | None = None, m3_confirm_dig: bool | None = None,
+                 m4_ticket_type: bool | None = None, m5_corner_permits: bool | None = None):
+        """Everything an agent can do on one case: the evidence board, tools, gates and the trace.
+
+        Args: env = CaseEnv (the simulated world); case = public Case; search = leak search engine; reader = message reader;
+              docs = RAG corpus; rulebook = SOP rules; use_gate/use_rag/use_field/use_canvass/allow_step = feature switches;
+              plan_samples = planner samples; use_planner = look-ahead planner on/off; min_checks_close = checks before 'no leak';
+              auto_sop = code does SOP paperwork; m1..m5 = mitigation switches (None = default on).
+        """
         self.env, self.case, self.search, self.reader = env, case, search, reader
         self.docs, self.rules = docs, rulebook
         self.net, self.places, self.sections = search.net, search.town.places, search.sections
@@ -44,21 +71,15 @@ class Toolbox:
         self.allow_step = allow_step                        # False: no night step test (the temporary flow/pressure measurement) is offered or accepted
 
         # Mitigation flags (Mid-project report Section 10)
-        env_mit = os.environ.get("AGENTIX_MITIGATIONS", "").strip().lower()
-        if env_mit == "none":
-            m1_weak_leads = m2_turn_budget = m3_confirm_dig = m4_ticket_type = m5_corner_permits = False
-        elif env_mit:
-            mits = {x.strip() for x in env_mit.split(",")}
-            m1_weak_leads = "m1" in mits
-            m2_turn_budget = "m2" in mits
-            m3_confirm_dig = "m3" in mits
-            m4_ticket_type = "m4" in mits
-            m5_corner_permits = "m5" in mits
-        self.m1_weak_leads = m1_weak_leads
-        self.m2_turn_budget = m2_turn_budget
-        self.m3_confirm_dig = m3_confirm_dig
-        self.m4_ticket_type = m4_ticket_type
-        self.m5_corner_permits = m5_corner_permits
+        f = mitigation_flags(m1_weak_leads=m1_weak_leads, m2_turn_budget=m2_turn_budget, m3_confirm_dig=m3_confirm_dig,
+                             m4_ticket_type=m4_ticket_type, m5_corner_permits=m5_corner_permits)
+        self.m1_weak_leads = f["m1_weak_leads"]
+        self._weak_js: set[int] = set()      # M1: junctions of step-test areas that showed suggestive (weak) extra flow
+        self.weak_dig_areas = True           # M1 dig areas on/off (the no-Forensic ablation turns it off: see Crew.run, ADR-013)
+        self.m2_turn_budget = f["m2_turn_budget"]
+        self.m3_confirm_dig = f["m3_confirm_dig"]
+        self.m4_ticket_type = f["m4_ticket_type"]
+        self.m5_corner_permits = f["m5_corner_permits"]
         self.trace: list[dict] = []
         t0 = time.time()
         self.reads = reader.read_many(case.reports)
@@ -71,7 +92,7 @@ class Toolbox:
         self.options: dict[str, Option] = {}
         self._plan_key = None
         self.attempts: dict[str, int] = {}              # call-backs made per message (answered or not): max 2 each
-        self.repairs_used: set[str] = set()             # ADR-018: repair tickets the agent cited as a failing stretch
+        self.repairs_used: set[str] = set()             # ADR-009: repair tickets the agent cited as a failing stretch
         self.digs = 0
         self.calls: dict[str, list] = {}
         self.records_used: dict[str, str] = {}
@@ -80,12 +101,35 @@ class Toolbox:
 
     # ------------------------------------------------------------------ bookkeeping
     def _log(self, tool, args, result, secs=0.0):
+        """Append one tool call to the trace with time, P(leak) and P(success).
+
+        Args: tool = tool name; args = its arguments; result = its result dict; secs = time taken.
+        Returns: the result (unchanged).
+        """
         self.trace.append({"t_case_h": round((self.env.now - self.case.case_open_s) / 3600, 2), "tool": tool,
                            "args": args, "result": result, "p_leak": round(self.board.p_leak, 3),
-                           "p_success": round(self.board.best_dig()[1], 3), "secs": round(secs, 2)})
+                           "p_success": round(self.board.best_dig()[1], 3), "secs": round(secs, 2),
+                           "seq": next_seq(), "heat": self._heat()})
         return result
 
+    def _heat(self) -> list | None:
+        """Record only (for the demo replay, never shown to an agent): the leak map when it changed since the last logged step.
+
+        Returns: [[junction index, P(leak here)], ...] for the 40 most likely junctions, or None if the map did not change."""
+        v = getattr(self.board, "version", 0)
+        if v == getattr(self, "_heat_v", None):
+            return None
+        self._heat_v = v
+        st = self.board.state
+        w = np.asarray(st["post"], float) * float(st["p_leak"])
+        return [[int(j), round(float(w[j]), 4)] for j in np.argsort(-w)[:40] if w[j] >= 1e-4]
+
     def _err(self, tool, args, msg):
+        """Log a failed tool call.
+
+        Args: tool = tool name; args = its arguments; msg = error text.
+        Returns: {'ok': False, 'error': msg}.
+        """
         return self._log(tool, args, {"ok": False, "error": msg})
 
     def refresh(self):
@@ -98,6 +142,11 @@ class Toolbox:
         return [r["report_id"] for r in new]
 
     def describe_node(self, j: int) -> str:
+        """Plain name of a junction plus its id.
+
+        Args: j = junction index.
+        Returns: e.g. 'near Hanuman Temple on Station Road (n123)'.
+        """
         return f"{self.places.describe(j)} ({self.net.junctions[j]})"
 
     def message_line(self, rid: str) -> str:
@@ -178,7 +227,7 @@ class Toolbox:
         """The simple dispatcher rule (no look-ahead): listen where the map is concentrated, else night step test of the sections holding most of it."""
         lite = self.planner.lite(self.board)
         cand = getattr(self.board, "cand", None)
-        if cand is not None and cand.any():                  # ADR-016: only where somebody hypothesised a leak
+        if cand is not None and cand.any():                  # ADR-006: only where somebody hypothesised a leak
             lite.lp = np.where(cand, lite.lp, -np.inf)
         o = self.planner.base_choice(lite)
         if o is None:
@@ -210,6 +259,11 @@ class Toolbox:
         return oid
 
     def can_call(self, rid: str) -> bool:
+        """Can this message's sender still be called back?
+
+        Args: rid = report id, e.g. 'R-003'.
+        Returns: True if usable and under the per-message call limit.
+        """
         m = self.board.messages.get(rid)
         return m is not None and m.usable() and self.attempts.get(rid, 0) < self.env.cfg["call"]["max_per_message"]
 
@@ -223,6 +277,10 @@ class Toolbox:
         return bool(opts) and max(o.value for o in opts) <= 0.01
 
     def gate(self) -> tuple[bool, str]:
+        """The code gate for a dig: P(success) bar, field support and the two-dig limit.
+
+        Returns: (allowed, reason text).
+        """
         j, p = self.board.best_dig()
         final = self.exhausted()
         sup = self.board.field_support(j, final)
@@ -262,7 +320,7 @@ class Toolbox:
             self.search.apply_reply(self.board, rid, rep)
             self.calls.setdefault(rid, []).append({"question": q, "reply": rep})
             facts = [k for k in ("source", "not_network", "still_flowing") if rep.get(k) not in (None, "unknown")]
-            results.append({"report_id": rid, "answered": rep["answered"],
+            results.append({"report_id": rid, "answered": rep["answered"], "question": q, "reply_text": a,     # record only (replay)
                             "learned": {k: rep[k] for k in facts},
                             "places_named": len(rep.get("places") or []) + len(rep.get("flows_from") or [])})
         self.env.advance(longest)
@@ -295,6 +353,11 @@ class Toolbox:
         return w / w.sum() if w.sum() > 0 else None
 
     def record_applies(self, rid: str, record_id: str) -> bool:
+        """Is this archive record a valid false-alarm citation for this message?
+
+        Args: rid = report id; record_id = ticket id, e.g. 'REC-014'.
+        Returns: True / False.
+        """
         return self._record_check(rid, record_id)[0]
 
     def use_record(self, rid: str, record_id: str) -> dict:
@@ -342,6 +405,8 @@ class Toolbox:
         c = self.docs.by_id.get(str(record_id)) if self.use_rag else None
         if c is None or c.provenance != "record" or "No utility pipe leak found" in c.text:
             return self._err("use_repair_record", args, "not a repair ticket of the archive")
+        if self.m4_ticket_type and self.is_false_alarm_ticket(c.text):      # M4: a customer-side ticket says nothing about the main
+            return self._err("use_repair_record", args, f"{record_id} is a customer-side ticket, not a utility repair of the main")
         w = self._record_footprint(c.text)
         if w is None:
             return self._err("use_repair_record", args, "the ticket's place is not on the map")
@@ -353,6 +418,11 @@ class Toolbox:
                                                      "where": self.describe_node(int(np.argmax(w)))})
 
     def search_docs(self, query: str) -> dict:
+        """BM25 search over the SOP and the ticket archive.
+
+        Args: query = search text.
+        Returns: {'ok': True, 'hits': [{'id', 'text'}]} (top 4), or an error if RAG is off.
+        """
         if not self.use_rag:
             return self._err("search_docs", {"query": query}, "document search is not available in this setup")
         hits = self.docs.search(str(query), k=4)
@@ -371,10 +441,16 @@ class Toolbox:
                 js += list(np.where(c["support"])[0])
             elif c["kind"] == "listen_hit" and c.get("at") is not None:
                 js += list(np.where(self.net.pipe_distance[c["at"]] <= 150)[0])
+        js += sorted(self._weak_js)              # M1: areas with suggestive extra flow (empty when M1 is off)
         if js:
             self.search.add_candidates(b, js, "physical", force=True)
 
     def field_check(self, option_id: str) -> dict:
+        """Run one menu option in the field: night step test, listening survey or canvass; update the board.
+
+        Args: option_id = id from the options menu, e.g. 'M1'.
+        Returns: result dict (kind, what was found, p_success_now) or an error.
+        """
         t0 = time.time()
         args = {"option": option_id}
         if not self.use_field:
@@ -405,6 +481,9 @@ class Toolbox:
                      "suggestive": [s["section"] for s in ok_steps if s["section"] not in lit and (lambda a: a[0] > 3 * a[1])(self.board.tools.step(
                          s["section"], s["inflow_drop_lps"] - s["expected_customer_use_lps"], self.board.q_hat, self.board.q_sd))],
                      "valve_failed": [s["section"] for s in r["steps"] if s.get("failed")]}
+                if self.m1_weak_leads and self.weak_dig_areas:     # M1: weak extra flow is a physical lead too; its area must be diggable (see _promote_physical)
+                    for sid in r["suggestive"]:
+                        self._weak_js.update(int(j) for j in np.where(np.asarray(self.sections.areas[sid]["mask"], bool))[0])
         elif o.kind == "canvass":
             c = o.args["center"]
             r = self.env.canvass(self.net.junctions[c])
@@ -477,6 +556,11 @@ class Toolbox:
         return after, inform, errs
 
     def propose_dig(self, reason: str = "", sop_actions: list | None = None) -> dict:
+        """Ask to dig at the best spot: code gate, SOP paperwork, operator token, then the dig.
+
+        Args: reason = short reason; sop_actions = paperwork, e.g. ['request_permit:Station Road', 'after_school_hours'].
+        Returns: result dict (leak_found, spot, ...) or an error if the gate refuses.
+        """
         args = {"reason": str(reason)[:200], **({"sop_actions": [str(x) for x in sop_actions][:6]} if sop_actions else {})}
         ok, why = self.gate()
         if not ok:
@@ -545,6 +629,11 @@ class Toolbox:
                        f"finding the leak. Explaining a message does not explain the pressure/flow anomaly.")
 
     def close(self, verdict: str, summary: str = "", force: bool = False) -> dict:
+        """Close the case without a dig.
+
+        Args: verdict = 'no_leak' | 'hand_over'; summary = short reason; force = skip the close gate.
+        Returns: {'ok': True} or an error.
+        """
         if verdict not in ("no_leak", "hand_over"):
             return self._err("close", {"verdict": verdict}, "verdict must be no_leak or hand_over")
         ok, why = self.close_gate()
@@ -555,4 +644,5 @@ class Toolbox:
         return self._log("close", {"verdict": verdict, "summary": summary[:300]}, {"ok": True})
 
     def final_guess(self) -> str:
+        """Returns: id of the best-supported junction (used to measure the error of a missed case)."""
         return self.net.junctions[self.board.best_dig()[0]]

@@ -6,7 +6,7 @@ Each ablation is implemented in its own modular file:
 - no_rag.py: No SOP rules and no repair/complaint history
 - no_gate.py: Safety gate disabled (no P(success) threshold, RQ2 safety)
 - one_shot.py: No investigation loop (one-shot Advocate evaluation)
-- no_ai.py: Complete system with all AI removed (pure deterministic code, ADR-017)
+- no_ai.py: Complete system with all AI removed (pure deterministic code, ADR-011)
 - roles.py: one switch per crew role (Forensic, Skeptic, Strategist, Auditor, SOP, triangulation); category "role_ablation"
 """
 from __future__ import annotations
@@ -25,6 +25,12 @@ _ALL_K = ["spread_k3", "spread_k5", "spread_k10"]
 
 
 def _meta(short: str, desc: str, section: str, *, llm: bool = True, cat: str = "proposal_ablation", ks=None) -> dict:
+    """Make the metadata entry of one ablation.
+
+    Args: short = its 'agentix_crew_*' alias; desc = one-line description; section = proposal section; llm = needs an LLM?;
+          cat = category name; ks = sensor layouts it runs on (default only spread_k5).
+    Returns: metadata dict.
+    """
     return {
         "category": cat,
         "description": desc,
@@ -64,15 +70,15 @@ ABLATION_METADATA = {
     ),
     "ablation_no_ai": _meta(
         "agentix_code",
-        "Complete system with all AI removed, including language understanding (pure code, ADR-017)",
-        "10/11 (No-AI Baseline / Ablation, ADR-017)",
+        "Complete system with all AI removed, including language understanding (pure code, ADR-011)",
+        "10/11 (No-AI Baseline / Ablation, ADR-011)",
         llm=False,
         ks=_ALL_K,
     ),
 }
 
 for _short, _desc in ROLE_DESCRIPTIONS.items():
-    ABLATION_METADATA[f"ablation_{_short}"] = _meta(f"agentix_crew_{_short}", _desc, "ADR-015 (crew role)", cat="role_ablation")
+    ABLATION_METADATA[f"ablation_{_short}"] = _meta(f"agentix_crew_{_short}", _desc, "ADR-007 (crew role)", cat="role_ablation")
 
 
 def get_ablation_registry(llm_factory: Callable[[], Any] | None = None, reader: str = "rules") -> dict[str, Any]:

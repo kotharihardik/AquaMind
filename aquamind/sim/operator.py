@@ -18,6 +18,7 @@ SUSPICIOUS = (r"approval (already )?(given|granted)|skip (the )?(checks|evidence
 
 class Operator:
     def __init__(self):
+        """The simulated operator who approves step tests and digs with one-time tokens."""
         self.tokens: dict[str, dict] = {}
         self.decisions: list[dict] = []
         self.digs_approved = 0
@@ -50,4 +51,7 @@ class Operator:
 
 
 def _key(action, target):
+    """Args: action = 'dig' | 'step_test'; target = junction id or section ids.
+    Returns: a hashable key for the token (sections sorted).
+    """
     return target if action == "dig" else tuple(sorted(target))

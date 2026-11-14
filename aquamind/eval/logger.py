@@ -178,6 +178,12 @@ class EvaluationLogger:
                  base_log_dir: str = "logs", run_title: str | None = None,
                  version: str | None = None, session: str | None = None,
                  case_order: list[str] | None = None, resume: bool = True):
+        """Versioned log of one method on one layout (case cards, overview table, metrics, trace, rows).
+
+        Args: method_name = method; layout = e.g. 'spread_k5'; base_log_dir = log root; run_title = title;
+              version = force a version like 'v2'; session = text that identifies the evaluation (for resuming);
+              case_order = all case names in benchmark order; resume = continue the newest log of the same session.
+        """
         self.session = session
         self.case_order = {n: i for i, n in enumerate(case_order or [], 1)}
         self.total = len(self.case_order) or None
@@ -225,9 +231,15 @@ class EvaluationLogger:
     # ------------------------------------------------------------------ files and versions
     @staticmethod
     def _key(r: dict[str, Any]) -> tuple:
+        """Unique key of a result row.
+
+        Args: r = result row.
+        Returns: (method, case, layout, budget, regime).
+        """
         return (r.get("method"), r.get("case"), r.get("layout"), r.get("budget", 5), r.get("regime", ""))
 
     def _versions(self) -> dict[int, Path]:
+        """Returns: {version number: txt file} of the existing logs of this method."""
         out = {}
         for f in self.target_dir.glob(f"v*_{self.file_prefix}.txt"):
             m = re.fullmatch(rf"v(\d+)_{re.escape(self.file_prefix)}\.txt", f.name)
@@ -236,11 +248,16 @@ class EvaluationLogger:
         return out
 
     def _get_next_version(self) -> str:
+        """Returns: the next free version name, e.g. 'v3'."""
         pat = re.compile(rf"v(\d+)_{re.escape(self.file_prefix)}(?:_overview|_metrics|_trace)?\.(?:txt|jsonl|json)")
         nums = [int(m.group(1)) for f in self.target_dir.iterdir() if (m := pat.fullmatch(f.name))]
         return f"v{max(nums, default=0) + 1}"
 
     def _find_resumable(self) -> str | None:
+        """Find the newest log written by the same session.
+
+        Returns: its version, e.g. 'v2', or None.
+        """
         hits = []
         for n, f in self._versions().items():
             try:
@@ -251,6 +268,7 @@ class EvaluationLogger:
         return f"v{max(hits)}" if hits else None
 
     def _load_previous(self) -> None:
+        """Read the rows of the log being resumed (a broken last line is skipped)."""
         txt = self.txt_file.read_text(encoding="utf-8") if self.txt_file.exists() else ""
         m = re.search(r"First started: (\d{4}-\d\d-\d\d \d\d:\d\d:\d\d)", txt)
         if m:
@@ -263,6 +281,11 @@ class EvaluationLogger:
                     continue                 # a half-written last line is dropped, never fatal
 
     def _remember(self, r: dict[str, Any]) -> bool:
+        """Keep a row in memory unless it is already there.
+
+        Args: r = result row.
+        Returns: True if added.
+        """
         if self._key(r) in self._keys:
             return False
         self._keys.add(self._key(r))
@@ -274,14 +297,25 @@ class EvaluationLogger:
 
     # ------------------------------------------------------------------ ordering and numbers
     def _card_no(self, r: dict[str, Any], fallback: int) -> int:
+        """Case number for printing: its position in the benchmark.
+
+        Args: r = result row; fallback = number to use if unknown.
+        Returns: int.
+        """
         return self.case_order.get(str(r.get("case")), fallback)
 
     def _sorted_rows(self) -> list[dict[str, Any]]:
+        """Returns: rows sorted by layout, then by benchmark position."""
         li = {l: i for i, l in enumerate(self.layout_order)}
         return sorted(self.rows, key=lambda r: (li.get(r.get("layout"), 99), self._card_no(r, 10**6)))
 
     # ------------------------------------------------------------------ the five files
     def _header(self, what: str) -> str:
+        """Header block of a log file.
+
+        Args: what = name of the file part, e.g. 'CASES'.
+        Returns: header text.
+        """
         lines = ["=" * 100, f"AQUAMIND EVALUATION: {self.method_name.upper()} ({self.version}) | {what}",
                  f"Category: {self.category.upper()} | Layout: {self.label} | First started: {self.first_started}"
                  + (f" | Last resumed: {self.start_time.strftime('%Y-%m-%d %H:%M:%S')}" if self.resumed else ""),
@@ -293,6 +327,10 @@ class EvaluationLogger:
         return "\n".join(lines + ["=" * 100, ""]) + "\n"
 
     def _write_reports(self) -> dict[str, Any]:
+        """Rewrite the case cards, overview table, metrics text and metrics JSON.
+
+        Returns: the summary dict.
+        """
         rows = self._sorted_rows()
         with open(self.txt_file, "w", encoding="utf-8") as f:                     # 1. case cards
             f.write(self._header("CASES") + "CASE-BY-CASE DETAILED LOG:\n" + "-" * 100 + "\n")
@@ -318,6 +356,11 @@ class EvaluationLogger:
         return out
 
     def _add(self, row: dict[str, Any]) -> bool:
+        """Add one new result: lean row to the .jsonl, events to the trace file.
+
+        Args: row = full result row (with trace).
+        Returns: True if new, False if already logged.
+        """
         if self._key(row) in self._keys:
             return False
         lean = {k: v for k, v in row.items() if k != "trace"}                  # the trace goes to its own file
@@ -334,6 +377,10 @@ class EvaluationLogger:
 
     # ------------------------------------------------------------------ logging
     def log_case(self, row: dict[str, Any]) -> None:
+        """Log one finished case and refresh the report files.
+
+        Args: row = full result row.
+        """
         if self._add(row):
             self._write_reports()
 
@@ -345,6 +392,11 @@ class EvaluationLogger:
         return n
 
     def finalize(self, metadata: dict[str, Any] | None = None) -> dict[str, Any]:
+        """Write the final reports and update master_index.json.
+
+        Args: metadata = run settings to store.
+        Returns: the summary dict.
+        """
         self.metadata = metadata or {}
         summary = self._write_reports()
         self._update_master_index(summary)
@@ -353,6 +405,11 @@ class EvaluationLogger:
     # ------------------------------------------------------------------ summary and table
     @staticmethod
     def _metrics(rows: list[dict[str, Any]], duration_s: float) -> dict[str, Any]:
+        """Headline metrics of a set of rows (accuracy within 100 m, found rate, median error, false digs, LLM use, ...).
+
+        Args: rows = result rows; duration_s = run time.
+        Returns: metrics dict.
+        """
         total_cases = len(rows)
         leak_cases = [r for r in rows if _has_leak(r)]
         no_leak_cases = [r for r in rows if not _has_leak(r)]
@@ -375,6 +432,11 @@ class EvaluationLogger:
         }
 
     def _compute_summary(self, metadata: dict[str, Any], duration_s: float) -> dict[str, Any]:
+        """Full summary: all rows plus one metrics block per layout.
+
+        Args: metadata = run settings; duration_s = run time.
+        Returns: summary dict.
+        """
         by_layout = {l: self._metrics([r for r in self.rows if r.get("layout") == l], 0.0) for l in self.layout_order
                      if any(r.get("layout") == l for r in self.rows)}
         return {"version": self.version, "title": self.run_title, "category": self.category, "method": self.method_name, "layout": self.label,
@@ -410,6 +472,11 @@ class EvaluationLogger:
                f"{'Suite':<16} {'Cases':<6} {'Success':<8} {'Failed':<7} {'Success %':<10} {'Leak never dug':<15} {'Dug, missed':<12} {'False dig':<10} {'Guess<=100m':<12} {'Median err':<10}", "-" * w]
 
         def line(name, rs):
+            """One table line for a case category.
+
+            Args: name = category; rs = its rows.
+            Returns: formatted text line.
+            """
             reasons = [_fail_reason(r) for r in rs]
             ok = sum(x is None for x in reasons)
             leak = [r for r in rs if _has_leak(r)]
@@ -429,6 +496,11 @@ class EvaluationLogger:
         return out + ["-" * w]
 
     def _metrics_text(self, summary: dict[str, Any]) -> str:
+        """Metrics as readable text, one block per layout.
+
+        Args: summary = summary dict.
+        Returns: text.
+        """
         lines = []
         for lay, m in summary["by_layout"].items():
             lines += [f"SUMMARY BENCHMARK METRICS ({lay}):", "-" * 75,
@@ -444,6 +516,10 @@ class EvaluationLogger:
         return "\n".join(lines or ["no cases logged yet", ""]) + "\n"
 
     def _update_master_index(self, summary: dict[str, Any]) -> None:
+        """Add or update this log's entry in logs/.../master_index.json.
+
+        Args: summary = summary dict.
+        """
         index_file = self.base_dir / "master_index.json"
         index: list[dict[str, Any]] = []
         if index_file.exists():
@@ -468,6 +544,11 @@ class LoggerSet:
 
     def __init__(self, methods: list[str], layouts: list[str], base_log_dir: str, bench: str, session_tail: str,
                  run_title: str | None = None, case_order: list[str] | None = None, resume: bool = True):
+        """One EvaluationLogger per (method, layout) of a run.
+
+        Args: methods, layouts = lists of names; base_log_dir = log root; bench = benchmark folder;
+              session_tail = settings text that identifies the evaluation; run_title, case_order, resume = passed to each logger.
+        """
         self.cfg = dict(base_log_dir=base_log_dir, run_title=run_title, case_order=case_order, resume=resume)
         self.bench, self.tail = bench, session_tail
         self.loggers: dict[tuple[str, str], EvaluationLogger] = {}
@@ -476,6 +557,11 @@ class LoggerSet:
                 self.get(m, lay)
 
     def get(self, method: str, layout: str) -> EvaluationLogger:
+        """Logger of one method and layout (created on first use).
+
+        Args: method, layout = names.
+        Returns: EvaluationLogger.
+        """
         key = (method, layout)
         if key not in self.loggers:
             self.loggers[key] = EvaluationLogger(method, layout, self.cfg["base_log_dir"], self.cfg["run_title"], session=f"{self.bench} | {method} | {self.tail}",
@@ -483,18 +569,33 @@ class LoggerSet:
         return self.loggers[key]
 
     def log_case(self, row: dict[str, Any]) -> None:
+        """Send a result row to its method/layout logger.
+
+        Args: row = full result row.
+        """
         self.get(row["method"], row["layout"]).log_case(row)
 
     def backfill(self, rows: list[dict[str, Any]]) -> int:
+        """Add rows finished earlier (in other results files) to the logs.
+
+        Args: rows = result rows.
+        Returns: number of rows added.
+        """
         by: dict[tuple[str, str], list] = {}
         for r in rows:
             by.setdefault((r["method"], r["layout"]), []).append(r)
         return sum(self.get(m, lay).backfill(rs) for (m, lay), rs in by.items())
 
     def finalize(self, metadata: dict[str, Any] | None = None) -> dict:
+        """Finalize every logger.
+
+        Args: metadata = run settings.
+        Returns: {(method, layout): summary}.
+        """
         return {k: lg.finalize(metadata) for k, lg in self.loggers.items()}
 
     def describe(self) -> list[str]:
+        """Returns: one status line per logger (version, new or resuming, cases so far, folder)."""
         return [f"[{lg.version}] {m} / {lay}: {'RESUMING' if lg.resumed else 'new log'} ({len(lg.rows)} cases) -> {lg.target_dir}/{lg.txt_file.stem}*"
                 for (m, lay), lg in self.loggers.items()]
 

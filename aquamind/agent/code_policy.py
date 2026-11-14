@@ -1,6 +1,6 @@
 """The code autopilot, and AquaMind with every LLM switched off (ablation 'agentix_code').
 
-Since ADR-014 the autopilot contains NO language at all: no question templates, no phrase tests on records, no pattern readers for documents.
+Since ADR-007 the autopilot contains NO language at all: no question templates, no phrase tests on records, no pattern readers for documents.
 Asking a person a good question, reading a work order or a permit, and judging whether a document explains a complaint are language jobs; in a real
 control room they are done by a person, so without an LLM agent nothing is asked and no document is read. What is left is the routine that needs no
 language:
@@ -17,6 +17,7 @@ class Autopilot:
     """Routine steps of an investigation, one action at a time. Holds no LLM and no language."""
 
     def __init__(self):
+        """Code-only decision helper; remembers if the last dig was refused."""
         self.refused = False
 
     def step(self, tb, prefer: str | None = None) -> str:
@@ -27,7 +28,7 @@ class Autopilot:
             self.refused = not tb.propose_dig("gate open").get("ok")
             return "dig"
         self.refused = False
-        if getattr(tb.board, "cand", None) is not None:      # ADR-016: no investigator -> the fixed fallback decides where to look
+        if getattr(tb.board, "cand", None) is not None:      # ADR-006: no investigator -> the fixed fallback decides where to look
             from ..search.candidates import heuristic
             tb.search.add_candidates(tb.board, heuristic(tb), "heuristic")
             if tb.gate()[0] and not self.refused:
@@ -45,6 +46,10 @@ class Autopilot:
         return "check"
 
     def finish(self, tb) -> None:
+        """End an open case: 'no_leak' if the leak is unlikely, else 'hand_over' to a supervisor.
+
+        Args: tb = the Toolbox of the case.
+        """
         if not (tb.done or tb.env.done):
             b = tb.board
             j, ps = b.best_dig()
@@ -58,9 +63,18 @@ class CodePolicy:
     name = "agentix_code"
 
     def __init__(self, max_rounds: int = 12):
+        """The no-AI brain: runs the autopilot only.
+
+        Args: max_rounds = most autopilot steps per case.
+        """
         self.max_rounds = max_rounds
 
     def run(self, tb) -> list[dict]:
+        """Run a case with code rules only (check, dig, close).
+
+        Args: tb = the Toolbox of the case.
+        Returns: the tool trace.
+        """
         ap = Autopilot()
         for _ in range(self.max_rounds):
             if ap.step(tb) in ("done", "stop"):

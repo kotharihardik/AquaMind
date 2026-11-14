@@ -45,6 +45,11 @@ def mcnemar(a: list[bool], b: list[bool]) -> tuple[int, int, float]:
 
 
 def sign_test(wins: int, losses: int) -> float:
+    """Two-sided sign test (binomial) for paired wins and losses.
+
+    Args: wins, losses = counts of cases one method won / lost.
+    Returns: p-value (1.0 if no pairs).
+    """
     from scipy.stats import binomtest
     return binomtest(wins, wins + losses).pvalue if wins + losses else 1.0
 
@@ -152,6 +157,9 @@ def summarize(rows: list[dict], ref: dict[tuple[str, str], dict]) -> dict[str, A
     out["calibration"] = _calibration(rows)
     # --- the answer to "100 m is wide, just guess near the complaint"
     def rf(r):
+        """Args: r = result row.
+        Returns: the reference method's row for the same case and layout ({} if missing).
+        """
         return ref.get((r["case"], r["layout"])) or {}
     strata = {"A": [], "B": [], "C": []}      # A: a complaint within 100 m | B: complaints read and placed, ALL more than 100 m away | C: no complaint could be placed
     for r in leak:
@@ -178,6 +186,9 @@ def summarize(rows: list[dict], ref: dict[tuple[str, str], dict]) -> dict[str, A
 def reference_rows(rows_leak: list[dict], ref: dict[tuple[str, str], dict]) -> dict[str, dict]:
     """Strategies that use no physics and no investigation, scored on the same leak cases: hit = would a dig there find the leak (<= 100 m)."""
     def share(f):
+        """Args: f = function row -> bool.
+        Returns: f applied to the reference row of every leak case (list of bools).
+        """
         vals = [f(ref.get((r["case"], r["layout"])) or {}) for r in rows_leak]
         return [bool(v) for v in vals]
     return {"complaint hot spot (centre of the complaints)": share(lambda x: x.get("complaint_hotspot_err_m") is not None and x["complaint_hotspot_err_m"] <= HIT_M),
@@ -186,5 +197,10 @@ def reference_rows(rows_leak: list[dict], ref: dict[tuple[str, str], dict]) -> d
 
 
 def fmt_ci(t: tuple[float, float, float]) -> str:
+    """Format a rate with its confidence interval.
+
+    Args: t = (mean, low, high) as fractions.
+    Returns: e.g. '83.2 % [78-88]', or '-' if empty.
+    """
     m, lo, hi = t
     return "-" if math.isnan(m) else f"{100 * m:.1f} % [{100 * lo:.0f}-{100 * hi:.0f}]"

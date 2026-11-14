@@ -14,6 +14,10 @@ from ..town.network import NetworkInfo
 
 class Terrain:
     def __init__(self, net: NetworkInfo, radius_m: float = 60.0):
+        """Terrain model: which way water runs downhill between nearby junctions.
+
+        Args: net = NetworkInfo; radius_m = neighbour radius (m).
+        """
         self.net = net
         self.elev = net.elevation
         self.xy = net.xy
@@ -34,6 +38,9 @@ class Terrain:
                                  for i, nb in enumerate(self.nbrs)])
 
     def _dist(self, i, j):
+        """Args: i, j = junction indices.
+        Returns: straight-line distance in metres.
+        """
         return float(np.hypot(*(self.xy[i] - self.xy[j])))
 
     def trench_travel(self, start: int, rng: np.random.Generator, mean_m: float = 20.0, cap_m: float = 80.0) -> int:

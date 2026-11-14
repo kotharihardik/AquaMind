@@ -15,6 +15,11 @@ _LONG = {"rd": "road", "st": "street", "ln": "lane"}
 
 
 def norm(s: str) -> str:
+    """Normalise a place name for matching (lower case, no punctuation, short forms expanded).
+
+    Args: s = name.
+    Returns: normalised text.
+    """
     s = s.lower().replace("'", "").replace(",", " ")
     s = re.sub(r"[^a-z0-9ऀ-෿ ]+", " ", s)
     return " ".join(_SHORT.get(t, t) for t in s.split())
@@ -22,6 +27,10 @@ def norm(s: str) -> str:
 
 class PlaceIndex:
     def __init__(self, gazetteer: dict, net):
+        """Look-up of place names: aliases, streets per junction, landmark positions.
+
+        Args: gazetteer = places data; net = NetworkInfo.
+        """
         self.places = {p["place_id"]: p for p in gazetteer["places"]}
         self.net = net
         self.alias_map: dict[str, list[str]] = {}
@@ -60,6 +69,11 @@ class PlaceIndex:
 
     # ------------------------------------------------------------------ mention -> places
     def resolve(self, mention: str, mention_type: str | None = None, fuzzy: float = 0.84) -> list[str]:
+        """Find the place ids a written name refers to (exact, then fuzzy match).
+
+        Args: mention = name as written; mention_type = 'street' | 'landmark' | 'area' | None; fuzzy = minimum similarity.
+        Returns: list of place ids (empty if unknown).
+        """
         k = norm(mention)
         if k in self.alias_map:
             ids = self.alias_map[k]
@@ -105,6 +119,11 @@ class PlaceIndex:
         return self._node_cache[place_id]
 
     def mention_nodes(self, mention: str, mention_type: str | None = None) -> np.ndarray | None:
+        """Junction weights of a written place name (an ambiguous name -> mix of all matches).
+
+        Args: mention = name as written; mention_type = place type or None.
+        Returns: weight per junction (sums to 1), or None if unknown.
+        """
         ids = self.resolve(mention, mention_type)
         if not ids:
             return None
@@ -112,6 +131,9 @@ class PlaceIndex:
 
     # ------------------------------------------------------------------ junction -> names
     def node_street(self, j: int | str) -> dict | None:
+        """Args: j = junction index or id.
+        Returns: the (first) street at that junction, or None.
+        """
         nid = self.net.junctions[j] if isinstance(j, int) else j
         return self._street_by_node.get(nid)
 
@@ -121,6 +143,9 @@ class PlaceIndex:
         return list(self._streets_by_node.get(nid, []))
 
     def node_landmark(self, j: int, max_m: float = 150.0) -> dict | None:
+        """Args: j = junction index; max_m = search radius (m).
+        Returns: nearest landmark dict within max_m, or None.
+        """
         d = np.hypot(*(self._lm_xy - self.net.xy[j]).T)
         i = int(np.argmin(d))
         return self.landmarks[i] if d[i] <= max_m else None

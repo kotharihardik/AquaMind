@@ -1,4 +1,4 @@
-"""Where to look when NO agent formulates hypotheses: the fixed fallback of the no-AI ablation (ADR-016).
+"""Where to look when NO agent formulates hypotheses: the fixed fallback of the no-AI ablation (ADR-006).
 
 A dispatcher without an investigator does the obvious: look near the places people named, near the sensors that dropped most, and inside any
 section a step test lit up. Nothing else: no reasoning about downhill flow, look-alike causes, records or what the sensors imply further away.
@@ -12,6 +12,11 @@ SENSOR_RADIUS_M = 300.0
 
 
 def heuristic(tb) -> list[int]:
+    """Fixed fallback list of junctions to search when no agent names hypotheses: around credible complaints, the sensors that dropped most, and lit step-test sections.
+
+    Args: tb = Toolbox.
+    Returns: list of junction indices (no duplicates).
+    """
     b, net = tb.board, tb.net
     js: list[int] = []
     for m in b.messages.values():

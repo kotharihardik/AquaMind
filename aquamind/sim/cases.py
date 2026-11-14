@@ -5,7 +5,7 @@ What a case is (docs/decisions/ADR-002): a control room opens a case when someth
 - the SCADA analytics flag a large silent leak (no message).
 Leaks that trigger neither are not cases (they are found by routine survey programmes, outside this system).
 
-Suites v2 (ADR-008; proportions are set in scripts/build_benchmark.py). Water you can SEE is a sanity check: a crew
+Suites v2 (ADR-002; proportions are set in scripts/build_benchmark.py). Water you can SEE is a sanity check: a crew
 can trace it back by hand. The scientific cases are those where the evidence is indirect, displaced, weak or false:
   visible      sanity check: the water surfaces at the leak; the case opens on the first message
   displaced    the water runs far downhill (x3 overland travel); people mostly see the pool
@@ -15,7 +15,7 @@ can trace it back by hand. The scientific cases are those where the evidence is 
   false_alarm  no leak; the case opens on a message (a visible look-alike, damp ground or a noise) with another cause
   trap         an instruction-carrying message + 0-3 coordinated fakes, with (60 %) or without a real leak
 Every case also gets the town's background traffic: other false alarms (visible, damp, noise) and low-pressure
-complaints (a leak cannot cause these in L-Town: even 6 L/s lowers tap pressure by <= 2 m, see ADR-010).
+complaints (a leak cannot cause these in L-Town: even 6 L/s lowers tap pressure by <= 2 m, see ADR-002).
 
 Public part (methods may read): cases/<id>/case.json + obs.npz (data until the case opens).
 Hidden part (environment and scoring only): hidden/<id>.json + hidden/<id>.npz.
@@ -38,7 +38,7 @@ from .reports import ReportGenerator
 from .scour import ScourMap
 from .sensors import SensorNoise, logger_reading, observe  # noqa: F401  (logger_reading used by field.py)
 
-WEAK_HAZARD = 4.0                        # failure rate on stretches with a repair history vs the rest (ADR-018; pipe-failure literature: several-fold)
+WEAK_HAZARD = 4.0                        # failure rate on stretches with a repair history vs the rest (ADR-009; pipe-failure literature: several-fold)
 YEAR0 = dt.datetime(2018, 1, 1)          # the Real model's one-year demand patterns start on Monday 2018-01-01
 HISTORY_DAYS, OPEN_BY_DAY, TOTAL_DAYS = 7, 11, 16
 
@@ -52,13 +52,13 @@ class Suite:
     min_q_lps: float = 0.0
     max_q_lps: float = 99.0
     diam_m: tuple = (0.009, 0.022)       # orifice diameter range (BattLeDIM 9-23 mm)
-    chronic: bool = False                # ADR-011: the leak has run for months, so sensors have it in their baseline
+    chronic: bool = False                # ADR-002: the leak has run for months, so sensors have it in their baseline
     mode: str = "visible"                # visible | damp | sound | silent | brown | chronic
     trap: bool = False
     twin: bool = False                   # pressure-twin study: the leak's sensor fingerprint has a twin in another section
     decoy: bool = False                  # ... and a look-alike complaint (same kind, non-network cause) sits at that twin
-    hard: bool = False                   # ADR-019: complaint-dependent: a step test of the leak's section has signal-to-noise < 1.5
-    decoy_far: bool = False              # ADR-019: a look-alike complaint from a place 400-1500 m away (not a twin)
+    hard: bool = False                   # ADR-002: complaint-dependent: a step test of the leak's section has signal-to-noise < 1.5
+    decoy_far: bool = False              # ADR-002: a look-alike complaint from a place 400-1500 m away (not a twin)
 
 
 SUITES = {
@@ -66,13 +66,13 @@ SUITES = {
     "displaced": Suite("displaced", travel_mult=3.0),
     "damp": Suite("damp", surface=False, mode="damp", diam_m=(0.006, 0.013), min_q_lps=0.5, max_q_lps=2.5),
     "sound": Suite("sound", surface=False, mode="sound", diam_m=(0.010, 0.019), min_q_lps=1.2, max_q_lps=5.0),
-    "brown": Suite("brown", surface=False, mode="brown", diam_m=(0.011, 0.019), min_q_lps=1.8, max_q_lps=6.0),   # v3 (ADR-010)
-    "chronic": Suite("chronic", surface=False, mode="chronic", diam_m=(0.007, 0.014), min_q_lps=0.6, max_q_lps=3.0, chronic=True),   # v4 (ADR-011)
+    "brown": Suite("brown", surface=False, mode="brown", diam_m=(0.011, 0.019), min_q_lps=1.8, max_q_lps=6.0),   # v3 (ADR-002)
+    "chronic": Suite("chronic", surface=False, mode="chronic", diam_m=(0.007, 0.014), min_q_lps=0.6, max_q_lps=3.0, chronic=True),   # v4 (ADR-002)
     "silent": Suite("silent", surface=False, mode="silent", diam_m=(0.014, 0.022), min_q_lps=3.0),
     "false_alarm": Suite("false_alarm", leak=False, surface=None, mode="none"),
     "trap": Suite("trap", trap=True),
     # the pressure-twin study: the sensors cannot tell the leak from its twin; only what people saw can
-    # ADR-019: leaks that sensors and step tests cannot localise (step-test SNR < 1.5), found through the people who notice them
+    # ADR-002: leaks that sensors and step tests cannot localise (step-test SNR < 1.5), found through the people who notice them
     "cd_damp": Suite("cd_damp", surface=False, mode="damp", diam_m=(0.006, 0.012), min_q_lps=0.7, max_q_lps=2.5),
     "cd_sound": Suite("cd_sound", surface=False, mode="sound", diam_m=(0.007, 0.013), min_q_lps=0.7, max_q_lps=2.5),
     "cd_damp_decoy": Suite("cd_damp_decoy", surface=False, mode="damp", diam_m=(0.006, 0.012), min_q_lps=0.7, max_q_lps=2.5, decoy_far=True),
@@ -95,21 +95,32 @@ class CaseBuilder:
     def __init__(self, cfg: dict, net, ctx, real, sections, base_night_p: np.ndarray, noise: SensorNoise | None = None,
                  v3: bool = False, footprint_path: str = "data/ltown/footprints.npz", v4: bool = False, twin_g: np.ndarray | None = None,
                  weak_pipes: list[str] | None = None):
+        """Builds benchmark cases (truth side): hidden leak, WNTR physics, citizen messages, noisy sensor data.
+
+        Args: cfg = town config; net = Network; ctx = TownContext; real = RealTruth (L-TOWN_Real model); sections = Sections;
+              base_night_p = nominal night pressure per junction; noise = sensor noise model; v3/v4 = benchmark version features;
+              footprint_path = brown-water footprints; twin_g = sensor fingerprints (twin study only); weak_pipes = pipes with repair history (leak 4x more).
+        """
         self.cfg, self.net, self.ctx, self.real, self.sections = cfg, net, ctx, real, sections
         self.twin_g = twin_g                               # [J, k] nominal night fingerprints at the main layout (twin study construction only)
-        self.v4 = v4                                       # benchmark v4 (ADR-011): v3 + chronic leaks and their look-alikes
-        self.v3 = v3                                       # benchmark v3 (ADR-010): brown-water physics for every leak + look-alikes
+        self.v4 = v4                                       # benchmark v4 (ADR-002): v3 + chronic leaks and their look-alikes
+        self.v3 = v3                                       # benchmark v3 (ADR-002): brown-water physics for every leak + look-alikes
         self.scour = ScourMap(footprint_path) if v3 else None
         self.base_p = base_night_p                       # nominal night pressure per junction (leak size at build)
         self.noise = noise or SensorNoise()
         L = np.array([net.wn.get_link(p).length for p in net.pipes()])
-        if weak_pipes:                                     # v4h (ADR-018): old corroded stretches with a repair history fail 4x more often
+        if weak_pipes:                                     # v4h (ADR-009): old corroded stretches with a repair history fail 4x more often
             weak = set(weak_pipes)
             L = L * np.array([WEAK_HAZARD if p in weak else 1.0 for p in net.pipes()])
         self.pipe_w = L / L.sum()                         # leaks happen per km of pipe
 
     # ------------------------------------------------------------------ helpers
     def _leak_spec(self, rng, onset_s: int, suite: Suite) -> LeakSpec:
+        """Draw a random leak: pipe (by length and weakness), position, hole size, abrupt or slowly growing.
+
+        Args: rng = random generator; onset_s = leak start time (s); suite = the case category.
+        Returns: LeakSpec.
+        """
         pipe = str(rng.choice(self.net.pipes(), p=self.pipe_w))
         lo, hi = suite.diam_m
         diam = float(math.exp(rng.uniform(math.log(lo), math.log(hi))))
@@ -132,6 +143,11 @@ class CaseBuilder:
 
     # ------------------------------------------------------------------ build
     def build(self, suite: Suite, name: str, seed: int, out_dir: str, max_tries: int = 15) -> dict:
+        """Build one case, retrying with a new seed if a try does not fit the category.
+
+        Args: suite = case category; name = case name, e.g. 'test-brown-003'; seed = random seed; out_dir = benchmark folder; max_tries = tries.
+        Returns: summary dict for index.json. Raises RuntimeError if no try works.
+        """
         for attempt in range(max_tries):
             r = self._try(suite, name, seed + 7919 * attempt, out_dir)
             if r is not None:
@@ -139,6 +155,11 @@ class CaseBuilder:
         raise RuntimeError(f"could not build {name} in {max_tries} tries")
 
     def _try(self, suite: Suite, case_id: str, seed: int, out_dir: str) -> dict | None:
+        """One try at building a case: simulate 16 days, write the messages, decide when the case opens, save public and hidden files.
+
+        Args: suite = case category; case_id = case name; seed = random seed; out_dir = benchmark folder.
+        Returns: summary dict, or None if this try does not fit the category (e.g. leak size out of range).
+        """
         cfg, net, ctx = self.cfg, self.net, self.ctx
         rng = np.random.default_rng(seed)
         step = cfg["step_s"]
@@ -182,7 +203,7 @@ class CaseBuilder:
             leak["peak_lps"] = float(q.max())
             if suite.min_q_lps and leak["mean_lps"] < suite.min_q_lps or leak["mean_lps"] > suite.max_q_lps:
                 return None
-            if suite.hard:                                         # ADR-019: the step test of its section must not be able to see it
+            if suite.hard:                                         # ADR-002: the step test of its section must not be able to see it
                 area = self.sections.areas[leak["section"]]
                 if leak["mean_lps"] / float(np.hypot(0.30, area["sd"])) >= 1.5:
                     return None
@@ -205,7 +226,7 @@ class CaseBuilder:
         if leak:
             leak.update({k: v for k, v in trace.items()})
         works = []
-        if self.v3:                                           # ADR-010: every leak scours the pipes that feed it
+        if self.v3:                                           # ADR-002: every leak scours the pipes that feed it
             rng3 = np.random.default_rng(seed + 424242)
             if leak and not suite.chronic:                     # a chronic leak's pipes are used to the faster flow: nothing is scoured
                 margin = float(rng3.uniform(0.1, 0.3)); kappa = gen.p.brown_kappa * float(np.exp(rng3.normal(0, 0.4)))
@@ -233,7 +254,7 @@ class CaseBuilder:
             reports += wmsgs
         if self.v4:                                           # look-alikes of the chronic cues: trucks on an old road, watered strips, rain in basements
             days = horizon_end / 86400
-            fscale = float(os.environ.get("AGENTIX_CHRONIC_FALSE_SCALE", "1"))        # sensitivity analysis only (ADR-011)
+            fscale = float(os.environ.get("AGENTIX_CHRONIC_FALSE_SCALE", "1"))        # sensitivity analysis only (ADR-002)
             for cue, rate in gen.p.chronic_false_per_day.items():
                 rate *= fscale
                 reports += [gen.false_cue(float(rng3.uniform(0, horizon_end)), cue) for _ in range(rng3.poisson(rate * days))]

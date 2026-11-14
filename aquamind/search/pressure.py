@@ -32,6 +32,11 @@ class PressureEvidence:
 
 
 def _tod(t, x, mask, step_s=900):
+    """Time-of-day profile of a signal: the average for each 15-min slot of the day, from the masked samples.
+
+    Args: t = times (s); x = values; mask = which samples to use; step_s = slot length (s).
+    Returns: the expected value at each time in t.
+    """
     slot = ((t % 86400) // step_s).astype(int)
     prof = np.array([x[mask & (slot == s)].mean() if (mask & (slot == s)).any() else np.nan
                      for s in range(86400 // step_s)])
@@ -71,6 +76,10 @@ class Fingerprints:
     """Nominal leak fingerprints per L/s: g[j, s] = pressure drop at junction s for a leak at junction j."""
 
     def __init__(self, path: str):
+        """Pre-computed leak fingerprints: pressure change at every junction for a leak at every junction.
+
+        Args: path = signatures .npz file.
+        """
         z = np.load(path)
         i3 = list(z["sizes_lps"]).index(3.0)
         self.g_night = z["dp_night"][i3] / 3.0

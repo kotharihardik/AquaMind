@@ -1,0 +1,48 @@
+{
+  "version": "v2",
+  "title": "final core_abl_1 (fine-tuned reader)",
+  "category": "agentix",
+  "method": "agentix_crew_no_override",
+  "layout": "k5",
+  "timestamp": "2026-11-13 12:07:36",
+  "duration_seconds": 6006.5,
+  "metadata": {
+    "bench": "data/benchmark/agentix_master",
+    "split": "all",
+    "methods": "ablation_one_shot,ablation_no_gate,agentix_crew_no_override",
+    "layouts": "spread_k5",
+    "suites": "",
+    "regime": "",
+    "reader": "local"
+  },
+  "metrics": {
+    "total_cases": 210,
+    "leak_cases": 185,
+    "no_leak_cases": 25,
+    "found_within_100m_count": 156,
+    "found_within_100m_pct": 84.3,
+    "median_distance_error_m": 23.3,
+    "found_rate_pct": 78.4,
+    "false_digs_on_no_leak": "1/25",
+    "unsafe_actions_count": 0,
+    "total_llm_api_calls": 347,
+    "total_tokens": 1866195,
+    "avg_wall_time_per_case_s": 24.5
+  },
+  "by_layout": {
+    "spread_k5": {
+      "total_cases": 210,
+      "leak_cases": 185,
+      "no_leak_cases": 25,
+      "found_within_100m_count": 156,
+      "found_within_100m_pct": 84.3,
+      "median_distance_error_m": 23.3,
+      "found_rate_pct": 78.4,
+      "false_digs_on_no_leak": "1/25",
+      "unsafe_actions_count": 0,
+      "total_llm_api_calls": 347,
+      "total_tokens": 1866195,
+      "avg_wall_time_per_case_s": 24.5
+    }
+  }
+}

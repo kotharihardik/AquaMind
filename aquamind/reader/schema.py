@@ -63,10 +63,16 @@ _V_REPLY = jsonschema.Draft202012Validator(REPLY)
 
 
 def valid_read(d) -> bool:
+    """Args: d = a reader output.
+    Returns: True if it matches the reader-2.0 JSON schema.
+    """
     return isinstance(d, dict) and _V_READ.is_valid(d)
 
 
 def valid_reply(d) -> bool:
+    """Args: d = a reply-reader output.
+    Returns: True if it matches the reply-2.0 JSON schema.
+    """
     return isinstance(d, dict) and _V_REPLY.is_valid(d)
 
 
@@ -100,6 +106,11 @@ def repair_read(d) -> dict:
 
 
 def repair_reply(d) -> dict:
+    """Force any reply-reader output into a valid reply-2.0 dict (bad fields -> safe defaults).
+
+    Args: d = raw output (any type).
+    Returns: valid reply dict.
+    """
     out = copy.deepcopy(EMPTY_REPLY)
     if not isinstance(d, dict):
         return out

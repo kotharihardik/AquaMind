@@ -13,6 +13,11 @@ from ..search.pressure import build_evidence
 
 
 def _cert(evidence: list[str], why: str) -> dict:
+    """Build an approval certificate for the operator.
+
+    Args: evidence = list of evidence lines; why = reason.
+    Returns: {'why', 'evidence'}.
+    """
     return {"why": why, "evidence": evidence}
 
 
@@ -20,6 +25,11 @@ class CrewPractice:
     name = "crew_practice"
 
     def run_case(self, world, env, case) -> dict:
+        """Today's utility practice: listen where the latest complaint points (or at the biggest pressure drop), walk outward, dig on a hit.
+
+        Args: world = shared World; env = CaseEnv; case = public Case.
+        Returns: result dict with 'final_guess'.
+        """
         net, places = world.town.net, world.town.places
         reader = RuleReader(places)
         reads = reader.read_many(case.reports)

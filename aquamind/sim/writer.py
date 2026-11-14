@@ -15,6 +15,11 @@ not state. Return {"texts": {"<id>": "<rewritten message>", ...}}."""
 
 
 def must_keep(gold: dict) -> list[str]:
+    """Words a re-worded message must keep (place names and the time phrase).
+
+    Args: gold = gold label of the message.
+    Returns: list of strings.
+    """
     keep = [p["text"] for p in gold.get("places") or []]
     if gold.get("since"):
         keep.append(gold["since"])
@@ -22,4 +27,9 @@ def must_keep(gold: dict) -> list[str]:
 
 
 def ok(text: str, keep: list[str]) -> bool:
+    """Check an LLM re-wording.
+
+    Args: text = new text; keep = words that must appear.
+    Returns: True if every kept word is present and the text is under 600 characters.
+    """
     return bool(text) and all(k.lower() in text.lower() for k in keep) and len(text) < 600

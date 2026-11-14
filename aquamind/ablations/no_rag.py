@@ -10,6 +10,11 @@ from ..methods import ToolboxMethod
 
 
 def build_no_rag(llm_factory: Callable[[], Any] | None, reader: str = "rules") -> dict[str, ToolboxMethod]:
+    """Build the no-RAG ablation: the crew without SOP text or the ticket archive.
+
+    Args: llm_factory = makes the agents' LLM client (None -> no methods); reader = 'rules' | 'llm' | 'local'.
+    Returns: {method name: ToolboxMethod} ('ablation_no_rag' and 'agentix_crew_no_rag').
+    """
     if llm_factory is None:
         return {}
     H = {"hypothesis_mode": True, "reply_confirms": False}

@@ -1,4 +1,4 @@
-"""Crew-role ablations (ADR-014/015): one switch per role, so the agentic core can be shown to be indispensable.
+"""Crew-role ablations (ADR-007): one switch per role, so the agentic core can be shown to be indispensable.
 
 Not part of the six proposal ablations (no_reports, no_temp_sensor, no_rag, no_gate, one_shot, no_ai); they answer a different question:
 what does each of the four agents add inside the crew?
@@ -36,6 +36,11 @@ ROLE_DESCRIPTIONS = {
 
 
 def build_roles(llm_factory: Callable[[], Any] | None, reader: str = "rules") -> dict[str, ToolboxMethod]:
+    """Build one ablation per crew role (no Forensic, no Skeptic, ...), each switching one role off.
+
+    Args: llm_factory = makes the agents' LLM client (None -> no methods); reader = 'rules' | 'llm' | 'local'.
+    Returns: {method name: ToolboxMethod}, two names per role ('ablation_*' and 'agentix_crew_*').
+    """
     if llm_factory is None:
         return {}
     H = {"hypothesis_mode": True, "reply_confirms": False}

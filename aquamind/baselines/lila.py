@@ -20,6 +20,11 @@ RIDGE = 1e-3          # tiny ridge on standardised features: with 3 sensors the 
 
 
 def predict_lila_style(world, case) -> tuple[int | None, np.ndarray | None]:
+    """LILA-style two-stage localisation (sensors only): sensor-to-sensor regression, then match the residuals to leak fingerprints.
+
+    Args: world = shared World; case = public Case.
+    Returns: (best junction index or None, probability per junction or None).
+    """
     net, ls = world.town.net, world.search()
     t = case.time_s.astype(float)
     base = t < case.history_days * 86400                      # leak-free history

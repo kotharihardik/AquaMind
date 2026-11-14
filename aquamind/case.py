@@ -32,6 +32,12 @@ class PublicCase:
 
 
 def load_public_case(bench_dir: str, name: str, layout: list[str], text_variant: str = "realistic") -> PublicCase:
+    """Load what a method may see of a case: messages so far and sensor data until opening.
+
+    Args: bench_dir = benchmark folder; name = case name, e.g. 'test-brown-003'; layout = sensor junction ids;
+          text_variant = 'realistic' (use re-worded text if present) or other.
+    Returns: PublicCase.
+    """
     d = f"{bench_dir}/cases/{name}"
     case = json.load(open(f"{d}/case.json"))
     if text_variant == "realistic" and os.path.exists(f"{d}/messages_realistic.json"):
@@ -48,4 +54,7 @@ def load_public_case(bench_dir: str, name: str, layout: list[str], text_variant:
 
 
 def load_layouts(bench_dir: str) -> dict[str, list[str]]:
+    """Args: bench_dir = benchmark folder.
+    Returns: {layout name: list of sensor junction ids}, e.g. {'spread_k5': [...]}.
+    """
     return json.load(open(f"{bench_dir}/layouts.json"))

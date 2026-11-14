@@ -8,24 +8,38 @@ from .reader.rules import RuleReader
 
 
 class NullReader:
-    """No language understanding at all (the no-AI ablation, ADR-017): a message is a message, its text is never interpreted. Real
+    """No language understanding at all (the no-AI ablation, ADR-011): a message is a message, its text is never interpreted. Real
     leak-finding software does not read citizen text (proposal Sections 4-5); a regex written against this benchmark's own templates would
     give code a reading ability it has nowhere else."""
     name = "none"
 
     def read_many(self, reports):
+        """Args: reports = list of message dicts.
+        Returns: {report_id: empty read} (nothing is understood).
+        """
         from .reader.schema import repair_read
         return {r["report_id"]: repair_read(None) for r in reports}
 
     def read(self, report):
+        """Args: report = one message dict.
+        Returns: an empty read.
+        """
         return self.read_many([report])[report["report_id"]]
 
     def read_replies(self, items):
+        """Args: items = call-back replies.
+        Returns: one empty reply read per item.
+        """
         from .reader.schema import EMPTY_REPLY
         return [dict(EMPTY_REPLY) for _ in items]
 
 
 def make_reader(kind: str, world, llm=None):
+    """Create the message reader of a run.
+
+    Args: kind = 'none' | 'rules' | 'llm' | 'local' (fine-tuned model); world = shared World; llm = LLM client for 'llm'.
+    Returns: reader object with read_many / read_replies.
+    """
     if kind == "none":
         return NullReader()
     if kind == "rules":
@@ -44,10 +58,20 @@ class ToolboxMethod:
 
     def __init__(self, name: str, brain_factory, reader: str = "llm", search_kw: dict | None = None,
                  llm_factory=None, **tb_kw):
+        """A method = a brain (crew, ablation or code policy) running on the AquaMind Toolbox.
+
+        Args: name = method name; brain_factory = llm -> brain object; reader = reader kind; search_kw = LeakSearch settings;
+              llm_factory = makes the LLM client (None = no LLM); **tb_kw = Toolbox switches (use_gate, m1_weak_leads, ...).
+        """
         self.name, self.brain_factory, self.reader_kind = name, brain_factory, reader
         self.search_kw, self.llm_factory, self.tb_kw = search_kw or {}, llm_factory, tb_kw
 
     def run_case(self, world, env, case) -> dict:
+        """Run the brain on one case and collect its results.
+
+        Args: world = shared World; env = CaseEnv; case = public Case.
+        Returns: dict (final_guess, reader info, trace, tool calls/errors, steps, LLM calls/tokens).
+        """
         llm = self.llm_factory() if self.llm_factory else None
         reader_llm = llm
         reader = make_reader(self.reader_kind, world, reader_llm)
@@ -83,11 +107,29 @@ def registry(agent_model: str | None = None, reader: str = "rules") -> dict[str,
     m.update(get_baseline_registry(llm))                                   # proposal Section 10
     m.update(get_ablation_registry(llm, reader=reader))                    # proposal Section 11 + crew-role ablations
 
-    # AquaMind itself (ADR-014/015/016/020): every agentic method searches ONLY hypothesised junctions (no 782-junction table, no planner)
+    # AquaMind itself (ADR-007/006/009): every agentic method searches ONLY hypothesised junctions (no 782-junction table, no planner)
     H = {"hypothesis_mode": True, "reply_confirms": False}
     kw = {"reader": reader, "llm_factory": llm, "search_kw": H, "use_planner": False, "min_checks_close": 3}
     m["agentix_crew"] = ToolboxMethod("agentix_crew", lambda l: Crew(l), **kw)
     m["agentix_crew_no_override"] = ToolboxMethod("agentix_crew_no_override", lambda l: Crew(l, chance_policy=False), **kw)
+
+    # Mid-system baseline (all mitigations disabled) for fair benchmarking against the improved final system
+    m["agentix_crew_mid"] = ToolboxMethod("agentix_crew_mid", lambda l: Crew(
+        l, m1_weak_leads=False, m2_turn_budget=False, m3_confirm_dig=False, m4_ticket_type=False, m5_corner_permits=False),
+        search_kw=H, reader=reader, llm_factory=llm, use_planner=False, min_checks_close=3,
+        m1_weak_leads=False, m2_turn_budget=False, m3_confirm_dig=False, m4_ticket_type=False, m5_corner_permits=False)
+
+    # Individual mitigation ablations
+    m["agentix_crew_no_m1"] = ToolboxMethod("agentix_crew_no_m1", lambda l: Crew(l, m1_weak_leads=False),
+                                            search_kw=H, reader=reader, llm_factory=llm, use_planner=False, min_checks_close=3, m1_weak_leads=False)
+    m["agentix_crew_no_m2"] = ToolboxMethod("agentix_crew_no_m2", lambda l: Crew(l, m2_turn_budget=False),
+                                            search_kw=H, reader=reader, llm_factory=llm, use_planner=False, min_checks_close=3, m2_turn_budget=False)
+    m["agentix_crew_no_m3"] = ToolboxMethod("agentix_crew_no_m3", lambda l: Crew(l, m3_confirm_dig=False),
+                                            search_kw=H, reader=reader, llm_factory=llm, use_planner=False, min_checks_close=3, m3_confirm_dig=False)
+    m["agentix_crew_no_m4"] = ToolboxMethod("agentix_crew_no_m4", lambda l: Crew(l, m4_ticket_type=False),
+                                            search_kw=H, reader=reader, llm_factory=llm, use_planner=False, min_checks_close=3, m4_ticket_type=False)
+    m["agentix_crew_no_m5"] = ToolboxMethod("agentix_crew_no_m5", lambda l: Crew(l, m5_corner_permits=False),
+                                            search_kw=H, reader=reader, llm_factory=llm, use_planner=False, min_checks_close=3, m5_corner_permits=False)
     return m
 
 

@@ -17,6 +17,11 @@ import numpy as np
 
 
 def build_sections(net, places, target_size: int = 55, night_factor: dict | None = None) -> dict:
+    """Split the network into step-test sections (~55 junctions each, within one pressure zone) and their parts.
+
+    Args: net = NetworkInfo; places = PlaceIndex; target_size = junctions per section; night_factor = night-use scaling.
+    Returns: sections data dict (saved as sections.json).
+    """
     D = net.pipe_distance
     J = len(net.junctions)
     sec = np.full(J, -1)
@@ -77,6 +82,10 @@ class Sections:
     """Lookup helper: section of each junction, member masks; 'areas' = sections and their parts (S03.2)."""
 
     def __init__(self, data: dict, net):
+        """Step-test sections and their parts, with junction masks and expected night use.
+
+        Args: data = sections.json content; net = NetworkInfo.
+        """
         self.items = data["sections"]
         self.ids = [s["id"] for s in self.items]
         self.by_id = {s["id"]: s for s in self.items}
@@ -100,13 +109,22 @@ class Sections:
                 self.by_id[p["id"]] = p
 
     def parts(self, sid: str) -> list[str]:
+        """Args: sid = section id.
+        Returns: ids of its parts (smaller areas tested on a second night).
+        """
         return [a for a, v in self.areas.items() if v["parent"] == sid]
 
     def area_mass(self, aid: str, post: np.ndarray) -> float:
+        """Args: aid = section or part id; post = probability per junction.
+        Returns: share of the probability inside that area.
+        """
         return float(post[self.areas[aid]["mask"]].sum())
 
     @classmethod
     def load(cls, path: str, net) -> "Sections":
+        """Args: path = sections.json; net = NetworkInfo.
+        Returns: Sections.
+        """
         return cls(json.load(open(path)), net)
 
     def mass(self, post: np.ndarray) -> np.ndarray:
@@ -114,4 +132,7 @@ class Sections:
         return np.bincount(self.of, weights=post, minlength=len(self.items))
 
     def index(self, sid: str) -> int:
+        """Args: sid = section id.
+        Returns: its position in the list.
+        """
         return self.ids.index(sid)

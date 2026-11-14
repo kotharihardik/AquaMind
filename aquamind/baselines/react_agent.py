@@ -47,6 +47,11 @@ def resolve_place(world, text: str) -> int | None:
 
 
 def format_sensor_summary(case) -> str:
+    """Sensor summary as text: pressure drop per sensor and the zone inflow change.
+
+    Args: case = public Case.
+    Returns: one line of text.
+    """
     from ..search.pressure import build_evidence
     ev = build_evidence(case.time_s, case.pressure, case.flow, case.tank_level, case.case_open_s)
     from ..agent.aquamind import _dp, _dq
@@ -58,9 +63,18 @@ class ReActAgent:
     name = "react_agent"
 
     def __init__(self, llm_factory, budget: int = STEP_BUDGET, allow_logger: bool = True):
+        """Standard ReAct tool-using agent (no hypothesis board, no code gate).
+
+        Args: llm_factory = makes the LLM client; budget = max steps; allow_logger = may place temporary loggers.
+        """
         self.llm_factory, self.budget, self.allow_logger = llm_factory, budget, allow_logger
 
     def run_case(self, world, env, case) -> dict:
+        """Run the think-act-observe loop until the agent digs, closes or runs out of steps.
+
+        Args: world = shared World; env = CaseEnv; case = public Case.
+        Returns: result dict (final_guess, trace, tool calls, LLM usage).
+        """
         llm = self.llm_factory()
         net = world.town.net
         ls = world.search(hypothesis_mode=True, use_messages=False)
@@ -86,7 +100,8 @@ class ReActAgent:
             if tool == "dig" and args.get("place"):
                 j = resolve_place(world, args["place"])
                 guess = net.junctions[j] if j is not None else guess
-            trace.append({"step": steps, "thought": d.get("thought"), "tool": tool, "args": args, "result": res})
+            trace.append({"step": steps, "thought": d.get("thought"), "tool": tool, "args": args, "result": res,
+                          "t_case_h": round((env.now - case.case_open_s) / 3600, 2)})          # record only: case clock for the replay
             hist.append(f"Step {steps}: {tool} {json.dumps(args)[:200]} -> {json.dumps(res)[:400]}")
         if not env.done:
             env.close("hand_over", "ReAct agent stopped")
@@ -96,6 +111,12 @@ class ReActAgent:
                 "llm_seconds": u.seconds, "tokens": u.prompt_tokens + u.output_tokens}
 
     def _act(self, world, env, board, ls, tool, args, tokens) -> dict:
+        """Execute one ReAct tool call (test_places, listen, step_test, call, search_docs, dig, close, ...).
+
+        Args: world, env = shared World and CaseEnv; board = evidence board; ls = leak search; tool = tool name;
+              args = tool arguments from the LLM; tokens = one-time operator tokens issued so far.
+        Returns: observation dict shown to the agent.
+        """
         net, sec = world.town.net, world.town.sections
         if tool == "test_places":
             js = []

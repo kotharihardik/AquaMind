@@ -11,6 +11,11 @@ from ..methods import ToolboxMethod
 
 
 def build_no_reports(llm_factory: Callable[[], Any] | None, reader: str = "rules") -> dict[str, ToolboxMethod]:
+    """Build the sensors-only ablation: the crew never reads citizen messages.
+
+    Args: llm_factory = makes the agents' LLM client (None -> no methods); reader = ignored (always 'none').
+    Returns: {method name: ToolboxMethod} ('ablation_no_reports' and 'agentix_crew_no_reports').
+    """
     if llm_factory is None:
         return {}
     H = {"hypothesis_mode": True, "reply_confirms": False, "use_messages": False}

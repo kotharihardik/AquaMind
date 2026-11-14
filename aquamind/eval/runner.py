@@ -19,6 +19,10 @@ class World:
     """Everything that is loaded once per process."""
 
     def __init__(self, bench: str, config: str = "configs/ltown.yaml"):
+        """Everything shared by all cases: the town, the simulator, layouts, RAG corpus and SOP rules.
+
+        Args: bench = benchmark folder; config = town config YAML.
+        """
         regime.tools_for_agent()
         self.bench = bench
         self.town = Town(config)
@@ -30,12 +34,22 @@ class World:
         self._search = {}
 
     def search(self, **kw) -> LeakSearch:
+        """Leak search engine with these settings (cached per setting).
+
+        Args: **kw = SearchConfig fields, e.g. hypothesis_mode=True, use_messages=False.
+        Returns: LeakSearch.
+        """
         key = tuple(sorted(kw.items()))
         if key not in self._search:
             self._search[key] = LeakSearch(self.town, SearchConfig(**kw))
         return self._search[key]
 
     def open(self, name: str, layout: str, text: str = "realistic", max_checks: int | None = None):
+        """Open one case for a method.
+
+        Args: name = case name; layout = layout name, e.g. 'spread_k5'; text = 'realistic' text variant; max_checks = field-check budget.
+        Returns: (PublicCase, CaseEnv).
+        """
         nodes = self.layouts[layout]
         case = load_public_case(self.bench, name, nodes, text)
         env = CaseEnv(self.bench, name, self.town.net, self.town.sections, self.town.places, self.sim.ctx, nodes,
@@ -45,6 +59,12 @@ class World:
 
 
 def run_case(world: World, method, name: str, layout: str, text: str = "realistic", max_checks: int | None = None) -> dict:
+    """Run one method on one case and score it (a crash counts as a failed case).
+
+    Args: world = shared World; method = method object with run_case(); name = case name; layout = layout name;
+          text = text variant; max_checks = field-check budget (default 5).
+    Returns: result row dict (outcome, digs, error m, unsafe, violations, LLM use, trace, ...).
+    """
     case, env = world.open(name, layout, text, max_checks)
     t0 = time.time()
     err, info = None, {}

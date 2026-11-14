@@ -18,6 +18,11 @@ _CFG = {}
 
 
 def _window_means(res, windows_h, day_index=1):
+    """Mean pressure per junction in each daily time window.
+
+    Args: res = WNTR results; windows_h = {name: (start h, end h)}; day_index = which simulated day.
+    Returns: {window name: pressures}.
+    """
     p = res.node["pressure"]
     idx = p.index.values
     out = {}
@@ -29,6 +34,9 @@ def _window_means(res, windows_h, day_index=1):
 
 
 def _load(cfg):
+    """Args: cfg = town config.
+    Returns: the nominal WNTR model with simulation times set.
+    """
     wn = wntr.network.WaterNetworkModel(cfg["nominal_inp"])
     wn.options.time.duration = int(cfg["signatures"]["duration_h"] * 3600)
     wn.options.time.report_timestep = 900
@@ -37,10 +45,19 @@ def _load(cfg):
 
 
 def _init(cfg):
+    """Worker setup: store the config for _run_one.
+
+    Args: cfg = town config.
+    """
     _CFG.update(cfg)
 
 
 def _run_one(args):
+    """Simulate one leak and return its pressure and flow fingerprint.
+
+    Args: args = (junction id, leak size L/s, reference night pressure).
+    Returns: (junction, size, window pressures, window flows).
+    """
     node, q_lps, p_ref = args
     cfg = _CFG
     wn = _load(cfg)
@@ -59,6 +76,10 @@ def _run_one(args):
 
 
 def build_library(cfg: dict, out_path: str, workers: int = 8):
+    """Build the fingerprint library: a leak of each size at every junction (parallel WNTR runs), saved to .npz.
+
+    Args: cfg = town config; out_path = output file; workers = parallel processes.
+    """
     wn = _load(cfg)
     junctions = list(wn.junction_name_list)
     d = tempfile.mkdtemp(prefix="agxsig_")

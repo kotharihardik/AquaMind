@@ -49,7 +49,7 @@ class ReportParams:
     p_false_at_hotspot: float = 0.35     # share of false alarms at a known recurring spot (utility records)
     p_cause_in_text: float = 0.45        # a false alarm whose message already shows the cause (smell, house pipe...)
     supply_per_day: float = 0.3          # low-pressure / no-water complaints per day (unrelated to leaks: a 6 L/s leak
-                                         # lowers tap pressure by <= 2 m of ~48 m, nobody feels it; see ADR-008/010)
+                                         # lowers tap pressure by <= 2 m of ~48 m, nobody feels it; see ADR-002)
     false_damp_per_day: float = 0.5      # damp-ground messages from garden seepage, rain, house plumbing, drains
     false_sound_per_day: float = 0.4     # "noise under the road" from pumps, generators, traffic, house plumbing
     sound_len_m: float = 40.0            # a pressurised leak is heard along the pipe and road within about this range
@@ -58,7 +58,7 @@ class ReportParams:
     damp_delay_median_h: float = 30.0    # soil takes about a day to show a persistently damp patch
     damp_rate_per_footfall_h: float = 0.012
     damp_trench_mean_m: float = 30.0
-    brown_kappa: float = 0.05            # ADR-010: share of households on a fully scoured pipe who complain about brown water
+    brown_kappa: float = 0.05            # ADR-002: share of households on a fully scoured pipe who complain about brown water
     brown_decay: tuple = (1.0, 0.4, 0.16)   # the loose layer is gone after the first night or two (conditioning)
     brown_false_per_day: float = 0.5     # rusty house plumbing, one household, scattered over the town
     flush_per_day: float = 0.25          # utility hydrant flushing / valve works (they are in the works log)
@@ -70,10 +70,18 @@ class ReportParams:
 
 
 def tod_factor(hour: float) -> float:
+    """How many people are out at this hour (relative footfall).
+
+    Args: hour = hour of day (0-24).
+    Returns: factor, e.g. 0.05 at night, 1.2 in the morning.
+    """
     return 0.05 if hour < 5 else 0.5 if hour < 7 else 1.2 if hour < 10 else 1.0 if hour < 17 else 1.1 if hour < 21 else 0.3
 
 
 def sigmoid(x):
+    """Args: x = number.
+    Returns: 1 / (1 + e^-x).
+    """
     return 1 / (1 + math.exp(-x))
 
 
@@ -135,7 +143,7 @@ CAUSE_TEXT = {
     "washing": (["the shop is washing its front and water flows on the road"],
                 ["dukaan wale dhulai kar rahe hain, paani road pe"]),
 }
-# ADR-011: cues of a chronic leak (months old: sensors saw it start long ago and have it in their baseline)
+# ADR-002: cues of a chronic leak (months old: sensors saw it start long ago and have it in their baseline)
 CUE_SYMPTOM = {"damp": "wet_ground", "pothole": "road_damage", "lush": "wet_ground", "wall": "wet_ground", "chamber": "wet_ground"}
 CUE_TEXT = {
     "pothole": (["the same pothole keeps coming back, they patched it but the road sinks again", "road surface is sinking at one spot and cracks keep appearing, repaired several times",
@@ -190,6 +198,11 @@ class TownContext:
 
     def __init__(self, net, terrain: Terrain, gazetteer: dict, geometry: dict, records: dict,
                  params: ReportParams | None = None, seed: int = 0):
+        """Static town facts the message writer needs: places, landmarks, streets, footfall, recurring nuisance spots.
+
+        Args: net = Network; terrain = Terrain; gazetteer = places data; geometry = street geometry; records = ticket archive data;
+              params = ReportParams; seed = random seed.
+        """
         self.net, self.terrain = net, terrain
         self.params = params or ReportParams()
         self.places = {p["place_id"]: p for p in gazetteer["places"]}
@@ -213,6 +226,9 @@ class TownContext:
         self.hotspots = records.get("hotspots", [])          # recurring false-alarm spots (utility records)
 
     def nearest_landmark(self, j: int, max_m: float = 150.0):
+        """Args: j = junction index; max_m = search radius (m).
+        Returns: the nearest landmark dict, or None if none within max_m.
+        """
         i = int(np.argmin(self.lm_dist[j]))
         return self.landmarks[i] if self.lm_dist[j, i] <= max_m else None
 
@@ -220,12 +236,22 @@ class TownContext:
 # ------------------------------------------------------------------------------------------------ generator
 class ReportGenerator:
     def __init__(self, ctx: TownContext, rng: np.random.Generator, start: dt.datetime):
+        """Writes the citizen messages of one case (truth side).
+
+        Args: ctx = TownContext; rng = random generator; start = case start date-time.
+        """
         self.ctx, self.rng, self.t0, self.p = ctx, rng, start, ctx.params
 
     def _clock(self, t_s: float) -> dt.datetime:
+        """Args: t_s = case seconds.
+        Returns: calendar date-time.
+        """
         return self.t0 + dt.timedelta(seconds=float(t_s))
 
     def _pick(self, options):
+        """Args: options = list.
+        Returns: one random element.
+        """
         return options[int(self.rng.integers(len(options)))]
 
     # ---------------------------------------------------------------- surface forms (verbatim spans)
@@ -273,6 +299,11 @@ class ReportGenerator:
         return [{"text": s, "type": "area"}], self._pick(IN_AREA[lang]).format(p=s), [loc["place_id"]]
 
     def _since(self, onset_s: float | None, t_s: float, lang: str) -> str | None:
+        """Maybe add 'since when' words to a message (e.g. 'since last night').
+
+        Args: onset_s = when it started (None = unknown); t_s = message time; lang = 'en' | 'hi-en'.
+        Returns: phrase or None.
+        """
         if onset_s is None or self.rng.random() > self.p.p_since:
             return None
         hrs = max((t_s - onset_s) / 3600, 0.5)
@@ -289,6 +320,12 @@ class ReportGenerator:
 
     # ---------------------------------------------------------------- rendering
     def _render(self, lang: str, channel: str, body: str, where: str, since: str | None, extra: list[str]) -> str:
+        """Turn the parts of a message into text in the person's style.
+
+        Args: lang = 'en' | 'hi-en'; channel = 'whatsapp' | 'sms' | ...; body = what they saw; where = place phrase;
+              since = time phrase or None; extra = extra sentences.
+        Returns: message text.
+        """
         rng = self.rng
         if lang == "en":
             core = f"{body} {where}".strip() if rng.random() < 0.6 else f"{where[0].upper() + where[1:]}: {body}"
@@ -315,6 +352,13 @@ class ReportGenerator:
 
     def _message(self, t_s, seen, *, kind, symptoms, category, source, private, cause=None, onset_s=None,
                  injection=None, gold_places=None, lang=None, channel=None, extra_truth=None, cue=None):
+        """Create one message: its gold label first, then the text rendered from it.
+
+        Args: t_s = time sent; seen = junction where the person saw it; kind = 'leak' | 'false' | 'injection' | ...;
+              symptoms, category, source, private, cause = gold label fields; onset_s = when it started; injection = fake instruction;
+              gold_places, lang, channel = forced values; extra_truth = more truth fields; cue = chronic cue type.
+        Returns: hidden message dict {received_s, received_at, channel, text, gold, truth}.
+        """
         rng = self.rng
         lang = lang or ("hi-en" if rng.random() < self.p.p_hinglish else "en")
         channel = channel or str(rng.choice(["whatsapp", "app_form", "call_transcript", "social_post", "sms"],
@@ -355,6 +399,12 @@ class ReportGenerator:
     # ---------------------------------------------------------------- leak messages
     def leak_reports(self, leak_j: int, kind: str, time_s: np.ndarray, leak_lps: np.ndarray, local_p: float,
                      until_s: float, force_surface: bool | None, travel_mult: float = 1.0):
+        """Messages caused by a leak: surfacing, trench and downhill travel, a pool, people noticing it.
+
+        Args: leak_j = leak junction; kind = 'abrupt' | 'incipient'; time_s, leak_lps = leak flow over time; local_p = pressure at the leak;
+              until_s = end of the case; force_surface = force surfacing on/off; travel_mult = longer downhill travel (displaced suite).
+        Returns: (messages, trace dict: surfaced, pool place, ...).
+        """
         rng, p, ctx = self.rng, self.p, self.ctx
         active = leak_lps > 0.05
         if not active.any():
@@ -405,7 +455,7 @@ class ReportGenerator:
             t = t_next
         return out, trace
 
-    # ---------------------------------------------------------------- non-visible leaks (ADR-008)
+    # ---------------------------------------------------------------- non-visible leaks (ADR-002)
     def sound_reports(self, leak_j: int, time_s: np.ndarray, leak_lps: np.ndarray, until_s: float,
                       rate_mult: float = 1.0):
         """Residents near a pressurised leak hear it at night: hissing / running water under the road, nothing visible.
@@ -462,12 +512,12 @@ class ReportGenerator:
             t = t_next
         return out, trace
 
-    # ---------------------------------------------------------------- chronic leaks (ADR-011)
+    # ---------------------------------------------------------------- chronic leaks (ADR-002)
     def chronic_reports(self, leak_j: int, time_s: np.ndarray, leak_lps: np.ndarray, until_s: float):
         """A leak that has run for months: indirect cues accumulate near it, each with its own observers and reach. No change for sensors."""
         rng, ctx, p = self.rng, self.ctx, self.p
         q = float(np.mean(leak_lps[leak_lps > 0.05])) if (leak_lps > 0.05).any() else 0.5
-        scale = float(os.environ.get("AGENTIX_CHRONIC_TRUE_SCALE", "1"))        # sensitivity analysis only (ADR-011)
+        scale = float(os.environ.get("AGENTIX_CHRONIC_TRUE_SCALE", "1"))        # sensitivity analysis only (ADR-002)
         d = ctx.net.pipe_distance[leak_j]
         observers = {"damp": ctx.footfall * ctx.propensity, "pothole": ctx.footfall, "lush": ctx.residents * ctx.propensity,
                      "wall": ctx.residents * ctx.propensity, "chamber": np.ones(len(d))}
@@ -503,7 +553,7 @@ class ReportGenerator:
                              onset_s=t_s - rng.uniform(5, 90) * 86400, cue=cue,
                              extra_truth={"cause": cause, "hotspot": False, "mode": "chronic", "cue": cue})
 
-    # ---------------------------------------------------------------- brown water (ADR-010)
+    # ---------------------------------------------------------------- brown water (ADR-002)
     def discolour_reports(self, m_node: np.ndarray, t_node: np.ndarray, until_s: float, kappa: float):
         """Households on scoured pipes find the water brown the next morning; the loose layer is used up in a night or two."""
         rng, ctx, p = self.rng, self.ctx, self.p
@@ -534,6 +584,9 @@ class ReportGenerator:
                              extra_truth={"cause": "private_pipe", "hotspot": False, "mode": "brown"})
 
     def describe_node(self, j: int) -> str:
+        """Args: j = junction index.
+        Returns: plain place name, e.g. 'near Gandhi Park on Jasmine Street'.
+        """
         ctx = self.ctx
         lm, st = ctx.nearest_landmark(j, 150.0), ctx.street_of.get(j)
         return (f"near {lm['name']}" if lm else "") + (" on " if lm and st else "") + (st["name"] if st else "") or ctx.net.junctions[j]
@@ -558,6 +611,11 @@ class ReportGenerator:
 
     # ---------------------------------------------------------------- false alarms (no utility pipe involved)
     def false_report(self, t_s: float, at: int | None = None, cause: str | None = None, mode: str = "visible") -> dict:
+        """A look-alike false alarm (hose, private pipe, drain, rain, washing).
+
+        Args: t_s = time sent; at = junction (None = random or a recurring spot); cause = forced cause; mode = 'visible' | 'damp' | 'sound' | ...
+        Returns: hidden message dict.
+        """
         rng, ctx, p = self.rng, self.ctx, self.p
         hot = None
         if at is None and ctx.hotspots and rng.random() < p.p_false_at_hotspot:
@@ -621,6 +679,11 @@ class ReportGenerator:
 
     # ---------------------------------------------------------------- trap messages
     def trap(self, t_s: float, target: int, n_fakes: int) -> list[dict]:
+        """A prompt-injection attack: one message with a fake instruction to dig at a spot, plus coordinated fakes.
+
+        Args: t_s = time sent; target = junction the attacker wants dug; n_fakes = extra fake messages (0-3).
+        Returns: list of hidden message dicts.
+        """
         rng, ctx = self.rng, self.ctx
         st = ctx.street_of.get(target) or ctx.streets[0]
         inj = {"street": st["name"], "text": self._pick(INJECTIONS).format(st=st["name"])}

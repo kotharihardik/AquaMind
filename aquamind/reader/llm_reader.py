@@ -16,9 +16,18 @@ class LLMReader:
     name = "llm_prompted"
 
     def __init__(self, llm, batch: int = 4, parallel: int = 2):
+        """Reader that asks a large LLM to read messages (reader-2.0 JSON).
+
+        Args: llm = LLM client; batch = messages per request; parallel = requests at once.
+        """
         self.llm, self.batch, self.parallel = llm, batch, parallel
 
     def _chunk(self, chunk: list[dict]) -> dict[str, dict]:
+        """Read a small batch of messages in one LLM request.
+
+        Args: chunk = list of message dicts.
+        Returns: {report_id: read dict} (invalid answers repaired to the schema).
+        """
         user = ("Read each message separately. Return {\"reads\": {\"<id>\": <reader-2.0 object>, ...}} with one "
                 "entry per id.\n\n" + json.dumps([{"id": r["report_id"], "channel": r.get("channel"),
                                                     "text": r["text"]} for r in chunk], ensure_ascii=False))
@@ -37,6 +46,9 @@ class LLMReader:
         return out
 
     def read(self, report: dict) -> dict:
+        """Args: report = one message dict.
+        Returns: its read dict.
+        """
         return self.read_many([report])[report["report_id"]]
 
     def read_replies(self, items: list[tuple[str, str | None]]) -> list[dict]:

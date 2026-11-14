@@ -11,6 +11,11 @@ from ..methods import ToolboxMethod
 
 
 def build_no_temp_sensor(llm_factory: Callable[[], Any] | None, reader: str = "rules") -> dict[str, ToolboxMethod]:
+    """Build the no-temporary-measurement ablation: the crew cannot run night step tests (listening still works).
+
+    Args: llm_factory = makes the agents' LLM client (None -> no methods); reader = 'rules' | 'llm' | 'local'.
+    Returns: {method name: ToolboxMethod} ('ablation_no_temp_sensor' and 'agentix_crew_no_temp_sensor').
+    """
     if llm_factory is None:
         return {}
     H = {"hypothesis_mode": True, "reply_confirms": False}

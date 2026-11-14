@@ -23,14 +23,14 @@ class SearchConfig:
     rho_p: float = 0.15                 # chance the fingerprints mislead for this leak (robust mixture)
     within_section: float = 0.5         # weight of the pressure detail INSIDE a step-test section (0 = flat)
     use_zone_balance: bool = True       # zone C night flow balance (pump inflow - tank filling)
-    zone_c_abs: bool = False            # ABSOLUTE zone C night balance against the audited leak-free level (sees chronic leaks too, ADR-012)
+    zone_c_abs: bool = False            # ABSOLUTE zone C night balance against the audited leak-free level (sees chronic leaks too, ADR-011)
     zone_c_base: float = 2.35           # audited leak-free night demand of zone C, L/s (calibrated on dev no-leak cases)
     zone_c_sd: float = 0.45
     base_eps: float = 0.5               # prior chance that a leak-looking message is a false alarm
     tau_age_h: float = 24.0             # messages long before the case opened are rarely about this leak
     prior_leak_message: float = 0.55    # P(leak) when a citizen message opened the case
     prior_leak_alarm: float = 0.85      # P(leak) when the SCADA analytics opened it
-    prior_leak_survey: float = 0.5      # P(leak) in a survey with no trigger at all (ADR-012)
+    prior_leak_survey: float = 0.5      # P(leak) in a survey with no trigger at all (ADR-011)
     window_h: float = 6.0               # pressure evidence window before "now"
     dig_radius_m: float = 90.0
     use_pressure: bool = True
@@ -42,23 +42,27 @@ class SearchConfig:
     lambda_sound_m: float = 70.0
     corr: float = 0.5                   # discount between overlapping reports
     eps_trigger: float = 0.25           # chance that the message the case was opened on is a false alarm (base rate of such cases)
-    use_footprint: bool = False         # brown-water complaints through hydraulic footprints (ADR-010): real physics, but neutral-to-harmful end to end in L-Town, so OFF
+    use_footprint: bool = False         # brown-water complaints through hydraulic footprints (ADR-002): real physics, but neutral-to-harmful end to end in L-Town, so OFF
     fp_margin: float = 0.2              # velocity must exceed the usual by this share to scour a pipe
     fp_kappa: float = 0.05              # share of households on a fully scoured pipe who complain
     fp_bg: float = 1.5                  # usual brown-water complaints (house plumbing, works) in the observed window, town-wide
     eps_scada: float = 0.0              # false-alarm chance of messages when a SCADA alarm (not a complaint) opened the case (0 = no special rule)
     use_works: bool = True              # explain brown water by the utility's own works log (hydrant flushing)
     fp_silence: float = 0.0             # weight of 'nobody complained' as evidence against a big footprint
-    reply_confirms: bool = True         # a caller's 'it is still flowing / it comes out right here' may RAISE a complaint's credibility (False: answers can only debunk, ADR-014)
-    hypothesis_mode: bool = False      # ADR-016: pressure physics only for HYPOTHESISED junctions (simulated on demand); no 782-junction table
+    reply_confirms: bool = True         # a caller's 'it is still flowing / it comes out right here' may RAISE a complaint's credibility (False: answers can only debunk, ADR-007)
+    hypothesis_mode: bool = False      # ADR-006: pressure physics only for HYPOTHESISED junctions (simulated on demand); no 782-junction table
     max_candidates: int = 220
-    hedge: float = 0.0                  # share of the complaint-free map in ranking the sections of the first step test (0 = off, ADR-014)
+    hedge: float = 0.0                  # share of the complaint-free map in ranking the sections of the first step test (0 = off, ADR-007)
     dig_bar: float = 0.8                # P(success) needed to dig while checks can still add something
-    final_bar: float = 0.35             # ... and when none can (ADR-008)
+    final_bar: float = 0.35             # ... and when none can (ADR-002)
 
 
 class LeakSearch:
     def __init__(self, town, cfg: SearchConfig | None = None):
+        """The leak search engine: builds and updates the evidence board for a case.
+
+        Args: town = Town assets; cfg = SearchConfig (switches and parameters; default settings if None).
+        """
         self.town, self.net, self.sections = town, town.net, town.sections
         self.cfg = cfg or SearchConfig()
         self.fp = None if self.cfg.hypothesis_mode else Fingerprints(town.signatures_path)
@@ -75,7 +79,7 @@ class LeakSearch:
     @staticmethod
     def fresh_until(case) -> float:
         """Telemetry that has gone stale (a flat line: every pressure value identical to the previous sample) carries no news. Evidence is
-        taken as of the last sample that changed, so a comms outage cannot be mistaken for 'nothing is happening' or for a leak (ADR-012)."""
+        taken as of the last sample that changed, so a comms outage cannot be mistaken for 'nothing is happening' or for a leak (ADR-011)."""
         P = np.asarray(case.pressure)
         if len(P) < 2:
             return case.case_open_s
@@ -119,6 +123,11 @@ class LeakSearch:
         return ll, ll0, ev
 
     def start(self, case, reads: dict[str, dict]) -> Board:
+        """Build the evidence board at case opening: sensors, prior, messages and works log.
+
+        Args: case = PublicCase; reads = {report_id: reader output}.
+        Returns: Board.
+        """
         cfg, net = self.cfg, self.net
         now_eff = self.fresh_until(case)
         ev0 = build_evidence(case.time_s, case.pressure, case.flow, case.tank_level, now_eff,
@@ -140,20 +149,21 @@ class LeakSearch:
         if cfg.hypothesis_mode:
             board.cand = np.zeros(len(net.junctions), bool)
             board._hyp = {"ev": ev, "sidx": [net.index[n] for n in case.pressure_nodes], "zone": ll - (ll0 if cfg.use_pressure else 0.0)}
-        board.prior_boost = np.zeros(len(net.junctions))      # ADR-018: log-prior raised where the agent cited a failing stretch of main
+        board.prior_boost = np.zeros(len(net.junctions))      # ADR-009: log-prior raised where the agent cited a failing stretch of main
         board.trigger_report = getattr(case, "trigger_report", None)
         board.t_open = dt.datetime.fromisoformat(case.start_datetime) + dt.timedelta(seconds=case.case_open_s)
         self.add_messages(board, case.reports, reads)
         return board
 
     def _phys(self):
+        """Returns: the WNTR physics tool (created on first use, one per worker)."""
         if self.physics is None:
             from .physics_tool import PhysicsTool
             self.physics = PhysicsTool(self.town.cfg, list(self.net.junctions))
         return self.physics
 
     def add_candidates(self, board: Board, js, source: str = "", force: bool = False) -> int:
-        """Hypothesise these junctions: simulate a leak at each on the nominal model (ADR-016) and let the pressure evidence speak about them.
+        """Hypothesise these junctions: simulate a leak at each on the nominal model (ADR-006) and let the pressure evidence speak about them.
         Junctions nobody hypothesised keep an uninformative pressure term (as likely as 'no leak'). -> number of new candidates."""
         if getattr(board, "cand", None) is None:
             return 0
@@ -172,7 +182,7 @@ class LeakSearch:
         board.touch()
         return len(new)
 
-    FAILURE_HAZARD = 4.0     # a stretch of main with a repeated-failure history fails several times as often (pipe-failure literature; ADR-018)
+    FAILURE_HAZARD = 4.0     # a stretch of main with a repeated-failure history fails several times as often (pipe-failure literature; ADR-009)
 
     def raise_prior(self, board: Board, mask: np.ndarray) -> int:
         """A cited failure history: the prior of every junction in `mask` is multiplied by FAILURE_HAZARD (once)."""
@@ -183,6 +193,10 @@ class LeakSearch:
         return int(new.sum())
 
     def add_messages(self, board: Board, reports: list[dict], reads: dict[str, dict]):
+        """Add new citizen messages to the board with their credibility and place weights.
+
+        Args: board = Board; reports = message dicts; reads = {report_id: reader output}.
+        """
         for r in reports:
             rid = r["report_id"]
             if rid in board.messages or rid not in reads:

@@ -40,9 +40,18 @@ class RuleReader:
     name = "rules_b0"
 
     def __init__(self, places):
+        """Rule-based reader (regex + gazetteer), the no-model fallback.
+
+        Args: places = the town's Places (names, aliases, streets).
+        """
         self.places = places
 
     def _mentions(self, text: str):
+        """Find place names in a text (exact and fuzzy).
+
+        Args: text = message text.
+        Yields: (surface text, position, type) where type is 'street' | 'landmark' | 'area' | ...
+        """
         found = self.places.find_mentions(text)
         taken = [(a, b) for _, a, b, _ in found]
         found = list(found) + self._fuzzy(text, taken)
@@ -83,6 +92,11 @@ class RuleReader:
         return out
 
     def read(self, report: dict) -> dict:
+        """Read one message with rules: category, symptoms, places, source, instructions.
+
+        Args: report = message dict with 'text'.
+        Returns: reader-2.0 dict.
+        """
         text = report["text"]
         low = re.sub(NOT_VISIBLE, " ", text.lower())              # "no water is visible" is not "no water at the tap"
         sym = [s for s, pat in SYMPTOMS if re.search(pat, low)]
@@ -109,6 +123,11 @@ class RuleReader:
                             (f"; place: {', '.join(names)}" if names else ""))[:160]}
 
     def read_reply(self, question: str, reply: str | None) -> dict:
+        """Read one call-back answer with rules.
+
+        Args: question = what was asked; reply = the answer text (None = no answer).
+        Returns: reply-2.0 dict (answered, source, places, flows_from, not_network, still_flowing, contains_instructions).
+        """
         out = {"answered": bool(reply), "source": "unknown", "places": [], "flows_from": [], "not_network": None,
                "still_flowing": None, "contains_instructions": False}
         if not reply:
@@ -154,7 +173,13 @@ class RuleReader:
         return out
 
     def read_many(self, reports: list[dict]) -> dict[str, dict]:
+        """Args: reports = list of message dicts.
+        Returns: {report_id: read dict}.
+        """
         return {r["report_id"]: self.read(r) for r in reports}
 
     def read_replies(self, items: list[tuple[str, str | None]]) -> list[dict]:
+        """Args: items = [(question, answer or None)].
+        Returns: one reply dict per item.
+        """
         return [self.read_reply(q, a) for q, a in items]

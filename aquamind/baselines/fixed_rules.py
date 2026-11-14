@@ -1,7 +1,7 @@
 """RQ2 Baseline: Fixed Rules Without LLM (Proposal Section 10).
 
 Always place one sensor at the most uncertain spot, then dig the top spot.
-Tests what the LLM adds. (Candidates come from fixed rule near complaints & sensor drops, ADR-016/017).
+Tests what the LLM adds. (Candidates come from fixed rule near complaints & sensor drops, ADR-006/011).
 """
 from __future__ import annotations
 
@@ -11,6 +11,11 @@ from ..search.tool_models import LOGGER_SD_M
 
 
 def _cert(evidence: list[str], why: str) -> dict:
+    """Build an approval certificate for the operator.
+
+    Args: evidence = list of evidence lines; why = reason.
+    Returns: {'why', 'evidence'}.
+    """
     return {"why": why, "evidence": evidence}
 
 
@@ -18,11 +23,16 @@ class FixedRules:
     name = "fixed_rules"
 
     def run_case(self, world, env, case) -> dict:
+        """Fixed rules, no LLM: place one temporary logger where candidates disagree most, then dig the best candidate.
+
+        Args: world = shared World; env = CaseEnv; case = public Case.
+        Returns: result dict with 'final_guess'.
+        """
         from ..agent.toolbox import Toolbox
         from ..search.candidates import heuristic
         from ..methods import NullReader
 
-        reads = NullReader()  # no LLM, so no language: messages are not understood (ADR-017)
+        reads = NullReader()  # no LLM, so no language: messages are not understood (ADR-011)
         ls = world.search(hypothesis_mode=True, use_messages=False)
         tb = Toolbox(env, case, ls, reads, world.docs, world.rules, use_planner=False)
         b = tb.board

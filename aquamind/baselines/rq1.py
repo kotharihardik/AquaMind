@@ -2,7 +2,7 @@
 
 "agentix_search*" is the proposal's component 2 as code (Section 7: a leak at each of the 782 junctions simulated once, every junction scored
 against the sensors, plus the report score): the first look of the leak search WITHOUT the LLM agents. It is the RQ1 "our system" because RQ1 asks
-what citizen reports add to simulation, and the investigation crew (hypothesis-driven, ADR-016, needs an LLM) is evaluated in RQ2. The 782-junction
+what citizen reports add to simulation, and the investigation crew (hypothesis-driven, ADR-006, needs an LLM) is evaluated in RQ2. The 782-junction
 table is therefore used here and by sensitivity_match / lila_style (they need it by definition), and by no agentic method.
 
 Modular architecture: delegates to dedicated baseline modules:
@@ -20,6 +20,12 @@ from .sensitivity_matching import predict_sensitivity_match
 
 
 def one_look(world, case, reads, method: str) -> tuple[int | None, np.ndarray | None]:
+    """RQ1 one-look localisation: one guess from the data at case opening, no field checks.
+
+    Args: world = shared World; case = public Case; reads = reader output per message;
+          method = 'agentix_search' | 'agentix_no_reports' | 'agentix_search_brown' | 'report_hotspot' | 'sensitivity_match' | 'lila_style'.
+    Returns: (best junction index or None, probability per junction or None).
+    """
     if method in ("agentix_search", "agentix_no_reports", "agentix_search_brown"):
         s = world.search(use_messages=method != "agentix_no_reports", use_footprint=method == "agentix_search_brown")
         b = s.start(case, reads)

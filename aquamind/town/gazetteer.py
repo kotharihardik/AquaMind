@@ -102,6 +102,9 @@ LANDMARK_NAMES = {
 
 
 def _bearing(xy_a, xy_b):
+    """Args: xy_a, xy_b = two points (x, y).
+    Returns: direction of the line between them in degrees (0-180).
+    """
     return math.degrees(math.atan2(xy_b[1] - xy_a[1], xy_b[0] - xy_a[0])) % 180
 
 
@@ -135,6 +138,9 @@ def build_streets(net: NetworkInfo, max_len_m: float = 700.0, turn_deg: float = 
             seen_edges.update({(u, v), (v, u)})
 
     def length(ch):
+        """Args: ch = chain of junctions.
+        Returns: its total pipe length in metres.
+        """
         return sum(g[a][b]["length"] for a, b in zip(ch, ch[1:]))
 
     # merge chains that continue straight through an intersection
@@ -175,6 +181,11 @@ def build_streets(net: NetworkInfo, max_len_m: float = 700.0, turn_deg: float = 
 
 
 def build_gazetteer(net: NetworkInfo, seed: int = 0, n_localities: int = 14, min_street_m: float = 120.0):
+    """Build the town's place names: localities, streets and landmarks placed on the network.
+
+    Args: net = NetworkInfo; seed = random seed; n_localities = number of localities; min_street_m = shortest street kept.
+    Returns: gazetteer dict {'places': [...], ...}.
+    """
     rng = np.random.default_rng(seed)
     chains, lengths = build_streets(net)
     J = net.index
@@ -225,6 +236,9 @@ def build_gazetteer(net: NetworkInfo, seed: int = 0, n_localities: int = 14, min
 
 
 def _stable_hash(s: str) -> int:
+    """Args: s = text.
+    Returns: a hash that is the same in every run (Python's hash() is not).
+    """
     return sum((i + 1) * ord(c) for i, c in enumerate(s))
 
 
@@ -286,5 +300,9 @@ def strip_geometry(gaz: dict) -> dict:
 
 
 def save(obj, path):
+    """Write an object as pretty JSON (UTF-8).
+
+    Args: obj = data; path = output file.
+    """
     with open(path, "w") as f:
         json.dump(obj, f, indent=1, ensure_ascii=False)

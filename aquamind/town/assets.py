@@ -13,6 +13,10 @@ from .sections import Sections
 
 class Town:
     def __init__(self, config: str = "configs/ltown.yaml", skin: str = "ltown"):
+        """Load the town: network, places (gazetteer), step-test sections and file paths.
+
+        Args: config = town config YAML; skin = gazetteer name (place names), e.g. 'ltown'.
+        """
         self.cfg = yaml.safe_load(open(config))
         self.dir = self.cfg["assets"]
         self.net = NetworkInfo(load_model(self.cfg["nominal_inp"]), self.cfg["network"], cache_dir=self.dir)

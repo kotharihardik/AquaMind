@@ -12,6 +12,11 @@ from ..methods import ToolboxMethod
 
 
 def build_no_gate(llm_factory: Callable[[], Any] | None, reader: str = "rules") -> dict[str, ToolboxMethod]:
+    """Build the no-gate ablation: the full crew, but a dig needs no P(success) bar or field support.
+
+    Args: llm_factory = makes the agents' LLM client (None -> no methods); reader = 'rules' | 'llm' | 'local'.
+    Returns: {method name: ToolboxMethod} ('ablation_no_gate' and 'agentix_crew_no_gate').
+    """
     if llm_factory is None:
         return {}
     H = {"hypothesis_mode": True, "reply_confirms": False}

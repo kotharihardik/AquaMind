@@ -121,21 +121,36 @@ class Citizen:
     """Replies of the people who sent messages. `facts()` is built from the hidden truth of each message."""
 
     def __init__(self, net, places, ctx_street_of, nearest_landmark, leak: dict | None):
+        """The simulated person who answers a call-back (truth side).
+
+        Args: net = Network; places = Places; ctx_street_of = {junction: street}; nearest_landmark = function junction -> landmark;
+              leak = hidden leak dict (None = no leak).
+        """
         self.net, self.places = net, places
         self.street_of, self.nearest_landmark = ctx_street_of, nearest_landmark
         self.leak = leak
 
     def _name(self, place: dict | None, rng) -> str | None:
+        """How a person names a place: its name or one of its aliases.
+
+        Args: place = place dict (or None); rng = random generator.
+        Returns: name text or None.
+        """
         if place is None:
             return None
         forms = [place["name"]] + [a for a in place.get("aliases", []) if len(a) > 3]
         return str(forms[int(rng.integers(len(forms)))])
 
     def facts(self, report: dict, rng) -> dict:
+        """What this person truly knows (where the water comes from, the real cause, ...), from the hidden truth.
+
+        Args: report = hidden message dict (with 'truth'); rng = random generator.
+        Returns: facts dict.
+        """
         t = report["truth"]
         j = self.net.index[t["seen_node"]]
         mode = t.get("mode")
-        if mode == "chronic":                                   # ADR-011: the way a person answers depends on what they saw
+        if mode == "chronic":                                   # ADR-002: the way a person answers depends on what they saw
             mode = {"sound": "sound", "pothole": "pothole"}.get(t.get("cue"), "damp")
         f = {"kind": t["kind"], "mode": mode, "works_place": t.get("works_place"), "street": self.street_of.get(j) if rng.random() < 0.85 else None,
              "landmark": self.nearest_landmark(j, 120), "source": None, "flows_from": None, "cause": t.get("cause"),
@@ -151,6 +166,11 @@ class Citizen:
         return f
 
     def answer(self, report: dict, question: str, rng) -> str | None:
+        """Answer a call-back question.
+
+        Args: report = hidden message dict; question = the agent's question; rng = random generator.
+        Returns: reply text, or None if the person does not pick up.
+        """
         return self.answer_with_gold(report, question, rng)[0]
 
     def answer_with_gold(self, report: dict, question: str, rng) -> tuple[str | None, dict]:
@@ -216,6 +236,11 @@ class Citizen:
         return text
 
     def _topic(self, topic: str, f: dict, pick, rng) -> str | None:
+        """The person's answer on one topic the question asked about.
+
+        Args: topic = e.g. 'source', 'garden', 'still'; f = the person's facts; pick = function key -> phrase; rng = random generator.
+        Returns: one sentence or None.
+        """
         kind, cause = f["kind"], f["cause"]
         if f["mode"] == "brown" and topic in ("source", "private", "garden", "sewer", "rain", "washing"):
             return pick("dont_know_source") if topic == "source" else None
