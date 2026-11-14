@@ -1,4 +1,4 @@
-"""Hydraulic footprints of a leak (ADR-010): for a leak of size q at every junction j of the NOMINAL model, how much faster does
+"""Hydraulic footprints of a leak (ADR-002): for a leak of size q at every junction j of the NOMINAL model, how much faster does
 water move in every pipe, and where does the flow direction reverse?  (Sediment on pipe walls is mobilised when the shear / velocity
 exceeds what the pipe has been used to, or when the flow reverses: the brown-water mechanism.)
 
@@ -16,6 +16,9 @@ INP = "data/raw/ltown/L-TOWN.inp"
 _G = {}
 
 def _run(wn):
+    """Args: wn = WNTR model.
+    Returns: simulation results (temporary files removed).
+    """
     d = tempfile.mkdtemp(prefix="agx_")
     try:
         return wntr.sim.EpanetSimulator(wn).run_sim(file_prefix=os.path.join(d, "s"))
@@ -23,6 +26,7 @@ def _run(wn):
         shutil.rmtree(d, ignore_errors=True)
 
 def _init():
+    """Worker setup: simulate the network without a leak and keep the normal pipe velocities and flows."""
     wn = wntr.network.WaterNetworkModel(INP)
     wn.options.time.duration = 48 * 3600; wn.options.time.report_timestep = 900; wn.options.time.hydraulic_timestep = 900
     base = _run(wn)
@@ -33,6 +37,11 @@ def _init():
     _G.update(wn=wn, pipes=pipes, vmax=V[pipes].max().values, f0=F[pipes][night].mean().values, night=night)
 
 def _one(args):
+    """Simulate a leak at one junction and measure how much faster each pipe flows (brown-water risk).
+
+    Args: args = (junction id, leak size L/s).
+    Returns: (velocity ratio per pipe, flow reversed per pipe).
+    """
     j, q = args
     wn = copy.deepcopy(_G["wn"]); wn.get_node(j).add_demand(q / 1000, None, "leak")
     r = _run(wn); pipes = _G["pipes"]

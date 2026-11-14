@@ -12,10 +12,18 @@ import time
 
 
 def toks(s):
+    """Args: s = text.
+    Returns: set of lower-case word tokens.
+    """
     return set(re.findall(r"[a-z0-9]+", s.lower()))
 
 
 def span_f1(pred: list[str], gold: list[str], relaxed: bool) -> tuple[int, int, int]:
+    """Count matches between predicted and gold text spans.
+
+    Args: pred = predicted spans; gold = gold spans; relaxed = token overlap counts as a match (else exact).
+    Returns: (true positives, number predicted, number gold).
+    """
     used, tp = set(), 0
     for p in pred:
         for i, g in enumerate(gold):
@@ -31,12 +39,20 @@ def span_f1(pred: list[str], gold: list[str], relaxed: bool) -> tuple[int, int, 
 
 
 def f1(tp, np_, ng):
+    """Args: tp = true positives; np_ = number predicted; ng = number gold.
+    Returns: F1 score (1.0 when both are empty).
+    """
     p = tp / np_ if np_ else 1.0
     r = tp / ng if ng else 1.0
     return 2 * p * r / (p + r) if p + r else 0.0
 
 
 def evaluate(rows, reader) -> dict:
+    """Score a reader on test rows: JSON validity, category, symptoms, places, time, source, injection detection, replies.
+
+    Args: rows = test rows (chat format with gold); reader = reader object.
+    Returns: metrics dict.
+    """
     from aquamind.reader.schema import valid_read, valid_reply
     acc = {k: [] for k in ("valid", "category", "source", "private", "since", "r_answered", "r_source", "r_cause")}
     counts = {k: [0, 0, 0] for k in ("symptoms", "places_exact", "places_relaxed", "r_places")}

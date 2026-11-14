@@ -15,6 +15,10 @@ from .world import run_lock
 
 class LiveRun:
     def __init__(self, case: str, layout: str, online: bool, reader: str):
+        """One live crew run in a background thread, streamed to the browser.
+
+        Args: case = case name; layout = sensor layout; online = may call the LLM API; reader = 'finetuned' | 'rules'.
+        """
         self.id = uuid.uuid4().hex[:10]
         self.case, self.layout, self.online, self.reader = case, layout, online, reader
         self.events: list[dict] = []
@@ -26,11 +30,16 @@ class LiveRun:
         self.thread = threading.Thread(target=self._run, daemon=True, name=f"live-{self.id}")
 
     def _sink(self, ev: dict) -> None:
+        """Store a new event and wake up the streams waiting for it.
+
+        Args: ev = event dict.
+        """
         with self.cond:
             self.events.append(ev)
             self.cond.notify_all()
 
     def _run(self) -> None:
+        """Thread body: run the instrumented crew; save a recording if it finished without errors or cache misses."""
         try:
             with run_lock:
                 rec = instrument.run_case(self.case, self.layout, allow_network=self.online, sink=self._sink, reader=self.reader)
@@ -65,6 +74,7 @@ class LiveRun:
                 return
 
     def info(self) -> dict:
+        """Returns: status dict {'id', 'case', 'layout', 'online', 'reader', 'events', 'done', 'saved', 'error', 'elapsed_s'}."""
         return {"id": self.id, "case": self.case, "layout": self.layout, "online": self.online, "reader": self.reader, "events": len(self.events),
                 "done": self.done, "saved": self.saved, "error": self.error, "elapsed_s": round(time.time() - self.started, 1)}
 
@@ -74,6 +84,11 @@ _lock = threading.Lock()
 
 
 def start(case: str, layout: str = "spread_k5", online: bool = True, reader: str = "finetuned") -> tuple[LiveRun | None, str | None]:
+    """Start a live run (only one at a time).
+
+    Args: case = case name; layout = sensor layout; online = may call the API; reader = 'finetuned' | 'rules'.
+    Returns: (LiveRun, note) - the running one and a note if another run was busy.
+    """
     with _lock:
         busy = [r for r in RUNS.values() if not r.done]
         if busy:
@@ -85,4 +100,7 @@ def start(case: str, layout: str = "spread_k5", online: bool = True, reader: str
 
 
 def get(run_id: str) -> LiveRun | None:
+    """Args: run_id = id of a live run.
+    Returns: LiveRun or None.
+    """
     return RUNS.get(run_id)

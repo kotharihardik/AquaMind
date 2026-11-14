@@ -1,4 +1,4 @@
-"""Value of citizen complaints vs the field-check budget, per kind of evidence (ADR-008/010) -> Markdown.
+"""Value of citizen complaints vs the field-check budget, per kind of evidence (ADR-002) -> Markdown.
 usage: python -I scripts/make_budget_report.py out.md rows.jsonl [more rows.jsonl ...]   (rows from scripts/run_eval.py, --max-checks sets the budget)
 """
 import collections, json, sys
@@ -12,11 +12,20 @@ NAMES = {"agentix_code": "autopilot, complaints used", "agentix_no_reports_code"
          "agentix": "AquaMind (LLM)", "fixed_rules": "fixed rules", "crew_practice": "crews' current practice"}
 
 def ci(x, n=1000):
+    """Bootstrap mean and 95% interval.
+
+    Args: x = values; n = resamples.
+    Returns: (mean, low, high).
+    """
     x = np.asarray(x, float); rng = np.random.default_rng(0)
     b = rng.choice(x, size=(n, len(x))).mean(1)
     return x.mean(), np.quantile(b, .025), np.quantile(b, .975)
 
 def main(out, files):
+    """Write the value-of-complaints report by field-check budget.
+
+    Args: out = output markdown file; files = result .jsonl files.
+    """
     rows = [json.loads(l) for f in files for l in open(f)]
     for r in rows:
         r.setdefault("budget", 5)

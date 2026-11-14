@@ -20,6 +20,7 @@ CREW_TOOLBOX = {"use_planner": False, "min_checks_close": 3}
 
 
 def world():
+    """Returns: the shared World for the benchmark (created once, thread-safe)."""
     global _world
     with _lock:
         if _world is None:
@@ -38,6 +39,7 @@ def search():
 
 
 def town():
+    """Returns: the shared Town."""
     return world().town
 
 

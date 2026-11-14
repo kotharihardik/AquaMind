@@ -16,12 +16,21 @@ _W = {}
 
 
 def _init(bench, model, reader):
+    """Worker setup: load the World and all methods.
+
+    Args: bench = benchmark folder; model = agent LLM model (None = default); reader = 'rules' | 'llm' | 'local'.
+    """
     from aquamind.eval.runner import World
     from aquamind.methods import registry
     _W["world"], _W["methods"] = World(bench), registry(model, reader)
 
 
 def _job(job):
+    """Run one method on one case in a worker.
+
+    Args: job = (method, case name, layout, text variant, max checks).
+    Returns: result row.
+    """
     from aquamind.eval.runner import run_case
     method, name, layout, text, max_checks = job
     r = run_case(_W["world"], _W["methods"][method], name, layout, text, max_checks)
@@ -39,6 +48,7 @@ if __name__ == "__main__":
     ap.add_argument("--workers", type=int, default=3, help="number of parallel worker processes (default 3 to match 3 API keys)")
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--suites", default="")
+    ap.add_argument("--cases", default="", help="optional comma-separated list of explicit case names to run")
     ap.add_argument("--stride", type=int, default=1, help="take every Nth case (a stratified subset for the expensive LLM baselines)")
     ap.add_argument("--regime", default="", help="stress regimes (aquamind/regime.py): survey, plastic, plastic_blind, drift, outage")
     ap.add_argument("--max-checks", type=int, default=None, help="field-check budget (default 5); the value-of-evidence curve uses 2 and 3")
@@ -69,7 +79,10 @@ if __name__ == "__main__":
     out_path = a.out or f"runs/eval/{'+'.join(methods)[:80]}_{'_'.join(layouts)}_{a.split}.jsonl"     # full result rows incl. trace: the source of scripts/make_metrics.py
 
     names = cases_for(a.bench, a.split)
-    if a.suites:
+    if a.cases:
+        case_set = set(x.strip() for x in a.cases.split(",") if x.strip())
+        names = [n for n in names if n in case_set]
+    elif a.suites:
         names = [n for n in names if n.split("-")[1] in a.suites.split(",")]
     if a.stride > 1:
         names = names[:: a.stride]

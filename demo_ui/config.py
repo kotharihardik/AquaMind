@@ -45,5 +45,8 @@ def setup_paths() -> None:
 
 
 def suite_of(case_name: str) -> str:
+    """Args: case_name = e.g. 'test-brown-003'.
+    Returns: its category, e.g. 'brown'.
+    """
     parts = case_name.split("-")
     return parts[1] if len(parts) > 2 else case_name

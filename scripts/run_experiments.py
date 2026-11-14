@@ -28,6 +28,7 @@ import sys
 
 
 def main():
+    """Experiment launcher: runs preset groups of methods (fast non-LLM, LLM pilot, RQ1 first look, custom) through run_eval."""
     ap = argparse.ArgumentParser(description="AquaMind Final Evaluation Orchestrator")
     ap.add_argument("--mode", choices=["fast-non-llm", "llm-pilot-5sensor", "rq1-first-look", "custom"],
                     default="fast-non-llm", help="experiment execution mode")

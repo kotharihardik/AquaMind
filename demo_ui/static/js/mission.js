@@ -221,8 +221,8 @@ function setHeader(meta, kind) {
   const su = suites[meta.suite] || { name: meta.suite, blurb: '' };
   E.title.textContent = su.name || meta.case;
   E.fid.className = `badge-fid ${kind === 'live' ? 'live' : kind === 'log' ? 'log' : 'rec'}`;
-  E.fid.textContent = kind === 'live' ? '● live' : kind === 'log' ? 'from log' : 'recording';
-  E.fid.title = kind === 'log' ? `Rebuilt from ${meta.source || 'the evaluation log'}: every turn and field result, no leak-map snapshots` : kind === 'live' ? 'The real crew is running now' : `Full-fidelity recording of the real crew (${meta.recorded_at || ''})`;
+  E.fid.textContent = kind === 'live' ? '● live' : kind === 'log' ? (meta.stage === 'mid' ? 'from log · mid-report run' : meta.stage === 'final' ? 'from log · final run' : 'from log') : 'recording';
+  E.fid.title = kind === 'log' ? `Rebuilt from ${meta.source || 'the evaluation log'}: every turn and field result${meta.map ? ', in exact order, with leak-map snapshots and the callers\' answers' : ', no leak-map snapshots'}` : kind === 'live' ? 'The real crew is running now' : `Full-fidelity recording of the real crew (${meta.recorded_at || ''})`;
   E.sub.innerHTML = `<span class="mono">${esc(meta.case)}</span> · opened ${esc(meta.opened_at || '')} · ${meta.k || 5} sensors${meta.method_name ? ' · ' + esc(meta.method_name) : ''}`;
   E.blurb.textContent = su.blurb || '';
   S.current = { meta, kind };
@@ -237,8 +237,8 @@ export async function loadRecording(file, { autoplay = true, seek = null } = {})
   else if (autoplay) setTimeout(() => S.player.play(), 400);
 }
 
-export async function loadReplay(method, caseName, { autoplay = true, seek = null } = {}) {
-  const rec = await get(`/api/replay?method=${method}&case=${encodeURIComponent(caseName)}`);
+export async function loadReplay(method, caseName, { autoplay = true, seek = null, ver = null } = {}) {
+  const rec = await get(`/api/replay?method=${method}&case=${encodeURIComponent(caseName)}${ver ? `&ver=${encodeURIComponent(ver)}` : ''}`);
   S.scene.load(rec);
   setHeader(rec.meta, 'log');
   S.player.load(rec.events, { start: 1 });
@@ -279,7 +279,7 @@ export function openPicker(boot) {
   const recs = boot.recordings || [];
   const body = h('div', {});
   body.append(h('div', { class: 'eyebrow' }, 'Full-fidelity recordings of the real crew'),
-    h('p', { class: 'small muted', style: { margin: '4px 0 10px' } }, 'Recorded by running the current AquaMind crew (demo_ui record): every agent turn, tool call and the leak map over all 782 junctions at every step.'));
+    h('p', { class: 'small muted', style: { margin: '4px 0 10px' } }, 'Real runs of the final AquaMind crew, saved step by step (demo_ui record): every agent turn with the board it saw, every tool call, and the leak map over all 782 junctions. Each one matches its row in the final evaluation.'));
   const grid = h('div', { class: 'rec-grid' });
   if (!recs.length) grid.append(h('div', { class: 'muted small' }, 'No recordings yet. Create one with: .venv/bin/python demo_ui record --cases dev-brown-002'));
   for (const r of recs) {
@@ -292,7 +292,7 @@ export function openPicker(boot) {
   body.append(grid);
   // all cases from the logs
   body.append(h('div', { class: 'eyebrow', style: { marginTop: '22px' } }, 'All 210 benchmark cases — rebuilt from the evaluation logs'),
-    h('p', { class: 'small muted', style: { margin: '4px 0 10px' } }, 'Mid-report run (5 sensors). Every agent turn and field result from logs/evaluation; the leak map is shown as hypothesis mass. "Run live" re-runs the case with the current crew.'));
+    h('p', { class: 'small muted', style: { margin: '4px 0 10px' } }, 'The final evaluation run (5 sensors), exactly as logged in logs/evaluation: every agent turn, tool call, caller answer and field result in its real order, with a leak-map snapshot after each step. "Recording" plays the full-detail recording where one exists; the play icon runs the crew live on the case.'));
   const q = h('input', { class: 'field', placeholder: 'Filter: case, type, outcome…', style: { maxWidth: '320px' } });
   const suiteSel = h('select', { class: 'field', style: { maxWidth: '230px' } }, h('option', { value: '' }, 'All case types'),
     ...Object.entries(boot.suites).map(([k, v]) => h('option', { value: k }, v.name)));

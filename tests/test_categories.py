@@ -17,11 +17,15 @@ pytestmark = pytest.mark.skipif(not os.path.exists(f"{BENCH}/dev.json"), reason=
 
 @pytest.fixture(scope="module")
 def world():
+    """Fixture: one shared World for the benchmark (module scope)."""
     from aquamind.eval.runner import World
     return World(BENCH)
 
 
 def _find_case(world, suite):
+    """Args: world = World; suite = category name.
+    Returns: the first dev case of that category.
+    """
     cases = json.load(open(f"{world.bench}/dev.json"))["cases"]
     return next(c for c in cases if c.split("-")[1] == suite)
 

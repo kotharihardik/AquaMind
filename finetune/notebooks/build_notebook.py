@@ -12,10 +12,18 @@ cells = []
 
 
 def md(s):
+    """Add a markdown cell to the notebook.
+
+    Args: s = cell text.
+    """
     cells.append({"cell_type": "markdown", "metadata": {}, "source": s.strip("\n")})
 
 
 def code(s):
+    """Add a code cell to the notebook.
+
+    Args: s = cell code.
+    """
     cells.append({"cell_type": "code", "metadata": {}, "execution_count": None, "outputs": [], "source": s.strip("\n")})
 
 

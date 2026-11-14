@@ -24,25 +24,34 @@ before anyone digs.
 
 The LLM never produces a number that a decision depends on. All physics and probability are computed in code.
 
-## Results (mid-project, 5 sensors, 210 cases)
+## Results (final, 5 sensors, 210 cases)
 
-| Method | Correct digs | Within 100 m | Median error | False digs | Unsafe | Rule violations |
-|---|---|---|---|---|---|---|
-| **AquaMind crew** | **74.6 %** | **83.2 %** | **23 m** | **12.7 %** | **0 %** | **3.8 %** |
-| ReAct agent (same LLM and tools) | 25.9 % | 31.4 % | 374 m | 52.5 % | 40.5 % | 54.3 % |
-| Crews' current practice | 27.6 % | 34.1 % | 409 m | 44.6 % | 0 % | 41.0 % |
-| Plain LLM | 11.9 % | 11.9 % | 557 m | 88.5 % | 0.5 % | 91.0 % |
-| Classical inversion (EPANET) | 7.6 % | 8.1 % | 1305 m | 76.3 % | 0 % | 28.1 % |
-| Fixed rules | 3.2 % | 3.2 % | 710 m | 95.9 % | 0 % | 69.5 % |
+| Method | Solved | Correct digs | Within 100 m | Median error | Dry holes | Unsafe | Rule violations |
+|---|---|---|---|---|---|---|---|
+| **AquaMind crew** | **172** | **79.5 %** | **86.5 %** | **23 m** | **11.4 %** | **0 %** | **2.4 %** |
+| ReAct agent (same LLM, tools and budget) | 66 | 26.5 % | 32.4 % | 371 m | 53.3 % | 41.0 % | 56.2 % |
+| Crews' current practice | 70 | 27.6 % | 34.1 % | 409 m | 44.6 % | 0 % | 41.0 % |
+| Plain LLM | 29 | 11.9 % | 11.9 % | 557 m | 88.5 % | 0.5 % | 91.0 % |
+| Classical inversion (EPANET) | 33 | 7.6 % | 8.1 % | 1305 m | 76.3 % | 0 % | 28.1 % |
+| Fixed rules | 21 | 3.2 % | 3.2 % | 710 m | 95.9 % | 0 % | 69.5 % |
 
-*Correct digs* = leak cases (185) that end with a dig within 100 m of the leak. The full tables, ablations and
-role ablations are in the mid report. Every number comes from the result rows in `logs/evaluation/`.
+*Solved* = a leak dug within 100 m, or a no-leak case closed without a dig. *Correct digs* = leak cases (185) that
+end with a dig within 100 m of the leak. *Dry holes* = share of digs more than 100 m from any leak. The crew handles
+all 13 prompt-injection traps; with 3 and 10 sensors it digs correctly in 75.1 % and 77.3 % of leak cases.
+
+- **Final report:** [`docs/AquaMind_Final_Report.pdf`](docs/AquaMind_Final_Report.pdf) (RQ1 and RQ2, all 12
+  ablations, reader and RAG metrics). **Poster:** [`docs/AquaMind_Final_Poster.pptx`](docs/AquaMind_Final_Poster.pptx).
+- **Demo:** `.venv/bin/python demo_ui` (see [`demo_ui/README.md`](demo_ui/README.md)): replays real runs of the
+  crew, compares it with ReAct on the same case, and recomputes every result table live from the logs.
+- Every number comes from the result rows in `logs/evaluation/` (one row per case; the newest log version of a run
+  is the final one, `v1` is the mid-report run).
 
 ## Repository map
 
 ```
 aquamind/
-  agent/       the crew (crew.py), its toolbox with the code gate and operator token, code-only policy
+  agent/       the crew (crew.py: switches + investigation loop), its toolbox with the code gate and operator token, code-only policy
+    roles/     one module per role: forensic, skeptic, strategist, auditor, field_checks (menu + chance), base, prompts
   search/      leak search, all maths: pressure, messages, field checks -> evidence board
   reader/      message reader: contract (schema.py), rules, prompted LLM, fine-tuned local model
   rag/         BM25 retriever over the town archive and the SOP
@@ -61,6 +70,10 @@ data/benchmark/agentix_master/   the 210 cases: 60 dev + 150 test (frozen with a
 finetune/      reader dataset builder, MLX training, evaluation, metrics
 scripts/       build assets and benchmark, run evaluations, make metric tables
 tests/         fast checks
+demo_ui/       the presentation demo (reads the code and the logs, changes nothing)
+docs/decisions/  the ADRs: why AquaMind is built this way, one short note per decision (start with its README)
+docs/final_report/  sources of the final report and poster (HTML, figure and poster scripts)
+logs/evaluation/    result rows and traces of every evaluation run
 ```
 
 Methods may not import `aquamind/sim`. The truth side uses the official `L-TOWN_Real.inp`; every method uses the
@@ -112,8 +125,30 @@ RQ1 one-look comparison (no field checks, no LLM):
     --out runs/one_look_dev.jsonl
 ```
 
-The full mid-project evaluation (all methods, 3/5/10 sensors) is `zsh scripts/final_eval.sh <profile>`. Profiles
-are listed at the top of the script; `DRY=1` prints the commands without running them.
+The full evaluation (all methods, 3/5/10 sensors) is `zsh scripts/final_eval.sh <profile>`. Profiles are listed
+at the top of the script; `DRY=1` prints the commands without running them.
+
+### Reproduce the report numbers
+
+Everything below reads only the logged result rows (no LLM call):
+
+```bash
+.venv/bin/python -I scripts/eval_agent_extra.py          # agent behaviour metrics -> logs/evaluation/extra/agent_extra.*
+.venv/bin/python -I scripts/eval_rag.py                  # retrieval and citation metrics -> logs/evaluation/extra/rag_eval.*
+.venv/bin/python -I docs/final_report/build_figures.py          # report figures (SVG) -> docs/final_report/figs/
+.venv/bin/python -I docs/final_report/build_poster_figures.py   # poster figures (PNG, drawn at print size)
+python3 -I docs/final_report/build_poster_template.py          # fills the provided poster template -> docs/AquaMind_Final_Poster.pptx
+```
+
+The RQ1 one-look rows are not in git (`runs/` is ignored); rebuild them (no LLM) with
+
+```bash
+for s in dev test; do .venv/bin/python -I scripts/run_one_look.py --bench data/benchmark/agentix_master --split $s \
+    --reader local --out runs/final_queue/one_look_$s.jsonl; done
+```
+
+The report PDF is printed from `docs/final_report/report.html` with any Chromium browser (`--print-to-pdf`). The
+demo's Results view (`.venv/bin/python demo_ui`, view 6) recomputes every table with 95 % intervals and McNemar tests.
 
 ### Method names
 

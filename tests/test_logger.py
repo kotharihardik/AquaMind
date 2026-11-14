@@ -8,6 +8,11 @@ S = "bench | agentix_crew | reader=local"
 
 
 def row(case, layout="spread_k5", found=True, trace=None):
+    """Make a fake result row for logger tests.
+
+    Args: case = case name; layout = sensor layout; found = leak found?; trace = optional trace.
+    Returns: result row dict.
+    """
     r = {"method": "agentix_crew", "case": case, "layout": layout, "suite": "chronic", "trigger": "citizen_message", "q_lps": 2.0, "has_leak": True, "found": found,
          "outcome": "found" if found else "hand_over", "guess_error_m": 20.0 if found else 300.0, "n_digs": 1, "wrong_digs": 0, "checks_used": 2, "llm_calls": 3, "tokens": 10,
          "wall_s": 5.0, "budget": 5, "regime": "", "unsafe": 0, "violations": 0, "final_guess": "n12"}
@@ -17,10 +22,16 @@ def row(case, layout="spread_k5", found=True, trace=None):
 
 
 def new(tmp_path, layout="spread_k5", **kw):
+    """Make an EvaluationLogger in a temp folder.
+
+    Args: tmp_path = pytest temp folder; layout = sensor layout; **kw = extra logger options.
+    Returns: EvaluationLogger.
+    """
     return EvaluationLogger("agentix_crew", layout, str(tmp_path), session=S, case_order=ORDER, **kw)
 
 
 def test_folder_per_layout_and_five_files(tmp_path):
+    """Test: each layout gets its own folder with the five log files."""
     lg = new(tmp_path)
     lg.log_case(row("test-x-000"))
     d = tmp_path / "agentix" / "crew" / "k5"
@@ -31,6 +42,7 @@ def test_folder_per_layout_and_five_files(tmp_path):
 
 
 def test_each_file_holds_one_kind_of_information(tmp_path):
+    """Test: cards, table, metrics, trace and rows each go to their own file."""
     lg = new(tmp_path)
     lg.log_case(row("test-x-000", trace=[{"tool": "field_check", "args": {"option": "F1"}, "result": {"ok": True}, "p_success": 0.4},
                                          {"turn": 0, "role": "forensic", "thought": "hypothesis H1"}]))
@@ -45,6 +57,7 @@ def test_each_file_holds_one_kind_of_information(tmp_path):
 
 
 def test_one_table_row_per_case_numbered_by_benchmark_position(tmp_path):
+    """Test: one table row per case, numbered by its benchmark position (even if finished out of order)."""
     lg = new(tmp_path)
     for c in ("test-x-003", "dev-x-000", "test-x-000"):                                    # finished out of order
         lg.log_case(row(c))
@@ -53,6 +66,7 @@ def test_one_table_row_per_case_numbered_by_benchmark_position(tmp_path):
 
 
 def test_resume_appends_to_the_same_files_and_never_duplicates(tmp_path):
+    """Test: resuming appends to the same log and never duplicates a case."""
     a = new(tmp_path)
     a.log_case(row("test-x-000"))
     a.log_case(row("dev-x-001"))
@@ -65,6 +79,7 @@ def test_resume_appends_to_the_same_files_and_never_duplicates(tmp_path):
 
 
 def test_a_resumed_card_keeps_its_key_action_although_the_trace_is_gone(tmp_path):
+    """Test: after a resume a case card still shows its key action."""
     a = new(tmp_path)
     a.log_case(row("test-x-000", trace=[{"tool": "propose_dig", "args": {}, "result": {"ok": True, "spot": "n7", "leak_found": True}}]))
     b = new(tmp_path)
@@ -72,6 +87,7 @@ def test_a_resumed_card_keeps_its_key_action_although_the_trace_is_gone(tmp_path
 
 
 def test_a_fresh_run_starts_the_next_version(tmp_path):
+    """Test: a fresh run starts the next version (v2 after v1)."""
     a = new(tmp_path)
     a.log_case(row("test-x-000"))
     a.finalize()
@@ -82,6 +98,7 @@ def test_a_fresh_run_starts_the_next_version(tmp_path):
 
 
 def test_metrics_and_one_index_entry_per_log(tmp_path):
+    """Test: metrics are right and master_index.json has one entry per log."""
     lg = new(tmp_path)
     lg.log_case(row("test-x-000"))
     lg.log_case(row("test-x-001", found=False))
@@ -95,12 +112,14 @@ def test_metrics_and_one_index_entry_per_log(tmp_path):
 
 
 def test_a_different_evaluation_does_not_mix_into_the_log(tmp_path):
+    """Test: a different evaluation (other session) gets a new version, not the same log."""
     new(tmp_path).log_case(row("test-x-000"))
     other = EvaluationLogger("agentix_crew", "spread_k5", str(tmp_path), session="other bench", case_order=ORDER)
     assert other.version == "v2" and other.rows == []
 
 
 def test_summary_by_case_type_and_failed_cases_are_below_the_metrics(tmp_path):
+    """Test: the metrics file shows the per-category summary and the failed cases."""
     lg = new(tmp_path)
     lg.log_case(row("test-x-000"))                                                     # success
     lg.log_case({**row("test-x-001", found=False), "n_digs": 0})                       # leak never dug
@@ -117,6 +136,7 @@ def test_summary_by_case_type_and_failed_cases_are_below_the_metrics(tmp_path):
 
 
 def test_several_methods_and_layouts_in_one_run_never_mix(tmp_path):
+    """Test: several methods and layouts in one run each get their own log."""
     from aquamind.eval.logger import LoggerSet
     ls = LoggerSet(["fixed_rules", "react_agent"], ["spread_k5", "spread_k3"], str(tmp_path), "bench", "reader=local | text=realistic | regime=- | checks=5", case_order=ORDER)
     for m in ("fixed_rules", "react_agent"):
@@ -133,6 +153,7 @@ def test_several_methods_and_layouts_in_one_run_never_mix(tmp_path):
 
 
 def test_two_crew_variants_have_separate_folders_and_version_numbers(tmp_path):
+    """Test: two crew variants get separate folders and version numbers."""
     a = EvaluationLogger("agentix_crew", "spread_k5", str(tmp_path), session="s1", case_order=ORDER)
     b = EvaluationLogger("agentix_crew_no_override", "spread_k5", str(tmp_path), session="s2", case_order=ORDER)
     assert a.target_dir != b.target_dir and a.version == "v1" and b.version == "v1"

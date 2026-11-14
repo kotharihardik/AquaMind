@@ -7,18 +7,32 @@ import re
 from .config import RECORDINGS, SUITES, suite_of
 
 # the curated order shown first in Mission Control (missing files are simply skipped)
-FEATURED = ["dev-chronic-010", "test-trap-000", "dev-displaced-003", "dev-cd_damp_decoy-000", "dev-cd_sound_decoy-002", "dev-brown-002", "dev-trap-003", "dev-false_alarm-002", "dev-cd_damp_decoy-002", "dev-cd_sound_decoy-003"]
+# (brown water -> trap with a real leak -> solved since the mid report -> displaced pool -> ... -> the honest ones: a dry hole first, rule violations)
+FEATURED = ["dev-brown-002", "test-trap-000", "test-cd_sound-007", "dev-displaced-003", "dev-chronic-004", "test-trap-008", "dev-false_alarm-002",
+            "test-cd_damp-003", "dev-cd_sound_decoy-002", "test-brown-012", "test-trap-004", "dev-cd_damp_decoy-002", "dev-cd_sound_decoy-003",
+            "dev-chronic-010"]
 
 
 def _safe(name: str) -> str:
+    """Args: name = any text.
+    Returns: a safe file name part.
+    """
     return re.sub(r"[^A-Za-z0-9_.\-]+", "_", name)
 
 
 def path_for(case: str, layout: str):
+    """Args: case = case name; layout = sensor layout.
+    Returns: path of its recording file.
+    """
     return RECORDINGS / f"{_safe(case)}__{_safe(layout)}.json"
 
 
 def save(rec: dict) -> str:
+    """Save a recording.
+
+    Args: rec = recording {'meta', 'events', ...}.
+    Returns: file name.
+    """
     m = rec["meta"]
     p = path_for(m["case"], m["layout"])
     p.write_text(json.dumps(rec, separators=(",", ":"), ensure_ascii=False))
@@ -26,6 +40,9 @@ def save(rec: dict) -> str:
 
 
 def load(name: str) -> dict | None:
+    """Args: name = recording file name.
+    Returns: recording dict, or None if missing or outside the folder.
+    """
     p = RECORDINGS / _safe(name)
     if not p.suffix:
         p = p.with_suffix(".json")
@@ -35,6 +52,7 @@ def load(name: str) -> dict | None:
 
 
 def listing() -> list[dict]:
+    """Returns: one summary per recording (case, layout, outcome, ...), featured cases first."""
     out = []
     for p in sorted(RECORDINGS.glob("*.json")):
         try:

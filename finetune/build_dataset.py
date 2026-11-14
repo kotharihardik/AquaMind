@@ -40,11 +40,21 @@ QUESTIONS = [
 
 
 def town_ctx(skin: str, base_town: Town, terrain, geometry, hot):
+    """Message-writer context for a town 'skin' (another set of place names, so the model learns reading, not one town).
+
+    Args: skin = gazetteer name; base_town = Town; terrain = Terrain; geometry = street geometry; hot = recurring nuisance spots.
+    Returns: (TownContext, gazetteer dict).
+    """
     gaz = json.load(open(f"{base_town.dir}/gazetteer/gazetteer_{skin}.json"))
     return TownContext(base_town.net, terrain, gaz, geometry, {"hotspots": hot}), gaz
 
 
 def sample_read(gen: ReportGenerator, ctx, rng) -> dict:
+    """Make one random synthetic message with its gold label (leak sighting, false alarm, supply complaint, attack, ...).
+
+    Args: gen = ReportGenerator; ctx = TownContext; rng = random generator.
+    Returns: hidden message dict with 'gold'.
+    """
     J = len(ctx.net.junctions)
     j = int(rng.integers(J))
     t = float(rng.uniform(8, 10) * 86400)
@@ -70,6 +80,11 @@ def sample_read(gen: ReportGenerator, ctx, rng) -> dict:
 
 
 def chat(system, user, gold, meta):
+    """One chat-format training row.
+
+    Args: system = system prompt; user = input; gold = target JSON; meta = extra info.
+    Returns: {'messages': [...], 'meta'}.
+    """
     return {"messages": [{"role": "system", "content": system}, {"role": "user", "content": user},
                          {"role": "assistant", "content": json.dumps(gold, ensure_ascii=False)}], "meta": meta}
 

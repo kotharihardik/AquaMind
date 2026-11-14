@@ -28,11 +28,20 @@ class DemoLLM(LLM):
     """The evaluation's LLM client. allow_network=False: a prompt that is not in the cache is answered with an error (nothing is sent)."""
 
     def __init__(self, *a, allow_network: bool = False, **kw):
+        """LLM client for the demo that can be limited to cached answers.
+
+        Args: allow_network = False -> never call the API (cache only); *a, **kw = LLM settings.
+        """
         self.allow_network = allow_network
         self.misses = 0
         super().__init__(*a, **kw)
 
     def _ask(self, system, user, required):
+        """Like LLM._ask, but returns an error (and counts a miss) instead of calling the API when offline.
+
+        Args: system, user = prompts; required = JSON keys needed.
+        Returns: (answer dict, tokens in, tokens out).
+        """
         if not self.allow_network:
             self.misses += 1
             return {"_error": "offline replay: this prompt is not in the LLM cache"}, 0, 0
@@ -42,6 +51,10 @@ class DemoLLM(LLM):
 # ---------------------------------------------------------------------------------------------------------------- events
 class Recorder:
     def __init__(self, sink=None):
+        """Collects the event stream of a run (for recordings and live streaming).
+
+        Args: sink = function called with each new event (None = just store).
+        """
         self.events: list[dict] = []
         self.sink = sink
         self.t0 = time.time()
@@ -49,6 +62,11 @@ class Recorder:
         self._cand = None
 
     def emit(self, kind: str, **data) -> dict:
+        """Add one event.
+
+        Args: kind = event type ('tool', 'turn', 'messages', ...); **data = event fields.
+        Returns: the event dict (with index i and wall time).
+        """
         ev = {"i": len(self.events), "kind": kind, "wall_s": round(time.time() - self.t0, 2), **data}
         self.events.append(ev)
         if self.sink:
@@ -60,10 +78,16 @@ class Recorder:
 
 
 def _f(x, nd=4):
+    """Args: x = number or None; nd = decimals.
+    Returns: rounded float or None.
+    """
     return None if x is None else round(float(x), nd)
 
 
 def _j(w):
+    """Args: w = weight per junction (or None).
+    Returns: index of the heaviest junction, or None.
+    """
     return int(np.argmax(w)) if w is not None and float(np.sum(w)) > 0 else None
 
 
@@ -117,6 +141,11 @@ def snapshot(tb, rec: Recorder, force: bool = False) -> dict:
 
 
 def _options(tb, crew) -> list[dict]:
+    """The current field-check menu for the UI.
+
+    Args: tb = Toolbox; crew = Crew (to compute each option's chance).
+    Returns: [{'id', 'kind', 'label', 'p_inside', 'chance', 'center' or 'sections'}].
+    """
     out = []
     for oid, o in (tb.options or {}).items():
         e = {"id": oid, "kind": o.kind, "label": o.label, "p_inside": _f(o.p_inside, 3)}
@@ -150,12 +179,21 @@ def _clean(d):
 # ---------------------------------------------------------------------------------------------------------------- toolbox
 class InstrumentedToolbox(Toolbox):
     def __init__(self, env, case, search, reader, docs, rules, *, recorder: Recorder, **kw):
+        """Toolbox that also emits UI events for every tool call (behaviour unchanged).
+
+        Args: env, case, search, reader, docs, rules = as Toolbox; recorder = Recorder; **kw = Toolbox switches.
+        """
         self._rec = recorder
         self._env_seen = 0
         super().__init__(env, case, search, reader, docs, rules, **kw)
 
     # ------------------------------------------------------------------ helpers
     def _message(self, r: dict) -> dict:
+        """Message as the UI shows it: text, reader output, provenance, agent view, credibility, place.
+
+        Args: r = message dict.
+        Returns: dict.
+        """
         rid = r["report_id"]
         rd = self.reads.get(rid) or {}
         m = self.board.messages.get(rid)
@@ -164,6 +202,7 @@ class InstrumentedToolbox(Toolbox):
                 "trigger": rid == getattr(self.case, "trigger_report", None), "j": _j(m.w) if m else None}
 
     def _env_new(self) -> list[dict]:
+        """Returns: environment actions (calls, approvals, permits, digs, ...) logged since the last call, cleaned for the UI."""
         new = self.env.log[self._env_seen:]
         self._env_seen = len(self.env.log)
         out = []
@@ -187,6 +226,11 @@ class InstrumentedToolbox(Toolbox):
 
     # ------------------------------------------------------------------ hooks
     def _log(self, tool, args, result, secs=0.0):
+        """Log the tool call (as Toolbox) and emit a 'tool' event with the board snapshot.
+
+        Args: tool, args, result, secs = as Toolbox._log.
+        Returns: result.
+        """
         r = super()._log(tool, args, result, secs)
         rec = getattr(self, "_rec", None)
         if rec is None:
@@ -224,6 +268,10 @@ class InstrumentedToolbox(Toolbox):
         return r
 
     def refresh(self):
+        """Pull new messages (as Toolbox) and emit a 'messages' event if any arrived.
+
+        Returns: ids of new messages.
+        """
         before = set(self.seen)
         new = super().refresh()
         rec = getattr(self, "_rec", None)
@@ -236,15 +284,29 @@ class InstrumentedToolbox(Toolbox):
 # ---------------------------------------------------------------------------------------------------------------- crew
 class InstrumentedCrew(Crew):
     def __init__(self, llm, *, recorder: Recorder, **kw):
+        """Crew that emits 'thinking', 'turn' and 'turn_done' events (behaviour unchanged).
+
+        Args: llm = LLM client; recorder = Recorder; **kw = Crew switches.
+        """
         super().__init__(llm, **kw)
         self._rec = recorder
         self._tb = None
 
     def run(self, tb):
+        """Run the case (as Crew), remembering the Toolbox for events.
+
+        Args: tb = Toolbox.
+        Returns: the trace.
+        """
         self._tb = tb
         return super().run(tb)
 
     def _ask(self, role, system, user, why):
+        """Ask the LLM (as Crew) and emit 'thinking' before and 'turn' after (thought, decision, cached?, latency).
+
+        Args: role, system, user, why = as Crew._ask.
+        Returns: the answer dict.
+        """
         self._rec.emit("thinking", role=role, why=why)
         u = self.llm.usage
         c0, s0 = u.cached, u.seconds
@@ -258,6 +320,10 @@ class InstrumentedCrew(Crew):
         return d
 
     def _done(self, role):
+        """Emit 'turn_done' with what the role's turn changed (hypotheses, challenges, rejected citations).
+
+        Args: role = role name.
+        """
         tb = self._tb
         rec = _clean(self.turns[-1]) if self.turns else {}
         rec.pop("thought", None)
@@ -269,21 +335,40 @@ class InstrumentedCrew(Crew):
                        rejected=_clean(self.rejected_citations[-4:]), state=snapshot(tb, self._rec) if tb is not None else None)
 
     def forensic(self, tb, why):
+        """Forensic turn (as Crew) plus its 'turn_done' event.
+
+        Args: tb = Toolbox; why = reason.
+        Returns: the turn record.
+        """
         r = super().forensic(tb, why)
         self._done("forensic")
         return r
 
     def skeptic(self, tb, why):
+        """Skeptic turn (as Crew) plus its 'turn_done' event.
+
+        Args: tb = Toolbox; why = reason.
+        """
         r = super().skeptic(tb, why)
         self._done("skeptic")
         return r
 
     def strategist(self, tb, why):
+        """Strategist turn (as Crew) plus its 'turn_done' event.
+
+        Args: tb = Toolbox; why = reason.
+        Returns: chosen option id or None.
+        """
         r = super().strategist(tb, why)
         self._done("strategist")
         return r
 
     def audit(self, tb, why):
+        """Auditor turn (as Crew) plus its 'turn_done' event.
+
+        Args: tb = Toolbox; why = reason.
+        Returns: 'approve' | 'delay' | 'hold'.
+        """
         r = super().audit(tb, why)
         self._done("auditor")
         return r

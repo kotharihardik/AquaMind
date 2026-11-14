@@ -65,6 +65,9 @@ def _new_board(text: str | None, channel: str, prefer: str = "finetuned"):
 
 
 def _anchor(tb, rid):
+    """Args: tb = Toolbox; rid = report id.
+    Returns: the junction a message points to most (from the board, else from its read places), or None.
+    """
     m = tb.board.messages.get(rid)
     if m is not None and m.w is not None:
         return int(np.argmax(m.w))
@@ -99,6 +102,11 @@ def read(text: str, channel: str = "whatsapp") -> dict:
 
 
 def rag(query: str, k: int = 8, provenance: str | None = None) -> dict:
+    """RAG search for the Lab view.
+
+    Args: query = search text (max 300 chars); k = hits; provenance = 'policy' | 'record' | None.
+    Returns: {'query', 'hits': [{'id', 'provenance', 'text', 'score'}], 'corpus': counts}.
+    """
     W = world()
     q = str(query or "").strip()[:300]
     hits = W.docs.search(q, k=k, provenance=provenance or None) if q else []
@@ -174,6 +182,7 @@ def attack(text: str, channel: str = "whatsapp") -> dict:
 
 
 def examples() -> dict:
+    """Returns: built-in examples for the Lab views: {'reader': [...], 'attacks': [...], 'rag': [queries]}."""
     return {"reader": EXAMPLES, "attacks": ATTACKS, "rag": ["garden watering overflowing Market Road", "repeat leak clamp cast iron renewal",
                                                             "school hours excavation", "resurfaced road permit", "hospital notify step test",
                                                             "private pump low pressure"]}

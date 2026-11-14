@@ -37,16 +37,16 @@ async function go(id, arg) {
         const P = new URLSearchParams(location.search), seek = P.has('seek') ? parseInt(P.get('seek'), 10) : null;
         if (!arg && P.get('live')) await startLive(boot, P.get('live'), P.get('online') === '0' ? false : null);
         else if (!arg && P.get('file')) await loadRecording(P.get('file'), { autoplay: false, seek });
-        else if (!arg && P.get('case')) await loadReplay(P.get('method') || 'agentix_crew', P.get('case'), { autoplay: false, seek });
-        else if (!arg) { if (first) await loadRecording(first.file, { autoplay: false, seek }); else await loadReplay('agentix_crew', 'test-brown-002', { autoplay: false, seek }); }
+        else if (!arg && P.get('case')) await loadReplay(P.get('method') || 'agentix_crew', P.get('case'), { autoplay: false, seek, ver: P.get('ver') });
+        else if (!arg) { if (first) await loadRecording(first.file, { autoplay: false, seek }); else await loadReplay('agentix_crew', 'dev-brown-002', { autoplay: false, seek }); }
         if (P.has('picker')) openPicker(boot);
       }
       if (id === 'h2h') { initH2H(root, boot); if (!arg) await loadH2H(new URLSearchParams(location.search).get('case') || H2H_DEFAULT); }
       if (id === 'safety') await initSafety(root, boot, go);
       if (id === 'lab') await initLab(root, boot);
-      if (id === 'results') await initResults(root);
+      if (id === 'results') await initResults(root, boot, go);
     }
-    if (id === 'mission' && arg) { if (arg.file) await loadRecording(arg.file); else if (arg.case) await loadReplay(arg.method || 'agentix_crew', arg.case); }
+    if (id === 'mission' && arg) { if (arg.file) await loadRecording(arg.file); else if (arg.case) await loadReplay(arg.method || 'agentix_crew', arg.case, { ver: arg.ver }); }
     if (id === 'h2h' && arg) await loadH2H(arg);
   } catch (e) {
     console.error(e);

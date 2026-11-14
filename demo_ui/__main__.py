@@ -22,6 +22,10 @@ from demo_ui.config import setup_paths  # noqa: E402
 
 
 def main(argv=None):
+    """Command line of the demo: 'serve' (start the web UI), 'record' (record crew runs), 'warm' (pre-build caches).
+
+    Args: argv = command-line arguments (None = sys.argv).
+    """
     ap = argparse.ArgumentParser(prog="demo_ui", description="AquaMind demo UI")
     sub = ap.add_subparsers(dest="cmd")
     s = sub.add_parser("serve")

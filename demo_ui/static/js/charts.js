@@ -27,10 +27,10 @@ export function hbars(rows, { max = 100, unit = '%', labelW = 210, W = 640, bar 
   return svg(W, H, s);
 }
 
-export function grouped(groups, series, { max = 100, unit = '%', W = 640, H = 260, fmt = v => `${Math.round(v)}${unit}` } = {}) {
+export function grouped(groups, series, { max = 100, unit = '%', W = 640, H = 260, barMax = 34, fmt = v => `${Math.round(v)}${unit}` } = {}) {
   // groups: ['3 sensors', ...]; series: [{name, color, values: [..]}]
   const L = 40, R = 10, T = 16, B = 46;
-  const gw = (W - L - R) / groups.length, bw = Math.min(34, (gw - 18) / series.length);
+  const gw = (W - L - R) / groups.length, bw = Math.min(barMax, (gw - 18) / series.length);
   const Y = v => T + (1 - Math.max(0, v) / max) * (H - T - B);
   let s = '';
   for (const t of [0, 0.25, 0.5, 0.75, 1]) s += `<line class="grid" x1="${L}" x2="${W - R}" y1="${Y(t * max)}" y2="${Y(t * max)}"/><text x="${L - 6}" y="${Y(t * max) + 4}" text-anchor="end">${Math.round(t * max)}${unit}</text>`;
@@ -59,14 +59,15 @@ export function diverging(rows, { W = 640, labelW = 220, bar = 20, gap = 10, spa
   // rows: [{label, sub, delta}] delta in percentage points (negative = worse)
   const H = rows.length * (bar + gap) + 24, mid = labelW + (W - labelW - 60) * 0.85, X = d => mid + (d / span) * (W - labelW - 60) * 0.85;
   let s = `<line class="axis" x1="${mid}" x2="${mid}" y1="0" y2="${H - 18}"/>`;
-  for (const t of [-60, -40, -20, 0]) s += `<text x="${X(t)}" y="${H - 4}" text-anchor="middle">${t}</text>`;
+  const stepT = span > 40 ? 20 : span > 20 ? 10 : 5;
+  for (let t = 0; t >= -span * 0.95; t -= stepT) s += `<text x="${X(t)}" y="${H - 4}" text-anchor="middle">${t}</text>`;
   rows.forEach((r, i) => {
     const y = i * (bar + gap) + 2, d = r.delta;
     s += `<text class="lab" x="${labelW - 10}" y="${y + bar / 2 + (r.sub ? -2 : 4)}" text-anchor="end">${esc(r.label)}</text>`;
     if (r.sub) s += `<text x="${labelW - 10}" y="${y + bar / 2 + 11}" text-anchor="end" font-size="10.5">${esc(r.sub)}</text>`;
     const x = Math.min(X(d), mid), w = Math.abs(X(d) - mid);
-    s += `<rect x="${x}" y="${y}" width="${Math.max(2, w)}" height="${bar}" rx="5" fill="${d < -15 ? 'var(--bad)' : d < -3 ? 'var(--warn)' : 'var(--faint)'}"/>`;
-    s += `<text class="val" x="${mid + 8}" y="${y + bar / 2 + 4}" text-anchor="start">${d > 0 ? '+' : ''}${d.toFixed(1)}${unit}</text>`;
+    s += `<rect x="${x}" y="${y}" width="${Math.max(2, w)}" height="${bar}" rx="5" fill="${d < -15 ? 'var(--bad)' : d < -3 ? 'var(--warn)' : d > 3 ? 'var(--good)' : 'var(--faint)'}"/>`;
+    s += `<text class="val" x="${Math.max(mid, X(d)) + 8}" y="${y + bar / 2 + 4}" text-anchor="start">${d > 0 ? '+' : ''}${d.toFixed(1)}${unit}</text>`;
   });
   return svg(W, H, s);
 }

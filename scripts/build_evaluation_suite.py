@@ -41,6 +41,10 @@ _W = {}
 
 
 def _init(weak_pipes_path: str):
+    """Worker setup: load the town and simulator and create the CaseBuilder with the weak pipes.
+
+    Args: weak_pipes_path = JSON list of pipes with repair history.
+    """
     from aquamind.search.pressure import Fingerprints
     from aquamind.sim.cases import CaseBuilder
     from aquamind.sim.world import SimTown
@@ -56,6 +60,11 @@ def _init(weak_pipes_path: str):
 
 
 def _build(job):
+    """Build one case in a worker.
+
+    Args: job = (suite name, case name, seed, output folder).
+    Returns: case summary dict.
+    """
     from aquamind.sim.cases import SUITES
     suite, name, seed, out = job
     t0 = time.time()
@@ -65,6 +74,11 @@ def _build(job):
 
 
 def layouts(town) -> dict:
+    """Sensor layouts for 3, 5 and 10 sensors (random draws plus one spread layout).
+
+    Args: town = Town.
+    Returns: {layout name: sensor junction ids}.
+    """
     cand = town.cfg["pressure_candidates"]
     D = town.net.pipe_distance
     idx = [town.net.index[n] for n in cand]
@@ -83,6 +97,7 @@ def layouts(town) -> dict:
 
 
 def main():
+    """Build an older evaluation suite (agentix_final); kept for reference."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", default="data/benchmark/agentix_final")
     parser.add_argument("--workers", type=int, default=3)

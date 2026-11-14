@@ -28,34 +28,59 @@ N_TEST_REAL = 250
 
 
 def read_label(x: dict) -> dict:
+    """Expand a compact hand label into the full reader-2.0 label.
+
+    Args: x = compact label {'cat', 'sym', 'pl', 'src', 'priv', 'since', 'inj', 'sum'}.
+    Returns: reader-2.0 dict.
+    """
     return {"category": x["cat"], "symptoms": x["sym"], "places": [{"text": t, "type": ty} for t, ty in x["pl"]], "source": x["src"],
             "on_private_property": x["priv"], "since": x["since"], "contains_instructions": bool(x.get("inj", False)), "summary": x["sum"]}
 
 
 def reply_label(x: dict) -> dict:
+    """Expand a compact hand label into the full reply-2.0 label.
+
+    Args: x = compact label {'ans', 'src', 'pl', 'from', 'nn', 'flow', 'inj'}.
+    Returns: reply-2.0 dict.
+    """
     return {"answered": x["ans"], "source": x["src"], "places": x["pl"], "flows_from": x["from"], "not_network": x["nn"],
             "still_flowing": x["flow"], "contains_instructions": bool(x.get("inj", False))}
 
 
 def check_spans(text: str, spans: list[str], where: str, errs: list) -> None:
+    """Check that every labelled place/time text appears word for word in the message; record an error if not.
+
+    Args: text = message; spans = labelled texts; where = name for the error; errs = error list (appended to).
+    """
     for s in spans:
         if s and s not in text:
             errs.append(f"{where}: '{s}' is not verbatim in the text")
 
 
 def row_read(channel, text, label, meta):
+    """One training row for the read task (chat format).
+
+    Args: channel = message channel; text = message; label = reader-2.0 gold; meta = extra info.
+    Returns: {'messages': [system, user, assistant], 'meta'}.
+    """
     return {"messages": [{"role": "system", "content": FT_READ_SYSTEM},
                          {"role": "user", "content": json.dumps({"channel": channel, "text": text}, ensure_ascii=False)},
                          {"role": "assistant", "content": json.dumps(label, ensure_ascii=False)}], "meta": {"task": "read", **meta}}
 
 
 def row_reply(q, a, label, meta):
+    """One training row for the reply task (chat format).
+
+    Args: q = question asked; a = citizen's answer; label = reply-2.0 gold; meta = extra info.
+    Returns: {'messages': [...], 'meta'}.
+    """
     return {"messages": [{"role": "system", "content": FT_REPLY_SYSTEM},
                          {"role": "user", "content": json.dumps({"question": q, "answer": a}, ensure_ascii=False)},
                          {"role": "assistant", "content": json.dumps(label, ensure_ascii=False)}], "meta": {"task": "reply", **meta}}
 
 
 def main():
+    """Assemble the fine-tuning dataset: check every label, split real and synthetic rows into train/dev/test, write the files and data card."""
     errs, seen = [], set()
     pool = json.load(open(f"{SRC}/real_pool.json"))
     real = []

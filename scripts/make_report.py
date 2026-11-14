@@ -10,7 +10,7 @@ import sys
 import numpy as np
 from scipy.stats import binomtest
 
-# ADR-008: visible water is a sanity check; the headline is the pooled non-obvious cases
+# ADR-002: visible water is a sanity check; the headline is the pooled non-obvious cases
 GROUPS = {"visible water (sanity check)": ["visible"],
           "NON-OBVIOUS (displaced + damp + sound + brown water + chronic + SCADA-only)": ["displaced", "damp", "sound", "brown", "chronic", "silent"]}
 ORDER = ["agentix", "agentix_code", "agentix_code_canvass", "agentix_no_reports_code", "agentix_no_reports_canvass", "agentix_canvass", "react_agent", "plain_llm", "fixed_rules", "crew_practice", "agentix_no_reports",
@@ -25,6 +25,11 @@ NAMES = {"agentix": "**AquaMind (ours)**", "agentix_code_canvass": "exploratory:
 
 
 def ci(x, n=2000, seed=0):
+    """Bootstrap mean and 95% interval.
+
+    Args: x = values; n = resamples; seed = random seed.
+    Returns: (mean, low, high) (NaN if empty).
+    """
     x = np.asarray(x, float)
     if len(x) == 0:
         return float("nan"), float("nan"), float("nan")
@@ -34,11 +39,19 @@ def ci(x, n=2000, seed=0):
 
 
 def pct(t):
+    """Args: t = (mean, low, high) fractions.
+    Returns: e.g. '83.2 % [78-88]'.
+    """
     m, lo, hi = t
     return f"{100 * m:.1f} % [{100 * lo:.0f}-{100 * hi:.0f}]"
 
 
 def mcnemar(a, b):
+    """McNemar test for two methods on the same cases.
+
+    Args: a, b = per-case success lists of the two methods.
+    Returns: (cases only a solved, cases only b solved, p-value).
+    """
     only_a = sum(x and not y for x, y in zip(a, b))
     only_b = sum(y and not x for x, y in zip(a, b))
     p = binomtest(only_a, only_a + only_b).pvalue if only_a + only_b else 1.0
@@ -46,6 +59,11 @@ def mcnemar(a, b):
 
 
 def table(rows, title):
+    """Markdown results table, one row per method.
+
+    Args: rows = result rows; title = table title.
+    Returns: list of markdown lines.
+    """
     by = collections.defaultdict(list)
     for r in rows:
         by[r["method"]].append(r)
@@ -80,7 +98,7 @@ def table(rows, title):
             cells.append(f"{sum(r['found'] for r in leak)}/{len(leak)}" if leak else "-")
         out.append(f"| {NAMES.get(m, m)} | " + " | ".join(cells) + " |")
     out.append("")
-    out += ["Correct-dig rate by kind of evidence (leak cases; ADR-008):", "",
+    out += ["Correct-dig rate by kind of evidence (leak cases; ADR-002):", "",
             "| Method | " + " | ".join(GROUPS) + " | all leak cases | median hours open | crews sent, no leak | dry digs / leak case |",
             "|" + "---|" * (len(GROUPS) + 5)]
     for m in [x for x in ORDER if x in by] + sorted(set(by) - set(ORDER)):
@@ -110,6 +128,11 @@ def table(rows, title):
 
 
 def one_look_table(path):
+    """Markdown table for RQ1 (one look, before any field check), by kind of evidence.
+
+    Args: path = one-look results .jsonl.
+    Returns: list of markdown lines.
+    """
     rows = [json.loads(l) for l in open(path)]
     out = ["### RQ1: one look (before any investigation), by kind of evidence", ""]
     for gname, ss in [("ALL leak cases", None)] + list(GROUPS.items()) + [(s, [s]) for s in ("displaced", "damp", "sound", "brown", "chronic", "silent")]:

@@ -24,6 +24,7 @@ _mlx = {"model": None, "tok": None, "error": None, "loading": False}
 
 
 def _server_url() -> str | None:
+    """Returns: URL of the fine-tuned reader server if it answers, else None."""
     from aquamind.reader.local_reader import DEFAULT_URL
     url = os.environ.get("AGENTIX_READER_URL") or DEFAULT_URL
     try:
@@ -34,6 +35,7 @@ def _server_url() -> str | None:
 
 
 def mlx_allowed() -> bool:
+    """Returns: True if the fine-tuned model may be loaded in-process (MLX installed, model present, AQUAMIND_DEMO_MLX != '0')."""
     if os.environ.get("AQUAMIND_DEMO_MLX", "1") == "0":
         return False
     from aquamind.reader.local_reader import MERGED
@@ -45,6 +47,7 @@ def mlx_allowed() -> bool:
 
 
 def status() -> dict:
+    """Returns: reader status for the UI {'server', 'mlx_allowed', 'mlx_loaded', 'mlx_loading', 'mlx_error'}."""
     return {"server": _server_url(), "mlx_allowed": mlx_allowed(), "mlx_loaded": _mlx["model"] is not None,
             "mlx_loading": _mlx["loading"], "mlx_error": _mlx["error"]}
 
@@ -53,6 +56,10 @@ class DemoReader:
     """reader-2.0 / reply-2.0 reads with provenance. `prefer`: 'finetuned' (default) or 'rules'."""
 
     def __init__(self, places=None, prefer: str = "finetuned", allow_model: bool = True):
+        """Reader for the demo: cached answers first, then the reader server, then MLX in-process, then the rules.
+
+        Args: places = Places (for the rule fallback); prefer = 'finetuned' | 'rules'; allow_model = may load the model.
+        """
         from aquamind.reader.local_reader import CACHE_DIR, LocalReader
         from aquamind.reader.prompts import FT_READ_SYSTEM, FT_REPLY_SYSTEM
         self.prefer, self.allow_model = prefer, allow_model
@@ -71,6 +78,7 @@ class DemoReader:
 
     # ------------------------------------------------------------------ plumbing
     def rules(self):
+        """Returns: the rule-based reader (created on first use)."""
         if self._rules is None:
             from aquamind.reader.rules import RuleReader
             if self.places is None:
@@ -80,9 +88,17 @@ class DemoReader:
         return self._rules
 
     def _key(self, system: str, user: str) -> str:
+        """Args: system, user = prompts.
+        Returns: cache key (same as the evaluation's reader cache).
+        """
         return hashlib.sha256(json.dumps([self.mid, system, user], ensure_ascii=False).encode()).hexdigest()
 
     def _cache_get(self, key: str):
+        """Look in the evaluation cache, then the demo cache.
+
+        Args: key = cache key.
+        Returns: cached answer or None.
+        """
         for d in (self.eval_cache, self.demo_cache):
             p = os.path.join(d, key[:2], key + ".json")
             if os.path.exists(p):
@@ -94,6 +110,10 @@ class DemoReader:
         return None
 
     def _cache_put(self, key: str, out) -> None:
+        """Save an answer in the demo cache (atomic write).
+
+        Args: key = cache key; out = answer.
+        """
         p = os.path.join(self.demo_cache, key[:2], key + ".json")
         os.makedirs(os.path.dirname(p), exist_ok=True)
         tmp = f"{p}.{os.getpid()}.tmp"
@@ -102,11 +122,17 @@ class DemoReader:
         os.replace(tmp, p)
 
     def _server(self):
+        """Returns: reader server URL (re-checked at most every 20 s) or None."""
         if time.time() - self._url_checked > 20:
             self._url, self._url_checked = _server_url(), time.time()
         return self._url
 
     def _gen_server(self, url, system, user):
+        """Ask the reader server.
+
+        Args: url = server URL; system, user = prompts.
+        Returns: parsed JSON dict or None.
+        """
         body = {"messages": [{"role": "system", "content": system}, {"role": "user", "content": user}], "max_tokens": 320, "temperature": 0.0}
         req = urllib.request.Request(f"{url}/v1/chat/completions", data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
         try:
@@ -116,6 +142,11 @@ class DemoReader:
             return None
 
     def _gen_mlx(self, system, user):
+        """Ask the fine-tuned model in-process with MLX (loads it on first use).
+
+        Args: system, user = prompts.
+        Returns: parsed JSON dict or None.
+        """
         if not (self.allow_model and mlx_allowed()):
             return None
         with _mlx_lock:
@@ -167,6 +198,11 @@ class DemoReader:
 
     # ------------------------------------------------------------------ the reader interface the toolbox uses
     def read_one(self, report: dict) -> tuple[dict, str]:
+        """Read one message and say where the answer came from.
+
+        Args: report = message dict.
+        Returns: (read dict, provenance: 'cache' | 'server' | 'mlx' | 'rules').
+        """
         from aquamind.reader.schema import repair_read
         if self.prefer == "rules":
             self.stats["rules"] += 1
@@ -179,14 +215,23 @@ class DemoReader:
         return repair_read(raw), prov
 
     def read(self, report: dict) -> dict:
+        """Args: report = message dict.
+        Returns: read dict (provenance stored in self.provenance).
+        """
         rd, prov = self.read_one(report)
         self.provenance[report.get("report_id", "?")] = prov
         return rd
 
     def read_many(self, reports: list[dict]) -> dict[str, dict]:
+        """Args: reports = message dicts.
+        Returns: {report_id: read dict}.
+        """
         return {r["report_id"]: self.read(r) for r in reports}
 
     def read_replies(self, items: list[tuple[str, str | None]]) -> list[dict]:
+        """Args: items = [(question, answer or None)].
+        Returns: one reply dict per item.
+        """
         from aquamind.reader.schema import EMPTY_REPLY, repair_reply
         if self.prefer == "rules":
             return self.rules().read_replies(items)

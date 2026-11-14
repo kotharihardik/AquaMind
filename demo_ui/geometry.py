@@ -11,10 +11,17 @@ _VERSION = 3
 
 
 def _r(x: float, nd: int = 1) -> float:
+    """Args: x = number; nd = decimals.
+    Returns: rounded float.
+    """
     return round(float(x), nd)
 
 
 def build() -> dict:
+    """Build the network drawing data for the UI: junctions, pipes, sections, landmarks, streets, sensors, layouts.
+
+    Returns: JSON-ready dict.
+    """
     from .world import town, world
     t = town()
     net, places, secs = t.net, t.places, t.sections
@@ -81,6 +88,7 @@ def build() -> dict:
 
 
 def payload() -> dict:
+    """Returns: the network drawing data (from the disk cache if up to date, else built and cached)."""
     p = CACHE / "network.json"
     if p.exists():
         try:
@@ -95,4 +103,7 @@ def payload() -> dict:
 
 
 def junction_of_weights(w) -> int | None:
+    """Args: w = weight per junction (or None).
+    Returns: index of the heaviest junction, or None if empty.
+    """
     return int(np.argmax(w)) if w is not None and float(np.sum(w)) > 0 else None

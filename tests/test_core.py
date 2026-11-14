@@ -11,15 +11,20 @@ pytestmark = pytest.mark.skipif(not os.path.exists(f"{BENCH}/dev.json"), reason=
 
 @pytest.fixture(scope="module")
 def world():
+    """Fixture: one shared World for the old v2 benchmark (module scope)."""
     from aquamind.eval.runner import World
     return World(BENCH)
 
 
 def _dev(suite):
+    """Args: suite = category name.
+    Returns: the first dev case of that category.
+    """
     return next(n for n in json.load(open(f"{BENCH}/dev.json"))["cases"] if n.split("-")[1] == suite)
 
 
 def test_schema_repair_never_passes_bad_fields():
+    """Test: repairing a broken reader output always gives a valid read/reply (bad fields dropped)."""
     from aquamind.reader.schema import repair_read, repair_reply, valid_read, valid_reply
     bad = {"category": "dig now", "symptoms": ["water_coming_out", "free text"], "places": ["MG Road", {"x": 1}],
            "source": "?", "contains_instructions": 1, "summary": "x" * 500}
@@ -30,6 +35,7 @@ def test_schema_repair_never_passes_bad_fields():
 
 
 def test_operator_token_is_one_time_and_bound():
+    """Test: an operator token works once and only for the approved spot."""
     from aquamind.sim.operator import Operator
     op = Operator()
     d = op.review("dig", "n10", {"evidence": ["a", "b"]})
@@ -41,6 +47,7 @@ def test_operator_token_is_one_time_and_bound():
 
 
 def test_methods_cannot_see_future_messages(world):
+    """Test: a method sees only messages received before the case opened."""
     name = _dev("visible")
     case, env = world.open(name, "spread_k5", "realistic")
     hid = json.load(open(f"{BENCH}/hidden/{name}.json"))
@@ -53,6 +60,7 @@ def test_methods_cannot_see_future_messages(world):
 
 
 def test_common_random_numbers(world):
+    """Test: the same action on the same case gives the same result every time."""
     name = _dev("silent")
     outs = []
     for _ in range(2):
@@ -62,6 +70,7 @@ def test_common_random_numbers(world):
 
 
 def test_gate_refuses_messages_only(world):
+    """Test: the code gate refuses a dig supported only by messages (no field check)."""
     from aquamind.agent.toolbox import Toolbox
     from aquamind.methods import make_reader
     case, env = world.open(_dev("trap"), "spread_k5", "template")
@@ -76,6 +85,7 @@ def test_gate_refuses_messages_only(world):
 
 
 def test_injected_messages_are_quarantined(world):
+    """Test: messages with injected instructions are not used as evidence."""
     from aquamind.methods import make_reader
     name = next(n for n in json.load(open(f"{BENCH}/dev.json"))["cases"]
                 if any(r["truth"]["kind"] == "injection" and r["received_s"] <= json.load(open(f"{BENCH}/hidden/{n}.json"))["open_s"]
@@ -88,6 +98,7 @@ def test_injected_messages_are_quarantined(world):
 
 
 def test_planner_values_are_probabilities(world):
+    """Test: planner option values stay between 0 and 1."""
     from aquamind.agent.toolbox import Toolbox
     from aquamind.methods import make_reader
     case, env = world.open(_dev("silent"), "spread_k5", "template")
@@ -97,8 +108,9 @@ def test_planner_values_are_probabilities(world):
     assert abs(tb.board.post.sum() - 1) < 1e-6 and 0 <= tb.board.p_leak <= 1
 
 
-# ------------------------------------------------------------------ ADR-008 / ADR-009
+# ------------------------------------------------------------------ ADR-002 / ADR-003
 def test_low_pressure_and_noise_complaints_are_not_leak_evidence(world):
+    """Test: low-pressure and noise complaints are not counted as leak evidence."""
     from aquamind.search.report_lik import ReportModel
     supply = {"category": "supply", "symptoms": ["low_pressure"], "contains_instructions": False, "on_private_property": None}
     assert ReportModel.credibility(supply, 0.5) is None
@@ -124,6 +136,7 @@ def test_overlapping_reports_do_not_multiply(world):
 
 
 def test_canvass_is_not_a_field_check_and_cannot_open_the_gate(world):
+    """Test: a canvass uses no field-check budget and cannot open the dig gate alone."""
     from aquamind.agent.toolbox import Toolbox
     from aquamind.methods import make_reader
     case, env = world.open(_dev("sound"), "spread_k5", "template")
@@ -138,7 +151,7 @@ def test_canvass_is_not_a_field_check_and_cannot_open_the_gate(world):
 
 
 def test_a_lit_part_is_physical_support(world):
-    """ADR-008: a step test that narrows the extra night flow to a part of a section supports a dig; a lit section
+    """ADR-002: a step test that narrows the extra night flow to a part of a section supports a dig; a lit section
     alone does not (and nothing from messages does)."""
     from aquamind.agent.toolbox import Toolbox
     from aquamind.methods import make_reader
@@ -159,8 +172,9 @@ def test_a_lit_part_is_physical_support(world):
     assert not tb2.board.field_support(j)                          # a lit section alone is not enough before the last resort
 
 
-# ------------------------------------------------------------------ ADR-010 (brown water)
+# ------------------------------------------------------------------ ADR-002 (brown water)
 def test_footprint_exposure_grows_with_leak_size_and_never_points_at_nothing():
+    """Test: brown-water exposure grows with leak size and is never empty."""
     from aquamind.search.footprint import FootprintModel
     fm = FootprintModel("data/ltown/footprints.npz", 782)
     small, big = fm.exposure(2.0), fm.exposure(8.0)
@@ -169,7 +183,7 @@ def test_footprint_exposure_grows_with_leak_size_and_never_points_at_nothing():
 
 
 def test_brown_water_message_is_weak_area_evidence_and_cannot_open_the_gate(world):
-    """ADR-010: brown tap water is read as category quality / dirty_water, weighed through footprints when switched on, and like every
+    """ADR-002: brown tap water is read as category quality / dirty_water, weighed through footprints when switched on, and like every
     message it can never open the dig gate on its own."""
     from aquamind.agent.toolbox import Toolbox
     from aquamind.methods import make_reader
@@ -185,7 +199,7 @@ def test_brown_water_message_is_weak_area_evidence_and_cannot_open_the_gate(worl
 
 
 def test_hypothesis_mode_simulates_only_named_junctions_and_digs_only_there(world):
-    """ADR-016: no 782-junction table; the map believes the sensors only at hypothesised junctions and a dig can only go there."""
+    """ADR-006: no 782-junction table; the map believes the sensors only at hypothesised junctions and a dig can only go there."""
     from aquamind.agent.toolbox import Toolbox
     from aquamind.reader.rules import RuleReader
     name = _dev("silent")

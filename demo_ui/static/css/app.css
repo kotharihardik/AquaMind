@@ -1,6 +1,10 @@
 /* AquaMind demo UI: design system + layout. Dark "control room" theme by default, light theme for bright projectors. */
 :root {
   --bg: #050a14;
+  --btn-primary: #e6ebf2;
+  --btn-primary-hover: #ffffff;
+  --btn-primary-text: #0b1426;
+  --btn-danger: #d64545;
   --bg-g1: rgba(14, 116, 144, 0.18);
   --bg-g2: rgba(99, 102, 241, 0.10);
   --panel: rgba(11, 19, 35, 0.82);
@@ -44,6 +48,10 @@
   color-scheme: dark;
 }
 [data-theme="light"] {
+  --btn-primary: #1f2937;
+  --btn-primary-hover: #111827;
+  --btn-primary-text: #ffffff;
+  --btn-danger: #c53030;
   --bg: #eef2f8;
   --bg-g1: rgba(14, 165, 233, 0.10);
   --bg-g2: rgba(99, 102, 241, 0.07);
@@ -174,9 +182,10 @@ main { position: absolute; inset: var(--top) 0 0 0; }
 .btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--line-2);
   background: var(--panel-2); cursor: pointer; font-weight: 600; font-size: 13px; color: var(--text); transition: all .15s; }
 .btn:hover { border-color: var(--accent); color: var(--accent); }
-.btn.primary { background: linear-gradient(135deg, #0ea5e9, #6366f1); color: #fff; border-color: transparent; box-shadow: 0 8px 24px rgba(14, 165, 233, 0.3); }
-.btn.primary:hover { filter: brightness(1.08); color: #fff; }
-.btn.danger { background: linear-gradient(135deg, #f43f5e, #f97316); color: #fff; border-color: transparent; }
+.btn.primary { background: var(--btn-primary); color: var(--btn-primary-text); border-color: transparent; }
+.btn.primary:hover { background: var(--btn-primary-hover); color: var(--btn-primary-text); }
+.btn.danger { background: var(--btn-danger); color: #fff; border-color: transparent; }
+.btn.danger:hover { filter: brightness(1.1); color: #fff; }
 .btn.ghost { background: transparent; }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 .btn.sm { padding: 5px 10px; font-size: 12px; border-radius: 8px; }
@@ -361,7 +370,7 @@ canvas.netmap.dragging { cursor: grabbing; }
 .tl-head { display: flex; align-items: center; gap: 8px; padding: 8px 12px 4px; }
 .tl-controls { display: flex; gap: 6px; align-items: center; }
 .tl-controls .icon-btn { width: 32px; height: 32px; }
-.tl-controls .play { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #0ea5e9, #6366f1); color: #fff; border: 0; box-shadow: 0 6px 18px rgba(14, 165, 233, .35); }
+.tl-controls .play { width: 40px; height: 40px; border-radius: 12px; background: var(--btn-primary); color: var(--btn-primary-text); border: 0; }
 .tl-svg { flex: 1; width: 100%; min-height: 0; cursor: pointer; display: block; }
 .tl-legend { display: flex; gap: 12px; font-size: 11px; color: var(--muted); align-items: center; }
 .tl-legend i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; margin-right: 4px; vertical-align: middle; }

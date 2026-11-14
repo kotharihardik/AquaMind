@@ -23,6 +23,7 @@ _boot = {"ready": False, "error": None, "t": 0.0}
 
 # ---------------------------------------------------------------- data for the views
 def catalogue() -> list[dict]:
+    """Returns: one entry per benchmark case for the case picker (category, outcome of crew and ReAct, recording available)."""
     idx = json.load(open(f"{BENCH}/index.json"))
     crew = logreplay.outcomes("agentix_crew")
     react = logreplay.outcomes("react_agent")
@@ -37,6 +38,7 @@ def catalogue() -> list[dict]:
 
 
 def status() -> dict:
+    """Returns: server status for the top bar (ready, reader, API keys found, recordings, live runs)."""
     from aquamind.llm.client import _discover_provider_keys, load_dotenv
     load_dotenv()
     return {"ready": _boot["ready"], "boot_error": _boot["error"], "boot_s": _boot["t"], "reader": readers.status(),
@@ -45,6 +47,7 @@ def status() -> dict:
 
 
 def warm() -> None:
+    """Background start-up: load the World, search engine and network data so the first page is fast."""
     t0 = time.time()
     try:
         from .world import search, world
@@ -68,11 +71,16 @@ class Handler(BaseHTTPRequestHandler):
     server_version = "AquaMindDemo/1.0"
 
     def log_message(self, fmt, *args):     # quiet, except errors
+        """Print only error requests (4xx/5xx) to keep the console quiet."""
         if args and isinstance(args[1], str) and args[1].startswith(("4", "5")):
             super().log_message(fmt, *args)
 
     # ------------------------------------------------------------ responses
     def _send(self, code: int, body: bytes, ctype: str, cache: bool = False):
+        """Send a response (gzip if the client accepts it and the body is large).
+
+        Args: code = HTTP status; body = bytes; ctype = content type; cache = allow browser caching.
+        """
         gz = "gzip" in (self.headers.get("Accept-Encoding") or "") and len(body) > 2048 and not ctype.startswith("image/")
         if gz:
             body = gzip.compress(body, 5)
@@ -86,9 +94,11 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def _json(self, obj, code: int = 200):
+        """Args: obj = data; code = HTTP status. Sends it as JSON."""
         self._send(code, json.dumps(obj, ensure_ascii=False, default=str).encode(), "application/json; charset=utf-8")
 
     def _body(self) -> dict:
+        """Returns: the request JSON body as a dict ({} if empty or invalid)."""
         n = int(self.headers.get("Content-Length") or 0)
         if not n:
             return {}
@@ -98,6 +108,10 @@ class Handler(BaseHTTPRequestHandler):
             return {}
 
     def _static(self, rel: str):
+        """Serve a file from static/ (paths outside it are refused).
+
+        Args: rel = path under static/.
+        """
         rel = rel.lstrip("/") or "index.html"
         p = (STATIC / rel).resolve()
         if not str(p).startswith(str(STATIC.resolve())) or not p.is_file():
@@ -111,6 +125,7 @@ class Handler(BaseHTTPRequestHandler):
 
     # ------------------------------------------------------------ routes
     def do_GET(self):
+        """GET routes: the page, static files and the /api/... data endpoints."""
         u = urlparse(self.path)
         q = {k: v[-1] for k, v in parse_qs(u.query).items()}
         path = u.path
@@ -132,7 +147,9 @@ class Handler(BaseHTTPRequestHandler):
                 d = recordings.load(q.get("file", ""))
                 return self._json(d) if d else self._json({"error": "no such recording"}, 404)
             if path == "/api/replay":
-                d = logreplay.build(q.get("method", "agentix_crew"), q.get("case", ""), q.get("layout", DEFAULT_LAYOUT))
+                ver = q.get("ver")
+                d = logreplay.build(q.get("method", "agentix_crew"), q.get("case", ""), q.get("layout", DEFAULT_LAYOUT),
+                                    int(ver) if ver and str(ver).isdigit() else None)
                 return self._json(d) if d else self._json({"error": "no log for this case and method"}, 404)
             if path == "/api/h2h":
                 c = q.get("case", "")
@@ -149,6 +166,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({"error": repr(e)}, 500)
 
     def do_POST(self):
+        """POST routes: /api/reader, /api/rag, /api/attack, /api/live/start."""
         u = urlparse(self.path)
         b = self._body()
         try:
@@ -169,6 +187,10 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({"error": repr(e)}, 500)
 
     def _sse(self, run_id: str, start: int):
+        """Stream a live run's events to the browser (Server-Sent Events, with heartbeats).
+
+        Args: run_id = live run id; start = first event index to send.
+        """
         run = live.get(run_id)
         if run is None:
             return self._json({"error": "no such live run"}, 404)
@@ -191,6 +213,10 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def serve(host: str = "127.0.0.1", port: int = 8765, open_browser: bool = True) -> None:
+    """Start the demo web server.
+
+    Args: host = address; port = port; open_browser = open the page in a browser.
+    """
     threading.Thread(target=warm, daemon=True, name="warm").start()
     httpd = ThreadingHTTPServer((host, port), Handler)
     httpd.daemon_threads = True

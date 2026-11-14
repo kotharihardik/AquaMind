@@ -20,6 +20,11 @@ WATER = re.compile(r"water|leak|burst|hydrant|flood|drain|sewer|puddle", re.I)
 
 
 def get(url, tries=8):
+    """GET a FixMyStreet API URL as JSON, waiting and retrying on rate limits (HTTP 429).
+
+    Args: url = API URL; tries = attempts.
+    Returns: parsed JSON.
+    """
     wait = 60
     for _ in range(tries):
         try:

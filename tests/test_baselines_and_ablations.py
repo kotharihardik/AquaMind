@@ -104,9 +104,11 @@ def test_multi_api_key_loading(monkeypatch, tmp_path):
     for k in ("NVIDIA_API_KEY", "NVIDIA_API_KEY_1", "NVIDIA_API_KEY_2", "NVIDIA_API_KEY_3"):
         monkeypatch.delenv(k, raising=False)
     for i in (1, 2, 3):
-        monkeypatch.setenv(f"NVIDIA_API_KEY_{i}", f"fake-key-{i}")
+        monkeypatch.setenv(f"NVIDIA_API_KEY_{i}", f"nvapi-fake-key-{i}")
+    monkeypatch.setenv("NVIDIA_API_KEY_4", "not-an-nvidia-key")     # wrong format: must be skipped (it would fail with HTTP 401)
     llm = LLM(cache_dir=str(tmp_path / "llm"))
     assert len(llm.keys) >= 3, f"Expected at least 3 API keys, found {len(llm.keys)}"
+    assert "not-an-nvidia-key" not in llm.keys
     assert len(llm._key_tags) == len(llm.keys)
     # Check that each key has its own distinct rate file
     rate_files = [llm._rate_file(i) for i in range(len(llm.keys))]
@@ -207,17 +209,20 @@ def test_registry_has_every_documented_method():
 
 
 def test_no_reports_ablation_hides_complaint_text_from_agents():
+    """Test: the no-reports ablation reads no messages and the search ignores them."""
     m = registry(None, "rules")["ablation_no_reports"]
     assert m.reader_kind == "none" and m.search_kw.get("use_messages") is False
 
 
 def test_no_temp_sensor_ablation_really_removes_a_tool():
+    """Test: the no-temp-sensor ablation disables step tests, and the full crew keeps them."""
     m = registry(None, "rules")
     assert m["ablation_no_temp_sensor"].tb_kw.get("allow_step") is False
     assert "allow_step" not in m["agentix_crew"].tb_kw
 
 
 def test_one_shot_can_dig_and_is_not_the_gated_loop():
+    """Test: the one-shot ablation has no code gate and uses the OneShotBrain."""
     m = registry(None, "rules")["ablation_one_shot"]
     assert m.tb_kw.get("use_gate") is False
     assert type(m.brain_factory(None)).__name__ == "OneShotBrain"

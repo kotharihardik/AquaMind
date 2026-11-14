@@ -26,6 +26,10 @@ if __name__ == "__main__":
         names = [n for n in names if n.startswith(split + "-")]
     stats = {"rewritten": 0, "kept": 0}
     def process(name):
+        """Re-word all messages of one case with the writer LLM; keep the original text if a check fails.
+
+        Args: name = case name. Writes hidden/<case>.realistic.json (skipped if it exists).
+        """
         out_h = f"{bench}/hidden/{name}.realistic.json"
         if os.path.exists(out_h):
             return

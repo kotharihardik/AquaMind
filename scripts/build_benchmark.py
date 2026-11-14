@@ -17,15 +17,15 @@ from concurrent.futures import ProcessPoolExecutor
 
 import numpy as np
 
-SHARES = {"visible": 0.10, "displaced": 0.10, "damp": 0.18, "sound": 0.18, "silent": 0.14, "false_alarm": 0.18, "trap": 0.12}     # ADR-008
+SHARES = {"visible": 0.10, "displaced": 0.10, "damp": 0.18, "sound": 0.18, "silent": 0.14, "false_alarm": 0.18, "trap": 0.12}     # ADR-002
 SEED = {"dev": 100_000, "val": 500_000, "test": 900_000}
-SHARES_V3 = {"visible": 0.08, "displaced": 0.08, "damp": 0.14, "sound": 0.14, "brown": 0.16, "silent": 0.10, "false_alarm": 0.18, "trap": 0.12}   # ADR-010
+SHARES_V3 = {"visible": 0.08, "displaced": 0.08, "damp": 0.14, "sound": 0.14, "brown": 0.16, "silent": 0.10, "false_alarm": 0.18, "trap": 0.12}   # ADR-002
 SEED_V3 = {"dev": 150_000, "val": 550_000, "test": 950_000}
-SHARES_V4 = {"visible": 0.06, "displaced": 0.06, "damp": 0.10, "sound": 0.10, "brown": 0.10, "chronic": 0.24, "silent": 0.08, "false_alarm": 0.16, "trap": 0.10}   # ADR-011
+SHARES_V4 = {"visible": 0.06, "displaced": 0.06, "damp": 0.10, "sound": 0.10, "brown": 0.10, "chronic": 0.24, "silent": 0.08, "false_alarm": 0.16, "trap": 0.10}   # ADR-002
 SEED_V4 = {"dev": 170_000, "val": 570_000, "test": 970_000}
-V4H = os.environ.get("AGENTIX_BENCH_V4H") == "1"       # v4 + failure history (ADR-018): weak stretches with repair records leak 4x more often
+V4H = os.environ.get("AGENTIX_BENCH_V4H") == "1"       # v4 + failure history (ADR-009): weak stretches with repair records leak 4x more often
 SEED_V4H = {"dev": 260_000, "val": 660_000, "test": 960_000}
-CD = os.environ.get("AGENTIX_BENCH_CD") == "1"        # ADR-019: complaint-dependent leaks (step-test SNR < 1.5) + decoys + false alarms
+CD = os.environ.get("AGENTIX_BENCH_CD") == "1"        # ADR-002: complaint-dependent leaks (step-test SNR < 1.5) + decoys + false alarms
 SHARES_CD = {"cd_damp": 0.2, "cd_damp_decoy": 0.2, "cd_sound": 0.2, "cd_sound_decoy": 0.2, "false_alarm": 0.2}
 SEED_CD = {"dev": 280_000, "val": 680_000, "test": 980_000}
 TWIN = os.environ.get("AGENTIX_BENCH_TWIN") == "1"     # the pressure-twin study: the sensors cannot tell the leak from its twin
@@ -38,11 +38,12 @@ SHARES_FINAL = {
 }
 SEED_FINAL = {"dev": 300_000, "val": 700_000, "test": 990_000}
 V4 = os.environ.get("AGENTIX_BENCH_V4") == "1" or TWIN or V4H or CD or FINAL
-V3 = os.environ.get("AGENTIX_BENCH_V3") == "1" or FINAL      # benchmark v3 (ADR-010): set by --v3, inherited by the worker processes
+V3 = os.environ.get("AGENTIX_BENCH_V3") == "1" or FINAL      # benchmark v3 (ADR-002): set by --v3, inherited by the worker processes
 _W = {}
 
 
 def _init():
+    """Worker setup: load the town, simulator, fingerprints and create the CaseBuilder."""
     from aquamind.search.pressure import Fingerprints
     from aquamind.sim.cases import CaseBuilder
     from aquamind.sim.world import SimTown
@@ -57,6 +58,11 @@ def _init():
 
 
 def _build(job):
+    """Build one case in a worker.
+
+    Args: job = (suite name, case name, seed, output folder).
+    Returns: case summary dict (with build time).
+    """
     from aquamind.sim.cases import SUITES
     suite, name, seed, out = job
     t0 = time.time()
@@ -66,6 +72,11 @@ def _build(job):
 
 
 def plan(split: str, n: int) -> list[tuple[str, str, int]]:
+    """List the cases to build for a split, using the category shares.
+
+    Args: split = 'dev' | 'val' | 'test'; n = number of cases.
+    Returns: [(suite, case name, seed)].
+    """
     shares, seeds = ((SHARES_FINAL, SEED_FINAL) if FINAL else (SHARES_CD, SEED_CD) if CD else (SHARES_TWIN, SEED_TWIN) if TWIN else (SHARES_V4, SEED_V4H) if V4H else (SHARES_V4, SEED_V4) if V4 else (SHARES_V3, SEED_V3) if V3
                      else (SHARES, SEED))
     counts = {s: int(round(n * f)) for s, f in shares.items()}
@@ -81,6 +92,11 @@ def plan(split: str, n: int) -> list[tuple[str, str, int]]:
 
 
 def layouts(town) -> dict:
+    """Sensor layouts for 3, 5 and 10 sensors: 3 random draws each, plus one 'spread' layout (farthest-point).
+
+    Args: town = Town.
+    Returns: {layout name: list of sensor junction ids}.
+    """
     cand = town.cfg["pressure_candidates"]
     D = town.net.pipe_distance
     idx = [town.net.index[n] for n in cand]
@@ -104,11 +120,11 @@ if __name__ == "__main__":
     ap.add_argument("--test", type=int, default=150)
     ap.add_argument("--dev", type=int, default=60)
     ap.add_argument("--val", type=int, default=0)
-    ap.add_argument("--v4", action="store_true", help="benchmark v4 (ADR-011): v3 + chronic leaks (sensors blind) and their look-alikes")
-    ap.add_argument("--v4h", action="store_true", help="v4 + failure history (ADR-018): repair records on weak stretches that leak more often")
-    ap.add_argument("--cd", action="store_true", help="ADR-019: complaint-dependent leaks (step-test SNR < 1.5), decoys, false alarms")
+    ap.add_argument("--v4", action="store_true", help="benchmark v4 (ADR-002): v3 + chronic leaks (sensors blind) and their look-alikes")
+    ap.add_argument("--v4h", action="store_true", help="v4 + failure history (ADR-009): repair records on weak stretches that leak more often")
+    ap.add_argument("--cd", action="store_true", help="ADR-002: complaint-dependent leaks (step-test SNR < 1.5), decoys, false alarms")
     ap.add_argument("--twin", action="store_true", help="the pressure-twin study: leaks whose sensor fingerprint has a twin elsewhere")
-    ap.add_argument("--v3", action="store_true", help="benchmark v3 (ADR-010): brown water, works log, flushing look-alikes")
+    ap.add_argument("--v3", action="store_true", help="benchmark v3 (ADR-002): brown water, works log, flushing look-alikes")
     ap.add_argument("--final", action="store_true", help="Master benchmark: unified decoys, brown-water scour, chronic failure history records, and non-obvious categories")
     ap.add_argument("--workers", type=int, default=3)
     ap.add_argument("--only", choices=["dev", "val", "test"])
